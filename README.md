@@ -206,6 +206,7 @@ git commit -m "docs: README 업데이트"
 ## 💖 PR 규칙
 
 ### Code Rabbit 사용
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/codeit-part3-team8/wikid?utm_source=oss&utm_medium=github&utm_campaign=codeit-part3-team8%2Fwikid&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 - **자동 코드 리뷰** - AI 기반 코드 분석
 - **보안 취약점 검사** - 잠재적 보안 이슈 탐지
