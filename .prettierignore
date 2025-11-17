@@ -1,0 +1,9 @@
+# Prettier 무시할 파일들
+.next/
+out/
+build/
+node_modules/
+*.min.js
+*.min.css
+package-lock.json
+yarn.lock
