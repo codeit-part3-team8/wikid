@@ -10,18 +10,6 @@ WIKID는 누구나 쉽게 위키를 생성하고 편집할 수 있는 협업 플
 
 ### 프레임워크 & 라이브러리
 
-# 📚 WIKID
-
-**나만의 위키를 만들고, 다른 사람들의 위키를 수정하는 공간입니다.**
-
-## ✨ 소개
-
-WIKID는 누구나 쉽게 위키를 생성하고 편집할 수 있는 협업 플랫폼입니다. 개인의 지식을 공유하고, 다른 사람들과 함께 정보를 발전시켜 나갈 수 있는 공간을 제공합니다.
-
-## 🛠️ 기술 스택
-
-### 프레임워크 & 라이브러리
-
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
