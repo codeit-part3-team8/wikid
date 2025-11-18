@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import '../styles/typo.css';
-import '../styles/color.css';
+import '../styles/typography-system.css';
+import '../styles/color-variables.css';
 
 export const metadata: Metadata = {
   title: 'WIKID',
