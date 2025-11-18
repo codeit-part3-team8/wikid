@@ -38,7 +38,7 @@ WIKID는 누구나 쉽게 위키를 생성하고 편집할 수 있는 협업 플
 
 ![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)
 
-- **Vercel** (예정) - 배포
+- **Vercel** - 배포 환경 (v1.0.0부터 시작)
 
 ## 👥 Team
 
@@ -134,36 +134,20 @@ npm run type-check   # TypeScript 타입 검사
 
 ## 📋 개발 규칙
 
-### ESLint 규칙
+상세한 개발 규칙은 **[docs/CODE_CONVENTION.md](./docs/CODE_CONVENTION.md)**를 참고하세요.
 
-- **@typescript-eslint/recommended** - TypeScript 권장 규칙
-- **@next/next/recommended** - Next.js 권장 규칙
-- **React Hooks 규칙** - 훅 사용 규칙 준수
-- **사용하지 않는 변수 경고** - 코드 품질 유지
+### 핵심 규칙
 
-### Prettier 설정
+- **네이밍**: 영문만 사용, 한글자 변수명 금지, 함수는 동사로 시작
+- **파일명**: 컴포넌트/페이지는 PascalCase, 나머지는 kebab-case
+- **스타일링**: Tailwind 클래스 순서 준수, 디자인 시스템 색상 사용
+- **컴포넌트**: tailwind-variants + clsx 패턴 사용
 
-- **세미콜론**: 항상 사용
-- **따옴표**: 싱글 쿼트 사용
-- **들여쓰기**: 2칸 스페이스
-- **줄바꿈 길이**: 100자
-- **후행 쉼표**: ES5 호환
+### 자동화 도구
 
-### Husky Git Hooks
-
-- **pre-commit**: ESLint, Prettier, TypeScript 검사
-- **commit-msg**: 커밋 메시지 컨벤션 검사
-
-### Tailwind CSS 사용법
-
-```tsx
-// 디자인 시스템 컬러 사용 (권장)
-<div className="bg-primary-200 text-white">버튼</div>
-<p className="text-grayscale-600">텍스트</p>
-
-// CSS 변수 직접 사용 (필요시)
-<div style={{ backgroundColor: 'var(--primary-200)' }}>배경</div>
-```
+- **ESLint + Prettier**: 코드 품질 및 포맷팅 자동 관리
+- **Husky**: 커밋 시 자동 검증
+- **commitlint**: 커밋 메시지 규칙 강제
 
 ## ⚙️ Git 가이드라인
 
@@ -179,33 +163,38 @@ main (프로덕션)
 
 ### 브랜치 네이밍
 
-- **feature**: `feature/login-page`
-- **hotfix**: `hotfix/fix-auth-bug`
-- **release**: `release/v1.0.0`
+**이슈 생성 후 브랜치 생성**을 원칙으로 합니다:
+
+- **feature**: `feature/#이슈번호-기능-디테일`
+  - 예: `feature/#12-login-form-validation`
+  - 예: `feature/#5-add-svgicon-component`
+- **hotfix**: `hotfix/#이슈번호-버그-설명`
+  - 예: `hotfix/#34-fix-auth-token-error`
+- **release**: `release/v버전번호`
+  - 예: `release/v1.0.0`, `release/v1.1.0`
 
 ### 커밋 컨벤션
 
-```
-feat: 새로운 기능 추가
-fix: 버그 수정
-docs: 문서 수정
-style: 코드 스타일 변경 (포맷팅, 세미콜론 등)
-refactor: 코드 리팩토링
-test: 테스트 추가 또는 수정
-chore: 빌드 과정 또는 도구 설정 변경
-```
+상세한 커밋 규칙은 **[docs/COMMIT_CONVENTION.md](./docs/COMMIT_CONVENTION.md)**를 참고하세요.
 
-**예시:**
+**기본 형식**: `<type>: <subject> (#이슈번호)`
 
 ```bash
-git commit -m "feat: 로그인 페이지 구현"
-git commit -m "fix: 타이포그래피 폰트 로딩 오류 수정"
-git commit -m "docs: README 업데이트"
+feat: 로그인 페이지 구현 (#12)
+fix: 버그 수정 설명 (#34)
+docs: 문서 업데이트
+style: 코드 포맷팅
+refactor: 코드 리팩토링
+test: 테스트 추가
+chore: 빌드 설정 변경
 ```
+
+**자동 검증**: commitlint로 커밋 메시지 규칙을 자동 검증합니다.
 
 ## 💖 PR 규칙
 
 ### Code Rabbit 사용
+
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/codeit-part3-team8/wikid?utm_source=oss&utm_medium=github&utm_campaign=codeit-part3-team8%2Fwikid&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 - **자동 코드 리뷰** - AI 기반 코드 분석
@@ -220,25 +209,11 @@ git commit -m "docs: README 업데이트"
 - [ ] 기능 테스트 완료
 - [ ] 코드 리뷰 승인 (최소 1명)
 
-### PR 템플릿
+### GitHub 자동화
 
-```markdown
-## 📝 변경사항
-
-- 구현한 기능이나 수정한 내용
-
-## 🧪 테스트
-
-- 테스트 방법 및 결과
-
-## 📸 스크린샷 (선택사항)
-
-- UI 변경사항이 있는 경우
-
-## 📚 관련 이슈
-
-- Close #이슈번호
-```
+- **Issue 템플릿**: 5가지 타입별 템플릿 제공
+- **PR 템플릿**: 구조화된 템플릿 자동 적용
+- **자동 코드 리뷰**: CodeRabbit AI 리뷰 시스템
 
 ## 🎨 디자인 시스템
 
@@ -258,11 +233,10 @@ git commit -m "docs: README 업데이트"
 
 ```bash
 # 디자인 시스템 showcase 페이지
-http://localhost:3000/typo_color
+http://localhost:3000/typo-color
 ```
 
 ## 🔗 링크
 
 - **Figma 디자인**: [figma.com/design/7aLjzZy50LPISym2AMxuQW/-BBB-위키드](https://figma.com/design/7aLjzZy50LPISym2AMxuQW/-BBB-위키드)
 - **GitHub 프로젝트**: [https://github.com/codeit-part3-team8/wikid](https://github.com/codeit-part3-team8/wikid)
-- **배포 URL**: (미정)
