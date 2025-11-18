@@ -64,7 +64,7 @@ wikid/
 │   │   ├── login/         # 로그인
 │   │   ├── mypage/        # 마이페이지
 │   │   ├── signup/        # 회원가입
-│   │   ├── typo_color/    # 디자인 시스템 showcase
+│   │   ├── typo-color/    # 디자인 시스템 showcase
 │   │   ├── wiki/          # 위키 상세
 │   │   └── wikilist/      # 위키 목록
 │   ├── components/        # 재사용 컴포넌트
@@ -74,8 +74,8 @@ wikid/
 │   ├── apis/             # API 관련
 │   ├── assets/           # 정적 자산
 │   └── styles/           # 스타일 파일
-│       ├── typo.css      # 타이포그래피 시스템
-│       └── color.css     # 컬러 시스템
+│       ├── typography-system.css  # 타이포그래피 시스템
+│       └── color-variables.css    # 컬러 시스템
 ├── docs/                 # 문서
 │   ├── COLOR_SYSTEM.md
 │   ├── TYPOGRAPHY.md
