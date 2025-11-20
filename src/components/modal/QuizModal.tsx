@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
-import { BaseModal } from '@/components/modal';
+import { BaseModal } from '@/components/Modal';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
 
 // Quiz input 스타일 정의

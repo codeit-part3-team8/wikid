@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertModal, ConfirmModal, QuizModal } from '@/components/modal';
+import { AlertModal, ConfirmModal, QuizModal } from '@/components/Modal';
 
 export default function WikiPage() {
   const [alertModal1, setAlertModal1] = useState(false);
