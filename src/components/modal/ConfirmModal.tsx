@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
-import { BaseModal } from '@/components/modal';
+import { BaseModal } from '@/components/Modal';
 
 // Confirm 버튼 스타일 정의
 const confirmButtonStyle = tv({

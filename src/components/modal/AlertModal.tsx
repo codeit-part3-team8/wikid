@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
-import { BaseModal } from '@/components/modal';
+import { BaseModal } from '@/components/Modal';
 
 // Alert 버튼 스타일 정의
 const alertButtonStyle = tv({
