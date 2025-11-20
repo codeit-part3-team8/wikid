@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
+import { BaseModalProps } from '@/types/modal';
 
 // Modal 스타일 정의
 const modalOverlayStyle = tv({
@@ -29,13 +30,9 @@ const closeButtonStyle = tv({
   base: 'absolute top-4 right-4 z-10 text-grayscale-400 transition-colors hover:opacity-70',
 });
 
-interface BaseModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface BaseModalComponentProps extends BaseModalProps {
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
-  showCloseButton?: boolean;
-  closeOnBackdropClick?: boolean;
 }
 
 export default function BaseModal({
@@ -45,7 +42,7 @@ export default function BaseModal({
   size = 'md',
   showCloseButton = true,
   closeOnBackdropClick = true,
-}: BaseModalProps) {
+}: BaseModalComponentProps) {
   // ESC 키로 모달 닫기
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {

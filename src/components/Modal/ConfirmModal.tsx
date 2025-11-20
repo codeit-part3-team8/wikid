@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import BaseModal from './BaseModal';
+import { BaseModalProps, ModalContentProps, ButtonVariant } from '@/types/modal';
 
 // Confirm 버튼 스타일 정의
 const confirmButtonStyle = tv({
@@ -19,20 +20,14 @@ const confirmButtonStyle = tv({
   },
 });
 
-interface ConfirmModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface ConfirmModalProps extends BaseModalProps, ModalContentProps {
   onConfirm: () => void;
-  title: string;
-  message: string;
   // 취소 버튼 설정
   cancelText?: string;
-  cancelVariant?: 'primary' | 'secondary' | 'warning' | 'info' | 'outline';
+  cancelVariant?: ButtonVariant;
   // 확인 버튼 설정
   confirmText?: string;
-  confirmVariant?: 'primary' | 'secondary' | 'warning' | 'info' | 'outline';
-  showCloseButton?: boolean;
-  closeOnBackdropClick?: boolean;
+  confirmVariant?: ButtonVariant;
 }
 
 export default function ConfirmModal({

@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import BaseModal from './BaseModal';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
+import { BaseModalProps } from '@/types/modal';
 
 // Quiz input 스타일 정의
 const quizInputStyle = tv({
@@ -25,15 +26,11 @@ const quizButtonStyle = tv({
   base: 'w-full h-[40px] px-5 py-[11px] bg-primary-200 hover:bg-primary-300 text-lg-semibold rounded-lg transition-colors flex items-center justify-center text-white',
 });
 
-interface QuizModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface QuizModalProps extends BaseModalProps {
   onCorrectAnswer: () => void;
   title: string;
   placeholder?: string;
   correctAnswer: string;
-  showCloseButton?: boolean;
-  closeOnBackdropClick?: boolean;
 }
 
 export default function QuizModal({
@@ -44,7 +41,7 @@ export default function QuizModal({
   placeholder = '정답을 입력하세요',
   correctAnswer,
   showCloseButton = true,
-  closeOnBackdropClick = false, // 퀴즈 모달은 기본적으로 배경 클릭으로 닫히지 않음
+  closeOnBackdropClick = false, // 퀴즈 모달은 배경 클릭으로 닫히지 않음
 }: QuizModalProps) {
   const [inputValue, setInputValue] = useState('');
   const [hasError, setHasError] = useState(false);
