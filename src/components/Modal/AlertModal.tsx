@@ -1,16 +1,18 @@
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import BaseModal from './BaseModal';
+import { BaseModalProps, ModalContentProps, ButtonVariant } from '@/types/modal';
 
 // Alert 버튼 스타일 정의
 const alertButtonStyle = tv({
-  base: 'rounded-md px-4 py-2 text-white transition-colors hover:opacity-90',
+  base: 'rounded-md px-4 py-2 transition-colors hover:opacity-90',
   variants: {
     variant: {
-      primary: 'bg-primary-200 hover:bg-primary-300',
-      secondary: 'bg-secondary-red-200 hover:bg-secondary-red-300',
+      primary: 'bg-primary-200 hover:bg-primary-300 text-white',
+      secondary: 'bg-secondary-red-200 hover:bg-secondary-red-300 text-white',
       warning: 'bg-secondary-yellow-100 hover:bg-secondary-yellow-200 text-grayscale-600',
-      info: 'bg-grayscale-500 hover:bg-grayscale-600',
+      info: 'bg-grayscale-500 hover:bg-grayscale-600 text-white',
+      outline: 'border border-grayscale-300 bg-white hover:bg-grayscale-100 text-grayscale-600',
     },
   },
   defaultVariants: {
@@ -18,15 +20,9 @@ const alertButtonStyle = tv({
   },
 });
 
-interface AlertModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  message: string;
+interface AlertModalProps extends BaseModalProps, ModalContentProps {
   buttonText?: string;
-  buttonVariant?: 'primary' | 'secondary' | 'warning' | 'info';
-  showCloseButton?: boolean;
-  closeOnBackdropClick?: boolean;
+  buttonVariant?: ButtonVariant;
 }
 
 export default function AlertModal({

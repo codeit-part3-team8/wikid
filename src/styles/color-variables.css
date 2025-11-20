@@ -1,14 +1,4 @@
-/* 
- * Wikid Color System
- * 디자인 시스템 기반 컬러 유틸리티 클래스
- * 
- * 사용법:
- * <div className="bg-grayscale-100 text-grayscale-600">콘텐츠</div>
- * <button className="bg-primary-200 text-white">버튼</button>
- */
-
 :root {
-  /* Grayscale Colors */
   --grayscale-50: #ffffff;
   --grayscale-100: #f7f7fa;
   --grayscale-200: #e4e5f0;
@@ -17,18 +7,14 @@
   --grayscale-500: #474d66;
   --grayscale-600: #3b4108;
 
-  /* Primary Green Colors */
   --primary-100: #eef9f6;
   --primary-200: #4cbfa4;
   --primary-300: #32a68a;
 
-  /* Secondary Red Colors */
   --secondary-red-100: #fbeded;
   --secondary-red-200: #d14343;
 
-  /* Secondary Purple Colors */
   --secondary-purple-100: #131314;
 
-  /* Secondary Yellow Colors */
   --secondary-yellow-100: #ffd061;
 }
