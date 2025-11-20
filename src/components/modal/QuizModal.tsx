@@ -53,9 +53,7 @@ export default function QuizModal({
     if (inputValue.trim().toLowerCase() === correctAnswer.toLowerCase()) {
       // 정답인 경우
       onCorrectAnswer();
-      onClose();
-      setInputValue('');
-      setHasError(false);
+      handleModalClose();
     } else {
       // 오답인 경우
       setHasError(true);
