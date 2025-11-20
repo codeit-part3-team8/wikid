@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import { BaseModal } from '@/components/Modal';
@@ -48,6 +48,14 @@ export default function QuizModal({
 }: QuizModalProps) {
   const [inputValue, setInputValue] = useState('');
   const [hasError, setHasError] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // 모달이 열리면 입력 필드로 포커스 이동
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
 
   const handleSubmit = () => {
     if (inputValue.trim().toLowerCase() === correctAnswer.toLowerCase()) {
@@ -107,12 +115,16 @@ export default function QuizModal({
         {/* 입력 필드 */}
         <div className="mt-2.5 w-full">
           <input
+            id="quiz-input"
+            ref={inputRef}
             type="text"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             className={clsx(quizInputStyle({ state: hasError ? 'error' : 'default' }))}
+            aria-invalid={hasError}
+            aria-describedby={hasError ? 'quiz-error' : undefined}
           />
         </div>
 
