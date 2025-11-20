@@ -134,7 +134,7 @@ export default function QuizModal({
 
         {/* 확인 버튼 */}
         <div className={clsx('w-full', hasError ? 'mt-9' : 'mt-10')}>
-          <button onClick={handleSubmit} className={clsx(quizButtonStyle())}>
+          <button type="button" onClick={handleSubmit} className={clsx(quizButtonStyle())}>
             확인
           </button>
         </div>

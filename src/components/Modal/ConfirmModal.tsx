@@ -67,6 +67,7 @@ export default function ConfirmModal({
         <div className="mt-4 flex justify-end gap-3 pt-5">
           {/* 취소 버튼 */}
           <button
+            type="button"
             onClick={onClose}
             className={clsx(confirmButtonStyle({ variant: cancelVariant }))}
           >
@@ -75,6 +76,7 @@ export default function ConfirmModal({
 
           {/* 확인 버튼 */}
           <button
+            type="button"
             onClick={handleConfirm}
             className={clsx(confirmButtonStyle({ variant: confirmVariant }))}
           >

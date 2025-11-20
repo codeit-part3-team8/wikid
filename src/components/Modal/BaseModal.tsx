@@ -77,7 +77,12 @@ export default function BaseModal({
       <div className={clsx(modalContainerStyle({ size }))} onClick={(e) => e.stopPropagation()}>
         {/* 닫기 버튼 */}
         {showCloseButton && (
-          <button onClick={onClose} className={clsx(closeButtonStyle())} aria-label="모달 닫기">
+          <button
+            type="button"
+            onClick={onClose}
+            className={clsx(closeButtonStyle())}
+            aria-label="모달 닫기"
+          >
             <SVGIcon icon="IC_Close" size="sm" />
           </button>
         )}

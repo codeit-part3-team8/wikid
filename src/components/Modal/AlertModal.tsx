@@ -52,7 +52,11 @@ export default function AlertModal({
 
         {/* 버튼 영역 */}
         <div className="mt-4 flex justify-end pt-5">
-          <button onClick={onClose} className={clsx(alertButtonStyle({ variant: buttonVariant }))}>
+          <button
+            type="button"
+            onClick={onClose}
+            className={clsx(alertButtonStyle({ variant: buttonVariant }))}
+          >
             {buttonText}
           </button>
         </div>
