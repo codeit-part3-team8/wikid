@@ -1,0 +1,70 @@
+/* ========== EDITOR CONTENT STYLE ========== */
+.editor-style .ProseMirror:focus {
+  outline: none;
+}
+
+.editor-style .ProseMirror {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* ========== CUSTOM SCROLLBAR ========== */
+.editor-style .ProseMirror::-webkit-scrollbar {
+  width: 4px; /* 스크롤바 너비 */
+}
+
+.editor-style .ProseMirror::-webkit-scrollbar-track {
+  background: #f1f1f1; /* 트랙 색상 */
+  border-radius: 4px;
+}
+
+.editor-style .ProseMirror::-webkit-scrollbar-thumb {
+  background-color: var(--color-grayscale-300);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.editor-style .ProseMirror::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* ========== TAG STYLING ========== */
+.editor-style .ProseMirror h1 {
+  font-size: 2rem; /* Tailwind text-2xl */
+  font-weight: 700; /* bold */
+  margin: 1rem 0;
+}
+
+.editor-style .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0.75rem 0;
+}
+
+.editor-style .ProseMirror h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0.75rem 0;
+}
+
+.editor-style .ProseMirror ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+}
+
+.editor-style .ProseMirror ol {
+  list-style-type: decimal;
+  margin-left: 1.25rem;
+}
+
+.editor-style .ProseMirror li {
+  margin: 0.25rem 0;
+}
+
+.editor-style .ProseMirror a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
