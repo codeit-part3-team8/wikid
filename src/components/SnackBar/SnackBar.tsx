@@ -10,7 +10,7 @@ const SNACKBAR_CONFIG = {
   DESKTOP_BASE_OFFSET: 16,
   MOBILE_BASE_OFFSET: 75,
   STACK_GAP: 60,
-  MOBILE_BREAKPOINT: 480,
+  MOBILE_BREAKPOINT: 680,
   DEFAULT_DURATION: 3000,
   DEFAULT_Z_INDEX: 50,
 } as const;
@@ -25,7 +25,7 @@ const SNACKBAR_ICONS = {
 
 // SnackBar 스타일 정의
 const snackBarStyle = tv({
-  base: 'flex items-center rounded-lg shadow-lg transition-all duration-300 transform px-5 py-[15px] gap-[15px] max-[480px]:px-[15px] max-[480px]:py-3 max-[480px]:gap-[15px] max-w-[90vw] min-w-0 translate-y-0 opacity-100',
+  base: 'flex items-center rounded-lg shadow-lg transition-all duration-300 transform px-5 py-[15px] gap-[15px] max-[680px]:px-[15px] max-[680px]:py-3 max-[680px]:gap-[15px] max-w-[90vw] min-w-0 translate-y-0 opacity-100',
   variants: {
     type: {
       success: 'bg-primary-100 border border-primary-200 text-primary-300',
@@ -38,7 +38,7 @@ const snackBarStyle = tv({
 });
 
 const iconStyle = tv({
-  base: 'flex-shrink-0 w-5 h-5 max-[480px]:w-[18px] max-[480px]:h-[18px]',
+  base: 'flex-shrink-0 w-5 h-5 max-[680px]:w-[18px] max-[680px]:h-[18px]',
   variants: {
     type: {
       success: 'text-primary-200',
@@ -48,7 +48,7 @@ const iconStyle = tv({
 });
 
 const messageStyle = tv({
-  base: 'text-lg-semibold flex-1 max-[480px]:text-xs whitespace-nowrap overflow-hidden text-ellipsis',
+  base: 'text-lg-semibold flex-1 max-[680px]:text-xs whitespace-nowrap overflow-hidden text-ellipsis',
   variants: {
     type: {
       success: 'text-primary-300',
