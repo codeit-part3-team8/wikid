@@ -4,12 +4,9 @@ import { clsx } from 'clsx';
 import AvatarFallback from '@/assets/avatarFallback/fallback_avatar.avif';
 
 type AvatarVariant = 'profile' | 'comment' | 'header';
-type AvatarShape = 'circle';
-
-const avatarFallback = AvatarFallback;
 
 const AvatarStyle = tv({
-  base: 'relative flex items-center justify-center overflow-hidden select-none',
+  base: 'relative flex items-center justify-center rounded-full overflow-hidden select-none',
   variants: {
     variant: {
       //내 위키 프로필
@@ -19,34 +16,24 @@ const AvatarStyle = tv({
       //헤더 프로필
       header: 'w-[32px] h-[32px]',
     },
-    shape: {
-      circle: 'rounded-full',
-    },
   },
 });
 
 interface AvatarProps {
-  src?: string;
+  src: string;
   alt: string;
   variant?: AvatarVariant;
-  shape?: AvatarShape;
   className?: string;
 }
 
-export default function Avatar({
-  src,
-  alt,
-  variant = 'profile',
-  shape = 'circle',
-  className,
-}: AvatarProps) {
-  const classes = AvatarStyle({ variant, shape });
+export default function Avatar({ src, alt, variant = 'profile', className }: AvatarProps) {
+  const classes = AvatarStyle({ variant });
   return (
     <div className={clsx(classes, className)}>
       {src ? (
         <Image src={src} alt={alt} fill className="object-cover" />
       ) : (
-        <Image src={avatarFallback} alt={alt} fill className="object-cover" />
+        <Image src={AvatarFallback} alt={alt} fill className="object-cover" />
       )}
     </div>
   );
