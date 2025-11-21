@@ -35,6 +35,7 @@ export default function Pagination({
   setPage,
   viewCount,
 }: PaginationProps) {
+  if (viewCount <= 0) return null;
   const totalPage = Math.ceil(totalCount / viewCount); //토탈페이지 완료
   if (totalPage <= 1) return null; // 다음 페이지 까지 넘어갈 데이터가 없으면 페이지네이션 안보임
 
