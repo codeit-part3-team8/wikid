@@ -5,21 +5,21 @@ import React, { useState } from 'react';
 // 타이포그래피 데이터
 const typographyData = [
   {
-    name: 'text-5xl',
+    name: 'text-5xl-semibold',
     size: '48px',
     lineHeight: '46px',
     weight: 'Semibold (600)',
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-4xl',
+    name: 'text-4xl-bold',
     size: '40px',
     lineHeight: '42px',
     weight: 'Bold (700)',
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-3xl',
+    name: 'text-3xl-bold',
     size: '32px',
     lineHeight: '38px',
     weight: 'Bold (700)',
@@ -33,7 +33,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-2xl',
+    name: 'text-2xl-bold',
     size: '24px',
     lineHeight: '32px',
     weight: 'Bold (700)',
@@ -61,7 +61,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-xl',
+    name: 'text-xl-bold',
     size: '20px',
     lineHeight: '32px',
     weight: 'Bold (700)',
@@ -89,7 +89,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-2lg',
+    name: 'text-2lg-bold',
     size: '18px',
     lineHeight: '26px',
     weight: 'Bold (700)',
@@ -117,7 +117,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-lg',
+    name: 'text-lg-bold',
     size: '16px',
     lineHeight: '26px',
     weight: 'Bold (700)',
@@ -145,7 +145,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-md',
+    name: 'text-md-bold',
     size: '14px',
     lineHeight: '24px',
     weight: 'Bold (700)',
@@ -173,7 +173,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-sm',
+    name: 'text-sm-semibold',
     size: '13px',
     lineHeight: '22px',
     weight: 'Semibold (600)',
@@ -187,7 +187,7 @@ const typographyData = [
     sample: '가나다라마바사아자차카타파하',
   },
   {
-    name: 'text-xs',
+    name: 'text-xs-semibold',
     size: '12px',
     lineHeight: '20px',
     weight: 'Semibold (600)',
@@ -356,7 +356,10 @@ export default function TypoColorPage() {
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* 헤더 */}
         <header style={{ marginBottom: '60px', textAlign: 'center' }}>
-          <h1 className="text-5xl" style={{ color: 'var(--primary-200)', marginBottom: '16px' }}>
+          <h1
+            className="text-5xl-semibold"
+            style={{ color: 'var(--primary-200)', marginBottom: '16px' }}
+          >
             WIKID Design System
           </h1>
           <p className="text-lg-regular" style={{ color: 'var(--grayscale-500)' }}>
@@ -366,7 +369,10 @@ export default function TypoColorPage() {
 
         {/* 타이포그래피 섹션 */}
         <section style={{ marginBottom: '80px' }}>
-          <h2 className="text-4xl" style={{ color: 'var(--grayscale-600)', marginBottom: '32px' }}>
+          <h2
+            className="text-4xl-bold"
+            style={{ color: 'var(--grayscale-600)', marginBottom: '32px' }}
+          >
             Typography Spec
           </h2>
 
@@ -411,7 +417,7 @@ export default function TypoColorPage() {
                 {/* 스펙 정보 */}
                 <div style={{ width: '300px', flexShrink: 0 }}>
                   <div
-                    className="text-md"
+                    className="text-md-bold"
                     style={{ color: 'var(--grayscale-600)', marginBottom: '4px' }}
                   >
                     {typo.name}
@@ -431,11 +437,10 @@ export default function TypoColorPage() {
                 {/* 복사 표시 */}
                 {copiedItem === `typo-${typo.name}` && (
                   <div
-                    className="text-sm"
+                    className="text-sm-semibold"
                     style={{
                       color: 'var(--primary-200)',
                       marginLeft: '16px',
-                      fontWeight: '600',
                     }}
                   >
                     복사됨 ✓
@@ -456,7 +461,7 @@ export default function TypoColorPage() {
               marginBottom: '32px',
             }}
           >
-            <h2 className="text-4xl" style={{ color: 'var(--grayscale-600)' }}>
+            <h2 className="text-4xl-bold" style={{ color: 'var(--grayscale-600)' }}>
               Color System
             </h2>
 
@@ -476,7 +481,7 @@ export default function TypoColorPage() {
               >
                 <button
                   onClick={() => setCopyType('tailwind')}
-                  className="text-sm"
+                  className="text-sm-medium"
                   style={{
                     padding: '8px 16px',
                     borderRadius: '6px',
@@ -492,7 +497,7 @@ export default function TypoColorPage() {
                 </button>
                 <button
                   onClick={() => setCopyType('css')}
-                  className="text-sm"
+                  className="text-sm-medium"
                   style={{
                     padding: '8px 16px',
                     borderRadius: '6px',
@@ -513,7 +518,7 @@ export default function TypoColorPage() {
           {colorData.map((category) => (
             <div key={category.category} style={{ marginBottom: '48px' }}>
               <h3
-                className="text-2xl"
+                className="text-2xl-bold"
                 style={{ color: 'var(--grayscale-600)', marginBottom: '20px' }}
               >
                 {category.category}
@@ -562,10 +567,9 @@ export default function TypoColorPage() {
                     >
                       {copiedItem === `color-${color.name}` && (
                         <div
-                          className="text-lg"
+                          className="text-lg-semibold"
                           style={{
                             color: getTextColor(color.hex),
-                            fontWeight: '600',
                             backgroundColor: 'rgba(255, 255, 255, 0.9)',
                             padding: '8px 16px',
                             borderRadius: '20px',
@@ -579,17 +583,16 @@ export default function TypoColorPage() {
                     {/* 컬러 정보 */}
                     <div style={{ padding: '20px' }}>
                       <div
-                        className="text-md"
+                        className="text-md-bold"
                         style={{ color: 'var(--grayscale-600)', marginBottom: '8px' }}
                       >
                         {color.name}
                       </div>
                       <div
-                        className="text-sm"
+                        className="text-sm-semibold"
                         style={{
                           color: 'var(--primary-200)',
                           marginBottom: '8px',
-                          fontWeight: '600',
                         }}
                       >
                         {copyType === 'tailwind'
@@ -629,7 +632,10 @@ export default function TypoColorPage() {
             border: '1px solid var(--primary-200)',
           }}
         >
-          <h3 className="text-2xl" style={{ color: 'var(--primary-300)', marginBottom: '16px' }}>
+          <h3
+            className="text-2xl-bold"
+            style={{ color: 'var(--primary-300)', marginBottom: '16px' }}
+          >
             💡 사용법
           </h3>
           <div
