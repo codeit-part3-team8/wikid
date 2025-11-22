@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AlertModal from '@/components/Modal/AlertModal';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 import QuizModal from '@/components/Modal/QuizModal';
+import { useSnackBar } from '@/contexts/SnackBarContext';
 
 export default function WikiPage() {
   const [alertModal1, setAlertModal1] = useState(false);
@@ -11,6 +12,8 @@ export default function WikiPage() {
   const [confirmModal1, setConfirmModal1] = useState(false);
   const [confirmModal2, setConfirmModal2] = useState(false);
   const [quizModal, setQuizModal] = useState(false);
+
+  const { showSuccess, showError } = useSnackBar();
 
   return (
     <div className="p-8">
@@ -73,6 +76,50 @@ export default function WikiPage() {
           >
             퀴즈 모달 열기
           </button>
+        </div>
+      </div>
+
+      {/* SnackBar 테스트 섹션 */}
+      <div className="mt-6 rounded-lg border bg-gray-50 p-6">
+        <h2 className="mb-4 text-lg font-semibold">SnackBar 테스트</h2>
+
+        <div className="space-y-3">
+          {/* 성공 스낵바 테스트 */}
+          <button
+            onClick={() => showSuccess('내 위키 링크가 복사되었습니다.')}
+            className="bg-primary-200 hover:bg-primary-300 rounded-md px-4 py-2 text-white transition-colors"
+          >
+            성공 스낵바 테스트 (위키 링크 복사)
+          </button>
+
+          {/* 오류 스낵바 테스트 */}
+          <button
+            onClick={() =>
+              showError('다른 친구가 편집하고 있어요. 나중에 다시 시도해 주세요.', 4000)
+            }
+            className="bg-secondary-red-200 hover:bg-secondary-red-300 ml-3 rounded-md px-4 py-2 text-white transition-colors"
+          >
+            오류 스낵바 테스트 (편집 충돌)
+          </button>
+
+          {/* 연속 테스트 버튼 */}
+          <button
+            onClick={() => {
+              showSuccess('첫 번째 성공 메시지');
+              setTimeout(() => showError('두 번째 오류 메시지'), 500);
+              setTimeout(() => showSuccess('세 번째 성공 메시지'), 1000);
+            }}
+            className="bg-grayscale-500 hover:bg-grayscale-600 ml-3 rounded-md px-4 py-2 text-white transition-colors"
+          >
+            연속 스낵바 테스트 (스택 확인)
+          </button>
+        </div>
+
+        <div className="text-grayscale-500 mt-4 text-sm">
+          <p>💡 스낵바는 3초 후 자동으로 사라집니다.</p>
+          <p>💡 나중에 생성된 스낵바가 위에 표시됩니다.</p>
+          <p>💡 연속 테스트로 스택 기능을 확인해보세요.</p>
+          <p>💡 480px 이하에서는 하단에서 나타납니다.</p>
         </div>
       </div>
 
