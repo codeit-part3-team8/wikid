@@ -12,9 +12,11 @@ const AvatarStyle = tv({
       //내 위키 프로필
       profile: 'w-[62px] h-[62px] md:w-[71px] md:h-[71px] lg:w-[200px] lg:h-[200px]',
       //위키리스트 댓글 프로필
-      comment: 'w-[60px] h-[60px] md:w-[85px] md:h-[85px]',
+      comment: 'w-[40px] h-[40px] md:w-[50px] md:h-[50px]',
       //헤더 프로필
       header: 'w-[32px] h-[32px]',
+      //리스트
+      list: "'w-[60px] h-[60px] md:w-[85px] md:h-[85px]",
     },
   },
 });
