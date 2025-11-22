@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import '../styles/typography-system.css';
 import '../styles/color-variables.css';
+import { SnackBarProvider } from '@/contexts/SnackBarContext';
 
 export const metadata: Metadata = {
   title: 'WIKID',
@@ -28,7 +29,9 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <SnackBarProvider>{children}</SnackBarProvider>
+      </body>
     </html>
   );
 }
