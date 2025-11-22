@@ -55,35 +55,59 @@ export default function ConfirmModal({
       size="sm"
       showCloseButton={showCloseButton}
       closeOnBackdropClick={closeOnBackdropClick}
+      aria-labelledby="confirm-modal-title"
     >
-      <div className="flex h-full flex-col pt-4 pl-2">
-        {/* 모달 제목 */}
-        <h3 className="text-2lg-semibold text-grayscale-500 mb-2.5 pt-5">{title}</h3>
-
-        {/* 모달 메시지 */}
-        <p className="text-lg-regular text-grayscale-400 flex-1">{message}</p>
-
-        {/* 버튼 영역 */}
-        <div className="mt-4 flex justify-end gap-3 pt-5">
-          {/* 취소 버튼 */}
-          <button
-            type="button"
-            onClick={onClose}
-            className={clsx(confirmButtonStyle({ variant: cancelVariant }))}
+      {({ isMobile }) => (
+        <div className="flex h-full flex-col pt-4 pl-2">
+          {/* 모달 제목 */}
+          <h3
+            id="confirm-modal-title"
+            className={clsx(
+              isMobile ? 'text-lg-semibold' : 'text-2lg-semibold',
+              'text-grayscale-500 mb-2.5 pt-5'
+            )}
           >
-            {cancelText}
-          </button>
+            {title}
+          </h3>
 
-          {/* 확인 버튼 */}
-          <button
-            type="button"
-            onClick={handleConfirm}
-            className={clsx(confirmButtonStyle({ variant: confirmVariant }))}
+          {/* 모달 메시지 */}
+          <p
+            className={clsx(
+              isMobile ? 'text-md-regular' : 'text-lg-regular',
+              'text-grayscale-400 flex-1'
+            )}
           >
-            {confirmText}
-          </button>
+            {message}
+          </p>
+
+          {/* 버튼 영역 */}
+          <div className="mt-4 flex justify-end gap-3 pt-5">
+            {/* 취소 버튼 */}
+            <button
+              type="button"
+              onClick={onClose}
+              className={clsx(
+                confirmButtonStyle({ variant: cancelVariant }),
+                isMobile ? 'text-md-semibold' : 'text-lg-semibold'
+              )}
+            >
+              {cancelText}
+            </button>
+
+            {/* 확인 버튼 */}
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className={clsx(
+                confirmButtonStyle({ variant: confirmVariant }),
+                isMobile ? 'text-md-semibold' : 'text-lg-semibold'
+              )}
+            >
+              {confirmText}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </BaseModal>
   );
 }
