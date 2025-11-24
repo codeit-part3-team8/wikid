@@ -1,3 +1,4 @@
+'use client';
 import { mockArticle } from '@/types/_mock/ArticleType.mock';
 import Board from './components/Board';
 import CommentUploadBox from './components/CommentUploadBox/CommentUploadBox';
