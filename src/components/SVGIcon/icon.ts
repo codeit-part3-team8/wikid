@@ -17,6 +17,17 @@ import IC_Menu from '@/assets/icons/menu-icon.svg';
 import IC_Profile from '@/assets/icons/profile-icon.svg';
 import IC_Search from '@/assets/icons/search-icon.svg';
 import IC_VisibleEyes from '@/assets/icons/visible-eyes.svg';
+import TTIC_AlignmentCenter from '@/assets/tiptap_icons/ic_Alignment_center.svg';
+import TTIC_AlignmentLeft from '@/assets/tiptap_icons/ic_Alignment_left.svg';
+import TTIC_AlignmentRight from '@/assets/tiptap_icons/ic_Alignment_right.svg';
+import TTIC_Bold from '@/assets/tiptap_icons/ic_bold.svg';
+import TTIC_Bullet from '@/assets/tiptap_icons/ic_Bullet.svg';
+import TTIC_Coloring from '@/assets/tiptap_icons/ic_coloring.svg';
+import TTIC_Image from '@/assets/tiptap_icons/ic_image.svg';
+import TTIC_Italic from '@/assets/tiptap_icons/ic_italic.svg';
+import TTIC_Movie from '@/assets/tiptap_icons/ic_movie.svg';
+import TTIC_Numbering from '@/assets/tiptap_icons/ic_numbering.svg';
+import TTIC_Underline from '@/assets/tiptap_icons/ic_underline.svg';
 
 export const IconMap = {
   IC_Alarm,
@@ -38,6 +49,17 @@ export const IconMap = {
   IC_Profile,
   IC_Search,
   IC_VisibleEyes,
+  TTIC_AlignmentCenter,
+  TTIC_AlignmentLeft,
+  TTIC_AlignmentRight,
+  TTIC_Bold,
+  TTIC_Bullet,
+  TTIC_Coloring,
+  TTIC_Image,
+  TTIC_Italic,
+  TTIC_Movie,
+  TTIC_Numbering,
+  TTIC_Underline,
 } as const;
 
 export const IconSizes = {
