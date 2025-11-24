@@ -53,4 +53,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * 버튼 내용
    */
   children: ReactNode;
+
+  href?: string; // 링크(페이지 이동 등)
 }

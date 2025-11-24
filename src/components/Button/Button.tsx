@@ -1,10 +1,12 @@
 import React from 'react';
+import Link from 'next/link';
 import LoadingDots from '../LoadingDots/LoadingDots';
 import { ButtonProps } from '../../types/Button.types';
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
+      href,
       variant = 'primary',
       size = 'md',
       loading = false,
@@ -38,6 +40,34 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const widthStyles = fullWidth ? 'w-full' : '';
+
+    if (href) {
+      const handleClick = (e: React.MouseEvent) => {
+        if (disabled || loading) {
+          e.preventDefault();
+          return;
+        }
+        props.onClick?.(e as any);
+      };
+      return (
+        <Link
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          href={href}
+          className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} ${className}`}
+          onClick={handleClick}
+          aria-disabled={disabled || loading}
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-1">
+              {children}
+              {showLoadingDots && <LoadingDots />}
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-1">{children}</span>
+          )}
+        </Link>
+      );
+    }
 
     return (
       <button
