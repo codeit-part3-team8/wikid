@@ -22,15 +22,14 @@ export default function SearchInput({ value, onChange, onSubmit }: SearchInputPr
   };
   return (
     <form onSubmit={handleSubmit} className={formStyle()}>
-      <div>
-        <SVGIcon icon="IC_Search" />
-      </div>
+      <SVGIcon icon="IC_Search" />
       <input
         type="text"
         onChange={onChange}
         value={value}
         className={inputStyle()}
         placeholder="이름을 검색해 주세요."
+        aria-label="이름 검색 입력창"
       />
     </form>
   );
