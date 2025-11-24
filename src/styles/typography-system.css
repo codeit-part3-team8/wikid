@@ -216,3 +216,130 @@ body {
   line-height: 18px;
   font-weight: 400;
 }
+
+/* ========== 반응형 Typography 시스템 ========== */
+
+/* 1. 기본 변수 정의 */
+:root {
+  /* 기본 반응형 조합 (md-regular ↔ xs-regular) */
+  --responsive-desktop-size: 14px;
+  --responsive-desktop-line: 24px;
+  --responsive-mobile-size: 12px;
+  --responsive-mobile-line: 18px;
+  --responsive-weight: 400;
+}
+
+/* 2. 메인 반응형 클래스 */
+.responsive-text {
+  font-family: var(--font-pretendard);
+  font-size: var(--responsive-desktop-size);
+  line-height: var(--responsive-desktop-line);
+  font-weight: var(--responsive-weight);
+}
+
+@media (max-width: 641px) {
+  .responsive-text {
+    font-size: var(--responsive-mobile-size);
+    line-height: var(--responsive-mobile-line);
+  }
+}
+
+.text-3xl-to-2xl {
+  --responsive-desktop-size: 32px;
+  --responsive-desktop-line: 38px;
+  --responsive-mobile-size: 24px;
+  --responsive-mobile-line: 32px;
+  --responsive-weight: 700;
+}
+
+.text-2xl-to-xl {
+  --responsive-desktop-size: 24px;
+  --responsive-desktop-line: 32px;
+  --responsive-mobile-size: 20px;
+  --responsive-mobile-line: 32px;
+  --responsive-weight: 600;
+}
+
+.text-xl-to-lg {
+  --responsive-desktop-size: 20px;
+  --responsive-desktop-line: 32px;
+  --responsive-mobile-size: 16px;
+  --responsive-mobile-line: 26px;
+  --responsive-weight: 600;
+}
+
+.text-2lg-to-lg {
+  --responsive-desktop-size: 18px;
+  --responsive-desktop-line: 26px;
+  --responsive-mobile-size: 16px;
+  --responsive-mobile-line: 26px;
+  --responsive-weight: 400;
+}
+
+.text-lg-to-md {
+  --responsive-desktop-size: 16px;
+  --responsive-desktop-line: 26px;
+  --responsive-mobile-size: 14px;
+  --responsive-mobile-line: 24px;
+  --responsive-weight: 400;
+}
+
+.text-md-to-xs {
+  --responsive-desktop-size: 14px;
+  --responsive-desktop-line: 24px;
+  --responsive-mobile-size: 12px;
+  --responsive-mobile-line: 18px;
+  --responsive-weight: 400;
+}
+.text-2lg-to-lg {
+  --responsive-desktop-size: 18px;
+  --responsive-desktop-line: 26px;
+  --responsive-mobile-size: 16px;
+  --responsive-mobile-line: 26px;
+  --responsive-weight: 400;
+}
+
+.text-lg-to-md {
+  --responsive-desktop-size: 16px;
+  --responsive-desktop-line: 26px;
+  --responsive-mobile-size: 14px;
+  --responsive-mobile-line: 24px;
+  --responsive-weight: 400;
+}
+
+.text-md-to-sm {
+  --responsive-desktop-size: 14px;
+  --responsive-desktop-line: 24px;
+  --responsive-mobile-size: 13px;
+  --responsive-mobile-line: 22px;
+  --responsive-weight: 400;
+}
+
+.text-sm-to-xs {
+  --responsive-desktop-size: 13px;
+  --responsive-desktop-line: 22px;
+  --responsive-mobile-size: 12px;
+  --responsive-mobile-line: 18px;
+  --responsive-weight: 400;
+}
+
+/*
+반응형 사용법:
+class="responsive-text text-[size]-to-[size]"
+
+고정 크기 사용법:
+기존 typography 클래스 직접 사용 (반응형 없음)
+
+예시:
+1. 반응형 기본: class="responsive-text" (14px → 12px)
+2. 반응형 헤딩: class="responsive-text text-xl-to-lg" (20px → 16px)
+3. 반응형 본문: class="responsive-text text-lg-to-md" (16px → 14px)
+
+4. 고정 크기 (기존 클래스 활용):
+   - 버튼: class="text-md-semibold" (14px 고정)
+   - 캐프션: class="text-xs-regular" (12px 고정)
+   - 라벨: class="text-sm-medium" (13px 고정)
+   - 제목: class="text-lg-semibold" (16px 고정)
+
+모든 반응형 조합이 641px 기준으로 동작합니다.
+*/
