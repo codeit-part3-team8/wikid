@@ -48,7 +48,7 @@ const iconStyle = tv({
 });
 
 const messageStyle = tv({
-  base: 'text-lg-semibold flex-1 max-[680px]:text-xs whitespace-nowrap overflow-hidden text-ellipsis',
+  base: 'responsive-text text-lg-to-xs text-weight-semibold flex-1 whitespace-nowrap overflow-hidden text-ellipsis',
   variants: {
     type: {
       success: 'text-primary-300',
@@ -79,29 +79,26 @@ export default function SnackBar({
   const [isMobile, setIsMobile] = useState(false);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 모바일 감지
+  // 모바일 감지 및 자동 닫기 타이머 관리
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= SNACKBAR_CONFIG.MOBILE_BREAKPOINT);
     };
 
+    // 모바일 감지 초기화 및 이벤트 리스너 등록
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // 자동 닫기 타이머 관리
-  useEffect(() => {
-    if (!isOpen || duration === 0) return;
-
     // 자동 닫기 타이머 설정
-    closeTimerRef.current = setTimeout(() => {
-      onClose();
-    }, duration);
+    if (isOpen && duration > 0) {
+      closeTimerRef.current = setTimeout(() => {
+        onClose();
+      }, duration);
+    }
 
     // cleanup
     return () => {
+      window.removeEventListener('resize', checkMobile);
       if (closeTimerRef.current) {
         clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;

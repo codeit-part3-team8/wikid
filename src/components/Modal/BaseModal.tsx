@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
@@ -31,12 +31,8 @@ const closeButtonStyle = tv({
   base: 'absolute top-4 right-4 z-10 text-grayscale-400 transition-colors hover:opacity-70',
 });
 
-interface ModalRenderProps {
-  isMobile: boolean;
-}
-
 interface BaseModalComponentProps extends BaseModalProps {
-  children: (props: ModalRenderProps) => React.ReactNode;
+  children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'quiz';
   'aria-labelledby'?: string;
   'aria-describedby'?: string;
@@ -52,44 +48,6 @@ export default function BaseModal({
   'aria-labelledby': ariaLabelledBy,
   'aria-describedby': ariaDescribedBy,
 }: BaseModalComponentProps) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  // 모바일 감지 (성능 최적화로 throttle 적용)
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
-
-    const checkMobile = () => {
-      const newIsMobile = window.innerWidth < 641;
-      setIsMobile((prev) => (prev !== newIsMobile ? newIsMobile : prev));
-    };
-
-    const throttledCheckMobile = () => {
-      if (timeoutId) return;
-      timeoutId = setTimeout(() => {
-        checkMobile();
-        timeoutId = null;
-      }, 16); // ~60fps
-    };
-
-    // 초기 체크
-    checkMobile();
-
-    // 리사이즈 이벤트 등록 (throttled)
-    window.addEventListener('resize', throttledCheckMobile);
-
-    // 모달이 열릴 때마다 다시 체크
-    if (isOpen) {
-      checkMobile();
-    }
-
-    return () => {
-      window.removeEventListener('resize', throttledCheckMobile);
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [isOpen]);
-
   // ESC 키로 모달 닫기
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -124,9 +82,8 @@ export default function BaseModal({
     e.stopPropagation();
   }, []);
 
-  // modalContent 메모이제이션 (의존성 최적화)
+  // modalContent 메모이제이션
   const modalContent = useMemo(() => {
-    // 스타일 클래스들을 useMemo 내부에서 계산하여 의존성 최소화
     const overlayClassName = clsx(modalOverlayStyle());
     const containerClassName = clsx(modalContainerStyle({ size }));
     const closeButtonClassName = clsx(closeButtonStyle());
@@ -154,8 +111,8 @@ export default function BaseModal({
             </button>
           )}
 
-          {/* 모달 컨테이너 - 컴포넌트 내용 */}
-          {children({ isMobile })}
+          {/* 모달 컴테이너 - 컴포넌트 내용 */}
+          {children}
         </div>
       </div>
     );
@@ -164,7 +121,6 @@ export default function BaseModal({
     showCloseButton,
     onClose,
     children,
-    isMobile,
     ariaLabelledBy,
     ariaDescribedBy,
     handleBackdropClick,
