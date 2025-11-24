@@ -1,7 +1,7 @@
 import { tv } from 'tailwind-variants';
 import Image from 'next/image';
-import Arrow_left from '@/public/arrow_left.png';
-import Arrow_right from '@/public/arrow_right.png';
+import Arrow_left from '@/assets/paginationArrow/arrow_left.png';
+import Arrow_right from '@/assets/paginationArrow/arrow_right.png';
 const PAGE_BLOCK = 5; // 보여지는 버튼 개수
 
 interface PaginationProps {
