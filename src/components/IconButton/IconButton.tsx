@@ -1,18 +1,20 @@
-import { IconMapTypes } from '@/components/SVGIcon/icon';
+import { IconMapTypes, IconSizeTypes } from '@/components/SVGIcon/icon';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
 import { ButtonHTMLAttributes, MouseEventHandler, forwardRef } from 'react';
 import { style } from './IconButton.style';
 import clsx from 'clsx';
+import Link from 'next/link';
 
 interface IconButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'onClick'> {
   icon: IconMapTypes;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: IconSizeTypes;
   variant?: 'filled' | 'ghost';
   radius?: 'md' | 'full';
   disabled?: boolean;
   className?: string;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  href?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
 }
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (
@@ -23,6 +25,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       radius = 'full',
       disabled = false,
       className,
+      href,
       onClick,
       ...props
     },
@@ -33,6 +36,22 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       radius,
       disabled,
     });
+
+    if (href) {
+      const handleClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+        onClick?.(e as React.MouseEvent<HTMLAnchorElement>);
+      };
+      return (
+        <Link
+          className={clsx(classes, className)}
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          href={href}
+          onClick={handleClick}
+        >
+          <SVGIcon icon={icon} size={size} />
+        </Link>
+      );
+    }
 
     return (
       <button

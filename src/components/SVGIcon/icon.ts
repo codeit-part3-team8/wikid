@@ -17,6 +17,7 @@ import IC_Menu from '@/assets/icons/menu-icon.svg';
 import IC_Profile from '@/assets/icons/profile-icon.svg';
 import IC_Search from '@/assets/icons/search-icon.svg';
 import IC_VisibleEyes from '@/assets/icons/visible-eyes.svg';
+import IC_HeartFilled from '@/assets/icons/ic_heart_filled.svg';
 import TTIC_AlignmentCenter from '@/assets/tiptap_icons/ic_Alignment_center.svg';
 import TTIC_AlignmentLeft from '@/assets/tiptap_icons/ic_Alignment_left.svg';
 import TTIC_AlignmentRight from '@/assets/tiptap_icons/ic_Alignment_right.svg';
@@ -49,6 +50,7 @@ export const IconMap = {
   IC_Profile,
   IC_Search,
   IC_VisibleEyes,
+  IC_HeartFilled,
   TTIC_AlignmentCenter,
   TTIC_AlignmentLeft,
   TTIC_AlignmentRight,
@@ -63,6 +65,7 @@ export const IconMap = {
 } as const;
 
 export const IconSizes = {
+  xxs: 16,
   xs: 18,
   sm: 20,
   md: 24,

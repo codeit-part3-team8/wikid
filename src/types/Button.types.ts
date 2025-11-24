@@ -18,7 +18,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 /**
  * Button 컴포넌트 Props
  */
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   /**
    * 버튼 스타일 변형
    * @default 'primary'
@@ -55,4 +55,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 
   href?: string; // 링크(페이지 이동 등)
+
+  onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
 }
