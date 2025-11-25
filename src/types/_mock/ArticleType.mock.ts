@@ -5,6 +5,7 @@ export const mockArticle: ArticleType = {
   createdAt: '2025-11-19T06:07:42.299Z',
   likeCount: 0,
   writer: {
+    image: '',
     name: '홍길동',
     id: 1,
   },

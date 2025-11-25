@@ -1,11 +1,16 @@
 'use client';
 
 import SearchInput from '@/components/SearchInput/SearchInput';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import ListCard from '@/components/ListCard/ListCard';
 import Pagination from '@/components/pagination/pagination';
+import Header from '@/components/Header/Header';
+import { tv } from 'tailwind-variants';
+import Image from 'next/image';
+import NoSearch from '@/assets/images/no-search.png';
+
 interface Profile {
   id: number;
   name: string;
@@ -199,28 +204,27 @@ const dummyProfiles: Profile[] = [
   },
 ];
 
-const BASE_URL = 'https://wikied-api.vercel.app/19-8';
+// const BASE_URL = 'https://wikied-api.vercel.app/19-8';
 const PAGE_SIZE = 3;
 
 export default function WikiListPage() {
   const [search, setSearch] = useState('');
   const [profiles, setProfiles] = useState<Profile[]>(dummyProfiles);
   const [page, setPage] = useState(1);
-  const [count, setCount] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const keywordFromUrl = searchParams.get('keyword') ?? '';
 
-  const fetchProfiles = async (name?: string): Promise<Profile[]> => {
-    const response = await axios.get(`${BASE_URL}/profiles`, {
-      params: {
-        name: name || undefined,
-      },
-    });
-    console.log(response.data);
-    return response.data.list ?? [];
-  };
+  // const fetchProfiles = async (name?: string): Promise<Profile[]> => {
+  //   const response = await axios.get(`${BASE_URL}/profiles`, {
+  //     params: {
+  //       name: name || undefined,
+  //     },
+  //   });
+  //   console.log(response.data);
+  //   return response.data.list ?? [];
+  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -232,7 +236,6 @@ export default function WikiListPage() {
   };
 
   // useEffect(() => {
-  //   // URL에 keyword 있으면 검색, 없으면 전체 최신
   //   // fetchProfiles();
   //   fetchProfiles();
   // }, []);
@@ -243,34 +246,67 @@ export default function WikiListPage() {
 
   const startIndex = (page - 1) * PAGE_SIZE;
   const currentProfiles = filteredProfiles.slice(startIndex, startIndex + PAGE_SIZE);
+
+  const wikiWrap = tv({
+    base: 'flex flex-col justify-center items-center m-auto md:w-[860px] mt-[40px] sm:mt-[70px] lg:mt-[80px] ',
+  });
+
+  const searchStyle = tv({
+    base: 'flex flex-col items-start  w-full gap-[16px]  mb-[40px] sm:mb-[100px] lg:mb-[57px] px-[20px]',
+  });
+
   return (
     <div>
-      <SearchInput value={search} onChange={handleChange} onSubmit={handleSubmit} />
-      <span>
-        {keywordFromUrl
-          ? count === 0
-            ? `"${keywordFromUrl}"에 대한 검색 결과가 없습니다.`
-            : `"${keywordFromUrl}"을 총 ${count}명 찾았습니다.`
-          : '검색어를 입력해 주세요.'}
-      </span>
-      <section>
-        {currentProfiles.map((profile) => (
-          <ListCard
-            key={profile.id}
-            image={profile.image}
-            name={profile.name}
-            city={profile.city}
-            nationality={profile.nationality}
-            job={profile.job}
-          />
-        ))}
-      </section>
-      <Pagination
-        currentPage={page}
-        totalCount={filteredProfiles.length}
-        setPage={setPage}
-        viewCount={PAGE_SIZE}
-      />
+      <Header />
+      <div className={wikiWrap()}>
+        <div className={searchStyle()}>
+          <SearchInput value={search} onChange={handleChange} onSubmit={handleSubmit} />
+          <span className="text-grayscale-400 max-[680px]:text-sm">
+            {keywordFromUrl ? (
+              filteredProfiles.length === 0 ? (
+                ''
+              ) : (
+                <>
+                  "{keywordFromUrl}"님을 총
+                  <span className="text-primary-200">&nbsp;{filteredProfiles.length}&nbsp;</span>명
+                  찾았습니다.
+                </>
+              )
+            ) : (
+              '검색어를 입력해 주세요.'
+            )}
+          </span>
+        </div>
+        <section className="mb-[54px] flex w-full max-w-[860px] flex-1 flex-col gap-[24px] px-[24px] md:px-[24px] lg:mb-[121px]">
+          {filteredProfiles.length <= 0 ? (
+            <div className="text-grayscale-400 flex flex-col items-center justify-center gap-[32px] py-[60px]">
+              <span className="text-md">"{keywordFromUrl}" 과 일치한 검색 결과가 없습니다.</span>
+              <Image
+                className="h-[108px] w-[108px] md:h-[144px] md:w-[144px]"
+                src={NoSearch}
+                alt="검색결과 없음 이미지"
+              />
+            </div>
+          ) : (
+            currentProfiles.map((profile) => (
+              <ListCard
+                key={profile.id}
+                image={profile.image}
+                name={profile.name}
+                city={profile.city}
+                nationality={profile.nationality}
+                job={profile.job}
+              />
+            ))
+          )}
+        </section>
+        <Pagination
+          currentPage={page}
+          totalCount={filteredProfiles.length}
+          setPage={setPage}
+          viewCount={PAGE_SIZE}
+        />
+      </div>
     </div>
   );
 }

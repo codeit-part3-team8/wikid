@@ -121,70 +121,71 @@ export default function QuizModal({
       aria-labelledby="quiz-modal-title"
       aria-describedby="quiz-modal-description"
     >
-      {({ isMobile: _isMobile }) => (
-        <div className="flex h-full flex-col pt-4">
-          {/* 자물쇠 아이콘 */}
-          <div className="text-grayscale-400 flex justify-center">
-            <SVGIcon icon="IC_Lock" size="sm" />
-          </div>
-          {/* 안내 텍스트 */}
-          <p
-            id="quiz-modal-description"
-            className="text-md-regular text-grayscale-400 mt-5 text-center"
-          >
-            다음 퀴즈를 맞추고
-            <br />
-            위키를 작성해 보세요.
-          </p>
-          {/* 퀴즈 제목 */}
-          <h3
-            id="quiz-modal-title"
-            className="text-2lg-semibold text-grayscale-500 mt-9 w-full text-left"
-          >
-            {title}
-          </h3>{' '}
-          {/* 입력 필드 */}
-          <div className="mt-2.5 w-full">
-            <input
-              id="quiz-input"
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              className={clsx(quizInputStyle({ state: hasError ? 'error' : 'default' }))}
-              aria-invalid={hasError}
-              aria-describedby={hasError ? 'quiz-error' : undefined}
-            />
-          </div>
-          {/* 에러 메시지 */}
-          {hasError && (
-            <p
-              className="text-xs-regular text-secondary-red-200 mt-2.5 w-full text-left"
-              id="quiz-error"
-            >
-              정답이 아닙니다. 다시 시도해 주세요.
-              <br />
-            </p>
-          )}
-          {/* 확인 버튼 */}
-          <div className={clsx('w-full', hasError ? 'mt-9' : 'mt-10')}>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className={clsx(quizButtonStyle(), 'text-lg-semibold')}
-            >
-              확인
-            </button>
-          </div>
-          {/* 하단 안내 텍스트 */}
-          <div className="text-xs-regular text-grayscale-400 mt-5 text-center">
-            <p>위키드는 지인들과 함께하는 즐거운 공간입니다.</p>
-            <p>지인에게 상처를 주지 않도록 작성해 주세요.</p>
-          </div>
+      <div className="flex h-full flex-col pt-4">
+        {/* 자물쇠 아이콘 */}
+        <div className="text-grayscale-400 flex justify-center">
+          <SVGIcon icon="IC_Lock" size="sm" />
         </div>
-      )}
+        {/* 안내 텍스트 */}
+        <p
+          id="quiz-modal-description"
+          className="responsive-text text-md-to-md text-grayscale-400 mt-5 text-center"
+        >
+          다음 퀴즈를 맞추고
+          <br />
+          위키를 작성해 보세요.
+        </p>
+        {/* 퀴즈 제목 */}
+        <h3
+          id="quiz-modal-title"
+          className="responsive-text text-2lg-to-lg text-weight-semibold text-grayscale-500 mt-9 w-full text-left"
+        >
+          {title}
+        </h3>
+        {/* 입력 필드 */}
+        <div className="mt-2.5 w-full">
+          <input
+            id="quiz-input"
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className={clsx(quizInputStyle({ state: hasError ? 'error' : 'default' }))}
+            aria-invalid={hasError}
+            aria-describedby={hasError ? 'quiz-error' : undefined}
+          />
+        </div>
+        {/* 에러 메시지 */}
+        {hasError && (
+          <p
+            className="responsive-text text-xs-to-xs text-secondary-red-200 mt-2.5 w-full text-left"
+            id="quiz-error"
+          >
+            정답이 아닙니다. 다시 시도해 주세요.
+            <br />
+          </p>
+        )}
+        {/* 확인 버튼 */}
+        <div className={clsx('w-full', hasError ? 'mt-9' : 'mt-10')}>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className={clsx(
+              quizButtonStyle(),
+              'responsive-text text-lg-to-md text-weight-semibold'
+            )}
+          >
+            확인
+          </button>
+        </div>
+        {/* 하단 안내 텍스트 */}
+        <div className="responsive-text text-xs-to-xs text-grayscale-400 mt-5 text-center">
+          <p>위키드는 지인들과 함께하는 즐거운 공간입니다.</p>
+          <p>지인에게 상처를 주지 않도록 작성해 주세요.</p>
+        </div>
+      </div>
     </BaseModal>
   );
 }
