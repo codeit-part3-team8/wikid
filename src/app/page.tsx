@@ -30,14 +30,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--grayscale-50)]">
+    <div className="bg-grayscale-50 min-h-screen">
       <Header isLoggedIn={isLoggedIn} />
 
       <main className="p-8">
         <div className="mx-auto max-w-4xl">
           {/* 헤더 상태 토글 */}
           <section className="mb-8 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="text-xl-semibold mb-4 text-[var(--grayscale-600)]">헤더 테스트</h2>
+            <h2 className="text-xl-semibold text-grayscale-600 mb-4">헤더 테스트</h2>
             <div className="flex gap-4">
               <Button
                 variant={!isLoggedIn ? 'primary' : 'secondary'}
@@ -58,9 +58,7 @@ export default function Home() {
 
           {/* Input 컴포넌트 테스트 */}
           <section className="mb-12 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="text-xl-semibold mb-6 text-[var(--grayscale-600)]">
-              Input 컴포넌트 테스트
-            </h2>
+            <h2 className="text-xl-semibold text-grayscale-600 mb-6">Input 컴포넌트 테스트</h2>
             <div className="max-w-md space-y-6">
               {/* 기본 Input */}
               <Input
@@ -126,46 +124,42 @@ export default function Home() {
             </div>
           </section>
 
-          <h1 className="text-3xl-semibold mb-8 text-[var(--grayscale-600)]">
-            버튼 컴포넌트 테스트
-          </h1>
+          <h1 className="text-3xl-semibold text-grayscale-600 mb-8">버튼 컴포넌트 테스트</h1>
 
           {/* Primary 버튼들 */}
           <section className="mb-12 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="text-xl-semibold mb-4 text-[var(--grayscale-600)]">Primary 버튼</h2>
+            <h2 className="text-xl-semibold text-grayscale-600 mb-4">Primary 버튼</h2>
             <div className="space-y-4">
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Small</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Small</p>
                 <Button variant="primary" size="sm" onClick={handleClick}>
                   내 위키 만들기
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Medium (기본)</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Medium (기본)</p>
                 <Button variant="primary" size="md" onClick={handleClick}>
                   로그인
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">
-                  Large (Full Width)
-                </p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Large (Full Width)</p>
                 <Button variant="primary" size="lg" fullWidth onClick={handleClick}>
                   로그인
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Loading 상태</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Loading 상태</p>
                 <Button variant="primary" loading={isLoading} onClick={handleClick}>
                   로그인
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Disabled 상태</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Disabled 상태</p>
                 <Button variant="primary" disabled>
                   로그인
                 </Button>
@@ -175,40 +169,38 @@ export default function Home() {
 
           {/* Secondary 버튼들 */}
           <section className="mb-12 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="text-xl-semibold mb-4 text-[var(--grayscale-600)]">Secondary 버튼</h2>
+            <h2 className="text-xl-semibold text-grayscale-600 mb-4">Secondary 버튼</h2>
             <div className="space-y-4">
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Small</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Small</p>
                 <Button variant="secondary" size="sm" onClick={handleClick}>
                   내 위키 만들기
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Medium (기본)</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Medium (기본)</p>
                 <Button variant="secondary" size="md" onClick={handleClick}>
                   로그인
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">
-                  Large (Full Width)
-                </p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Large (Full Width)</p>
                 <Button variant="secondary" size="lg" fullWidth onClick={handleClick}>
                   로그인
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Loading 상태</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Loading 상태</p>
                 <Button variant="secondary" loading={isLoading} onClick={handleClick}>
                   로그인
                 </Button>
               </div>
 
               <div>
-                <p className="text-md-regular mb-2 text-[var(--grayscale-500)]">Disabled 상태</p>
+                <p className="text-md-regular text-grayscale-500 mb-2">Disabled 상태</p>
                 <Button variant="secondary" disabled>
                   로그인
                 </Button>
@@ -218,7 +210,7 @@ export default function Home() {
 
           {/* 실제 사용 예시 */}
           <section className="rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="text-xl-semibold mb-4 text-[var(--grayscale-600)]">실제 사용 예시</h2>
+            <h2 className="text-xl-semibold text-grayscale-600 mb-4">실제 사용 예시</h2>
             <div className="flex gap-4">
               <Button variant="secondary" size="sm">
                 내 위키 만들기

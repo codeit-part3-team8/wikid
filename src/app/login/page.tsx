@@ -28,7 +28,7 @@ export default function LoginPage() {
 
       <main className="flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
-          <h1 className="text-2xl-semibold mb-8 text-center text-[var(--grayscale-600)]">로그인</h1>
+          <h1 className="text-2xl-semibold text-grayscale-600 mb-8 text-center">로그인</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* 이메일 */}
@@ -59,11 +59,11 @@ export default function LoginPage() {
             </Button>
 
             {/* 회원가입 링크 */}
-            <p className="text-md-regular text-center text-[var(--grayscale-400)]">
+            <p className="text-md-regular text-grayscale-400 text-center">
               {' '}
               <Link
                 href="/signup"
-                className="text-md-medium text-[var(--primary-200)] hover:text-[var(--primary-300)]"
+                className="text-md-medium text-primary-200 hover:text-primary-300"
               >
                 회원가입
               </Link>

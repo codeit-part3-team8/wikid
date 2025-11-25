@@ -23,12 +23,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const variantStyles = {
       primary:
         loading || disabled
-          ? 'bg-[var(--grayscale-300)] text-white'
-          : 'bg-[var(--primary-200)] text-white hover:bg-[var(--primary-300)] active:bg-[var(--primary-300)]',
+          ? 'bg-grayscale-300 text-white'
+          : 'bg-primary-200 text-white hover:bg-primary-300 active:bg-primary-300',
       secondary:
         loading || disabled
-          ? 'bg-transparent border-2 border-[var(--grayscale-300)] text-[var(--grayscale-300)]'
-          : 'bg-transparent border-2 border-[var(--primary-200)] text-[var(--primary-200)] hover:bg-[var(--primary-100)] active:bg-[var(--primary-100)]',
+          ? 'bg-transparent border-2 border-grayscale-300 text-grayscale-300'
+          : 'bg-transparent border-2 border-primary-200 text-primary-200 hover:bg-primary-100 active:bg-primary-100',
     };
 
     const sizeStyles = {

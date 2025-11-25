@@ -13,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
 
   return (
     <header className="border-grayscale-200 relative sticky top-0 z-50 border-b bg-white">
-      <div className="lg-mx-20 mx-auto max-w-7xl px-5">
+      <div className="mx-auto max-w-7xl px-5 lg:mx-20">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-10">
             {/* 로고 */}
