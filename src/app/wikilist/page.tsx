@@ -280,7 +280,7 @@ export default function WikiListPage() {
         <section className="mb-[54px] flex w-full max-w-[860px] flex-1 flex-col gap-[24px] px-[24px] md:px-[24px] lg:mb-[121px]">
           {filteredProfiles.length <= 0 ? (
             <div className="text-grayscale-400 flex flex-col items-center justify-center gap-[32px] py-[60px]">
-              <span className="text-md">"{keywordFromUrl}" 과 일치한 검색 결과가 없습니다.</span>
+              <span className="text-md">"{keywordFromUrl}"과 일치한 검색 결과가 없습니다.</span>
               <Image
                 className="h-[108px] w-[108px] md:h-[144px] md:w-[144px]"
                 src={NoSearch}
