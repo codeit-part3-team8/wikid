@@ -40,8 +40,26 @@ export default function Pagination({
   if (totalPage <= 1) return null; // 다음 페이지 까지 넘어갈 데이터가 없으면 페이지네이션 안보임
 
   const pageBtn = Array.from({ length: PAGE_BLOCK }, (_, i) => i + 1);
-  const currentBlock = Math.floor((currentPage - 1) / PAGE_BLOCK);
-  const startPage = currentBlock * PAGE_BLOCK + 1;
+
+  let startPage = currentPage - 2;
+  let endPage = currentPage + 2;
+
+  if (startPage < 1) {
+    // endPage += 1 - startPage;
+    startPage = 1;
+  }
+
+  if (endPage > totalPage) {
+    startPage -= endPage - totalPage; // 차이 나는만큼 스타트 페이지 더 보이게
+    endPage = totalPage;
+  }
+
+  if (startPage < 1) startPage = 1;
+
+  const pageNumbers: number[] = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPage) return;

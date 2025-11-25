@@ -277,7 +277,7 @@ export default function WikiListPage() {
             )}
           </span>
         </div>
-        <section className="mb-[54px] flex w-full max-w-[860px] flex-1 flex-col gap-[24px] px-[24px] md:px-[24px] lg:mb-[121px]">
+        <section className="mb-[54px] flex h-[466px] w-full max-w-[860px] flex-col gap-[24px] px-[24px] md:mb-[81px] md:h-[474px] md:px-[24px] lg:mb-[121px]">
           {filteredProfiles.length <= 0 ? (
             <div className="text-grayscale-400 flex flex-col items-center justify-center gap-[32px] py-[60px]">
               <span className="text-md">"{keywordFromUrl}"과 일치한 검색 결과가 없습니다.</span>
@@ -300,12 +300,14 @@ export default function WikiListPage() {
             ))
           )}
         </section>
-        <Pagination
-          currentPage={page}
-          totalCount={filteredProfiles.length}
-          setPage={setPage}
-          viewCount={PAGE_SIZE}
-        />
+        <div className="mb-[35px] md:mb-[229px] lg:mb-[136px]">
+          <Pagination
+            currentPage={page}
+            totalCount={filteredProfiles.length}
+            setPage={setPage}
+            viewCount={PAGE_SIZE}
+          />
+        </div>
       </div>
     </div>
   );
