@@ -1,6 +1,5 @@
 import Avatar from '../Avatar/Avatar';
 import { tv } from 'tailwind-variants';
-import styles from './ListCard.module.css';
 import LinkCopy from '../LinkCopy/LinkCopy';
 
 // const profile = {
@@ -24,7 +23,7 @@ interface ListCardProps {
 }
 
 const listCardStyle = tv({
-  base: 'flex items-center flex-1 gap-[32px] py-6 px-9  shadow-[0px_4px_20px_rgba(0,0,0,0.08)]',
+  base: 'flex items-center h-[150px] md:h-[142px] gap-[32px] py-6 px-9  shadow-[0px_4px_20px_rgba(0,0,0,0.08)]',
 });
 const cardInfoStyle = tv({
   base: 'flex flex-col  flex-1 justify-between gap-[10px] md:gap-[14px] ',
@@ -40,7 +39,7 @@ export default function ListCard({ image, name, city, nationality, job }: ListCa
       <Avatar imgUrl={image} name={name} variant="list" />
       <div className={cardInfoStyle()}>
         <span className={nameStyle()}>{name}</span>
-        <div className={styles.text_style}>
+        <div className="flex items-end justify-between max-[641px]:items-start max-[640px]:flex-col max-[640px]:gap-[14px]">
           <div className="text-grayscale-400 flex flex-col text-xs sm:text-sm">
             <div>
               {city},&nbsp;{nationality}

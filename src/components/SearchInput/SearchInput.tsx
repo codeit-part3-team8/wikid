@@ -2,7 +2,7 @@ import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
 
 const formStyle = tv({
-  base: 'flex items-center gap-[15px] h-[45px] lg:w-[860px] md:w-[664px] w-[335px] text-xl-medium text-grayscale-500 bg-grayscale-100 rounded-[10px]  py-[10px] px-[20px]',
+  base: 'flex items-center gap-[15px] h-[45px] flex-1 w-full text-xl-medium text-grayscale-500 bg-grayscale-100 rounded-[10px]  py-[10px] px-[20px]',
 });
 
 const inputStyle = tv({
