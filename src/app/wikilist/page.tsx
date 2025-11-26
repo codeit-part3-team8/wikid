@@ -1,9 +1,10 @@
 'use client';
 
+import { Suspense } from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+// import axios from 'axios';
 import ListCard from '@/components/ListCard/ListCard';
 import Pagination from '@/components/Pagination/Pagination';
 import Header from '@/components/Header/Header';
@@ -207,7 +208,7 @@ const dummyProfiles: Profile[] = [
 // const BASE_URL = 'https://wikied-api.vercel.app/19-8';
 const PAGE_SIZE = 3;
 
-export default function WikiListPage() {
+function WikiListContent() {
   const [search, setSearch] = useState('');
   const [profiles, setProfiles] = useState<Profile[]>(dummyProfiles);
   const [page, setPage] = useState(1);
@@ -310,5 +311,13 @@ export default function WikiListPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function WikiListPage() {
+  return (
+    <Suspense fallback={<div>위키 리스트 불러오는 중...</div>}>
+      <WikiListContent />
+    </Suspense>
   );
 }
