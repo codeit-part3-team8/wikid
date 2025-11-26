@@ -320,6 +320,9 @@ body {
   --responsive-mobile-line: 18px;
   --responsive-weight: 400;
 }
+.text-weight-regular {
+  --responsive-weight: 400;
+}
 
 .text-weight-semibold {
   --responsive-weight: 600;
