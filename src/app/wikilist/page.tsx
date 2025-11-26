@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import ListCard from '@/components/ListCard/ListCard';
-import Pagination from '@/components/pagination/pagination';
+import Pagination from '@/components/Pagination/Pagination';
 import Header from '@/components/Header/Header';
 import { tv } from 'tailwind-variants';
 import Image from 'next/image';

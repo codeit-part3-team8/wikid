@@ -3,7 +3,7 @@
 import { CommentType } from '@/types/CommentType';
 import { useState } from 'react';
 import Comment from '../Comment/Comment';
-import Pagination from '@/components/pagination/pagination';
+import Pagination from '@/components/Pagination/Pagination';
 
 const VIEW_COUNT = 10;
 
