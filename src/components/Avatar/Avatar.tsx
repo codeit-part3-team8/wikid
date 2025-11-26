@@ -26,16 +26,36 @@ interface AvatarProps {
   name: string;
   variant?: AvatarVariant;
   className?: string;
+  priority?: boolean;
 }
 
-export default function Avatar({ imgUrl, name, variant = 'profile', className }: AvatarProps) {
+export default function Avatar({
+  imgUrl,
+  name,
+  variant = 'profile',
+  className,
+  priority = false,
+}: AvatarProps) {
   const classes = AvatarStyle({ variant });
+
   return (
     <div className={clsx(classes, className)}>
       {imgUrl ? (
-        <Image src={imgUrl} alt={`${name}이미지`} fill className="object-cover" />
+        <Image
+          src={imgUrl}
+          alt={`${name}이미지`}
+          fill
+          className="object-cover"
+          priority={priority}
+        />
       ) : (
-        <Image src={AvatarFallback} alt="fallback이미지" fill className="object-cover" />
+        <Image
+          src={AvatarFallback}
+          alt="fallback이미지"
+          fill
+          className="object-cover"
+          priority={priority}
+        />
       )}
     </div>
   );

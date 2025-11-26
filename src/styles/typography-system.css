@@ -235,11 +235,19 @@ body {
   font-weight: var(--responsive-weight);
 }
 
-@media (max-width: 641px) {
+@media (max-width: 640px) {
   .responsive-text {
     font-size: var(--responsive-mobile-size);
     line-height: var(--responsive-mobile-line);
   }
+}
+
+.text-5xl-to-3xl {
+  --responsive-desktop-size: 48px;
+  --responsive-desktop-line: 46px;
+  --responsive-mobile-size: 32px;
+  --responsive-mobile-line: 38px;
+  --responsive-weight: 700;
 }
 
 .text-3xl-to-2xl {
