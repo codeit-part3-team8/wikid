@@ -24,16 +24,48 @@ export const useCommonEditor = (
 ) => {
   const prevRef = useRef('');
 
+  // 표 관련 커스텀
+  const CustomTable = Table.extend({
+    // 중첩 표 생성 금지
+    addOptions() {
+      return {
+        ...this.parent?.(),
+        allowTableInTable: false,
+      };
+    },
+    // 백스페이스로 삭제
+    addKeyboardShortcuts() {
+      return {
+        Backspace: ({ editor }) => {
+          const { $from } = editor.state.selection;
+          let isInTable = false;
+          for (let d = $from.depth; d > 0; d--) {
+            if ($from.node(d).type.name === 'table') {
+              isInTable = true;
+              break;
+            }
+          }
+
+          if (isInTable) {
+            editor.chain().focus().deleteTable().run();
+            return true;
+          }
+          return false;
+        },
+      };
+    },
+  });
+
   const editor = useEditor({
     extensions: [
       Color,
-      HorizontalRule,
-      Image,
+      HorizontalRule, // Divider
+      Image, // 이미지 추가
       Link.configure({ openOnClick: true }),
       Placeholder.configure({ placeholder: '본문을 입력해주세요' }),
       StarterKit,
       Strike,
-      Table,
+      CustomTable,
       TableCell,
       TableHeader,
       TableRow,
