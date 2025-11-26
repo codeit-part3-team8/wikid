@@ -10,6 +10,8 @@ interface DropDownProps {
   onSelect: (option: SortOption) => void;
 }
 
+const options: SortOption[] = ['최신순', '인기순'];
+
 const dropDownStyle = tv({
   base: 'bg-grayscale-100 flex h-[45px] w-[335px] max-w-full items-center justify-between  px-[20px] py-[10px] sm:w-[120px] lg:w-[140px] cursor-pointer rounded-[10px]',
 });
@@ -47,33 +49,22 @@ export default function DropDown({ onSelect }: DropDownProps) {
         {value}
         <SVGIcon icon="IC_Arrow" />
       </div>
-
       {isOpen && (
         <ul className={dropDownValueStyle()}>
-          <li
-            className="text-grayscale-500 w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setValue('최신순');
-              onSelect('최신순');
-              setIsOpen(false);
-            }}
-          >
-            최신순
-          </li>
-          <li
-            className="text-grayscale-500 w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setValue('인기순');
-              onSelect('인기순');
-              setIsOpen(false);
-            }}
-          >
-            인기순
-          </li>
-
-          {/* 여기다 작성하면 돼? */}
+          {options.map((option) => (
+            <li
+              key={option}
+              className="text-grayscale-500 w-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                setValue(option);
+                onSelect(option);
+                setIsOpen(false);
+              }}
+            >
+              {option}
+            </li>
+          ))}
         </ul>
       )}
     </div>
