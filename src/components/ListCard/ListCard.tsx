@@ -1,6 +1,5 @@
 import Avatar from '../Avatar/Avatar';
 import { tv } from 'tailwind-variants';
-import styles from './ListCard.module.css';
 import LinkCopy from '../LinkCopy/LinkCopy';
 
 // const profile = {
@@ -40,7 +39,7 @@ export default function ListCard({ image, name, city, nationality, job }: ListCa
       <Avatar imgUrl={image} name={name} variant="list" />
       <div className={cardInfoStyle()}>
         <span className={nameStyle()}>{name}</span>
-        <div className={styles.text_style}>
+        <div className="flex items-end justify-between max-[641px]:items-start max-[640px]:flex-col max-[640px]:gap-[14px]">
           <div className="text-grayscale-400 flex flex-col text-xs sm:text-sm">
             <div>
               {city},&nbsp;{nationality}
