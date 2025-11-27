@@ -26,6 +26,11 @@
   --color-secondary-purple-100: #131314;
 
   --color-secondary-yellow-100: #ffd061;
+
+  /* Notification colors */
+  --color-notification-bg: #cbc9cf;
+  --color-notification-unread: #3b82f6;
+  --color-notification-read: #6b7280;
 }
 
 /* ========== CUSTOM SCROLL BAR ========== */
@@ -47,6 +52,48 @@
 .no-scrollbar {
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* ========== NOTIFICATION STYLES ========== */
+.notification-dropdown {
+  @apply absolute top-full z-50 mt-2;
+  right: 20px;
+}
+
+.notification-dropdown-mobile {
+  right: 20px;
+}
+
+.notification-dropdown-desktop {
+  right: -24px;
+}
+
+.notification-content {
+  @apply rounded-lg shadow-lg;
+  background-color: var(--color-notification-bg);
+  padding: 20px 16px;
+}
+
+.notification-content-mobile {
+  width: 320px;
+}
+
+.notification-content-desktop {
+  width: 380px;
+}
+
+.notification-item {
+  @apply relative rounded-lg border bg-white;
+  border-color: var(--color-primary-100);
+  padding: 12px 10px;
+}
+
+.notification-item-mobile {
+  width: 288px;
+}
+
+.notification-item-desktop {
+  width: 348px;
 }
 
 /* 버튼 로딩 애니메이션 */
