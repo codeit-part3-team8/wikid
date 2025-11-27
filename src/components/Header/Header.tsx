@@ -43,6 +43,36 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
     }
   };
 
+  // 알림 읽음 처리 함수
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      // TODO: 실제 API 호출
+      // await markNotificationAsReadAPI(id);
+
+      // 임시로 로컬 상태에서 읽음 처리
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id ? { ...notification, isRead: true } : notification
+        )
+      );
+    } catch (error) {
+      console.error('알림 읽음 처리 실패:', error);
+    }
+  };
+
+  // 모든 알림 읽음 처리 함수
+  const handleMarkAllAsRead = async () => {
+    try {
+      // TODO: 실제 API 호출
+      // await markAllNotificationsAsReadAPI();
+
+      // 임시로 로컬 상태에서 모든 알림 읽음 처리
+      setNotifications((prev) => prev.map((notification) => ({ ...notification, isRead: true })));
+    } catch (error) {
+      console.error('모든 알림 읽음 처리 실패:', error);
+    }
+  };
+
   // 미읽은 알림이 있는지 확인
   const hasUnreadNotifications = notifications.some((notification) => !notification.isRead);
 
@@ -81,6 +111,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
                 <NotificationContainer
                   notifications={notifications}
                   onDeleteNotification={handleDeleteNotification}
+                  onMarkAsRead={handleMarkAsRead}
+                  onMarkAllAsRead={handleMarkAllAsRead}
                   hasUnread={hasUnreadNotifications}
                 />
 
@@ -176,6 +208,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
               notifications={notifications}
               onClose={() => setIsMobileNotificationOpen(false)}
               onDelete={handleDeleteNotification}
+              onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllAsRead}
             />
           </div>
         )}

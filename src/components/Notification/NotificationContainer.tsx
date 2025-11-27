@@ -8,6 +8,8 @@ import { NotificationContainerProps } from '@/types/Notification';
 const NotificationContainer = ({
   notifications,
   onDeleteNotification,
+  onMarkAsRead,
+  onMarkAllAsRead,
   hasUnread = false,
 }: NotificationContainerProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +34,6 @@ const NotificationContainer = ({
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-
   const handleClose = () => {
     setIsOpen(false);
   };
@@ -61,6 +62,8 @@ const NotificationContainer = ({
           notifications={notifications}
           onClose={handleClose}
           onDelete={onDeleteNotification}
+          onMarkAsRead={onMarkAsRead}
+          onMarkAllAsRead={onMarkAllAsRead}
         />
       )}
     </div>
