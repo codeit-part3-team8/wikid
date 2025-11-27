@@ -5,10 +5,10 @@ interface ArticleListProps {
   title: string;
   writer: string;
   likeCount: number;
-  creatdeAt: string;
+  createdAt: string;
 }
 
-export default function ArticleList({ id, title, writer, likeCount, creatdeAt }: ArticleListProps) {
+export default function ArticleList({ id, title, writer, likeCount, createdAt }: ArticleListProps) {
   return (
     <>
       <tr className="text-lg-regular text-grayscale-500 border-grayscale-200 hidden border-b min-[640px]:table-row md:table-row">
@@ -16,7 +16,7 @@ export default function ArticleList({ id, title, writer, likeCount, creatdeAt }:
         <td className="py-[11px] text-center">{title}</td>
         <td className="w-[120px] py-[11px] text-center">{writer}</td>
         <td className="w-[80px] py-[11px] text-center">{likeCount}</td>
-        <td className="w-[120px] py-[11px] text-center whitespace-nowrap">{creatdeAt}</td>
+        <td className="w-[120px] py-[11px] text-center whitespace-nowrap">{createdAt}</td>
       </tr>
       {/* 모바일 */}
       <tr className="border-grayscale-200 table-row min-[640px]:hidden">
@@ -27,7 +27,7 @@ export default function ArticleList({ id, title, writer, likeCount, creatdeAt }:
             <div className="text-grayscale-400 flex w-full items-center justify-between text-sm">
               <div className="flex items-center gap-[16px]">
                 <span className="text-grayscale-500">{writer}</span>
-                <span className="whitespace-nowrap">{creatdeAt}</span>
+                <span className="whitespace-nowrap">{createdAt}</span>
               </div>
               <div className="text-grayscale-500 flex items-center gap-[5px]">
                 <SVGIcon icon="IC_Heart" />
