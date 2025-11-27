@@ -3,6 +3,7 @@
 import React from 'react';
 import { tv } from 'tailwind-variants';
 import { WikiContentProps } from '@/types/Wiki';
+import WikiTextEditor from '../textEditor/WikiTextEditorSample';
 
 // WikiContent 컨테이너 스타일
 const wikiContentStyle = tv({
@@ -31,13 +32,7 @@ export default function WikiContent({
     return (
       <div className={wikiContentStyle({ className })}>
         <div className={editContentStyle()}>
-          <div className="border-grayscale-300 min-h-[200px] w-full rounded-lg border-2 border-dashed p-6 text-center">
-            <p className="responsive-text text-sm-to-xs text-grayscale-400">
-              TextEditor 컴포넌트가 여기에 표시됩니다.
-            </p>
-            {/* 추후 TextEditor로 교체될 부분 */}
-            {/* <WikiTextEditor content={content} /> */}
-          </div>
+          <WikiTextEditor content={content} />
         </div>
       </div>
     );
@@ -49,11 +44,7 @@ export default function WikiContent({
       <div className={wikiContentStyle({ className })}>
         <div className={hasEditPermission ? editContentStyle() : 'px-6 py-4'}>
           {hasEditPermission ? (
-            <div className="min-h-[200px] w-full">
-              <p className="responsive-text text-sm-to-xs text-grayscale-400 mb-4 text-center">
-                편집 모드 - TextEditor가 여기에 표시됩니다.
-              </p>
-            </div>
+            <WikiTextEditor content={content} />
           ) : (
             <div className="prose max-w-none">
               <p className="responsive-text text-md-to-sm text-grayscale-500">
