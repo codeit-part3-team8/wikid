@@ -52,7 +52,7 @@ const NotificationDropdown = ({
             ))
           ) : (
             <div className="py-8 text-center">
-              <p className="text-md-regular text-grayscale-200">알림이 없습니다</p>
+              <p className="text-md-regular text-grayscale-500">알림이 없습니다</p>
             </div>
           )}
         </div>

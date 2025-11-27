@@ -201,17 +201,24 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
           </div>
         )}
 
-        {/* 모바일 알림 드롭다운 */}
+        {/* 모바일 알림 드롭다운 - 외부 클릭 시 닫기 */}
         {isMobileNotificationOpen && isLoggedIn && (
-          <div className="md:hidden">
-            <NotificationDropdown
-              notifications={notifications}
-              onClose={() => setIsMobileNotificationOpen(false)}
-              onDelete={handleDeleteNotification}
-              onMarkAsRead={handleMarkAsRead}
-              onMarkAllAsRead={handleMarkAllAsRead}
+          <>
+            <div
+              className="fixed inset-0 z-40 md:hidden"
+              onClick={() => setIsMobileNotificationOpen(false)}
+              aria-hidden="true"
             />
-          </div>
+            <div className="relative z-50 md:hidden">
+              <NotificationDropdown
+                notifications={notifications}
+                onClose={() => setIsMobileNotificationOpen(false)}
+                onDelete={handleDeleteNotification}
+                onMarkAsRead={handleMarkAsRead}
+                onMarkAllAsRead={handleMarkAllAsRead}
+              />
+            </div>
+          </>
         )}
       </div>
     </header>
