@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API } from '@/constants/api';
+import { handlerServerError } from '@/utils/handlerServerError';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const path = searchParams.get('path') ?? '';
 
   try {
-    const res = await fetch(`${BASE_URL}/${path}`);
+    const res = await fetch(`${API.BASE}/${path}`);
     const data = await res.json();
     return NextResponse.json(data);
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
+    return handlerServerError(err, 'Failed to fetch');
   }
 }
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const path = searchParams.get('path') ?? '';
 
-    const res = await fetch(`${BASE_URL}/${path}`, {
+    const res = await fetch(`${API.BASE}/${path}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,6 +34,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: 'Failed to post' }, { status: 500 });
+    return handlerServerError(err, 'Failed to post');
   }
 }
