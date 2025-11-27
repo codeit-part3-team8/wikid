@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const eventListenerRef = useRef<(() => void) | null>(null);
   const [remainingTime, setRemainingTime] = useState(timeoutMs);
   const [isActive, setIsActive] = useState(false);
 
@@ -59,6 +60,14 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
       resetTimer(true);
     };
 
+    // 기존 리스너 제거
+    if (eventListenerRef.current) {
+      events.forEach((event) => {
+        document.removeEventListener(event, eventListenerRef.current!);
+      });
+    }
+    eventListenerRef.current = handleActivity;
+
     // 이벤트 리스너 등록
     events.forEach((event) => {
       document.addEventListener(event, handleActivity, { passive: true });
@@ -68,20 +77,16 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
     setTimeout(() => {
       resetTimer(true);
     }, 0);
-
-    return () => {
-      events.forEach((event) => {
-        document.removeEventListener(event, handleActivity);
-      });
-      clearTimers();
-      setIsActive(false);
-    };
   }, [resetTimer, clearTimers]);
 
   const stopTimer = useCallback(() => {
     setIsActive(false);
     clearTimers();
     setRemainingTime(timeoutMs);
+    if (eventListenerRef.current) {
+      document.removeEventListener('keydown', eventListenerRef.current);
+      eventListenerRef.current = null;
+    }
   }, [clearTimers, timeoutMs]);
 
   // 포맷된 시간 반환 (MM:SS)
