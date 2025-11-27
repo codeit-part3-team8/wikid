@@ -7,19 +7,41 @@ import WikiContent from './components/WikiContent';
 import Header from '@/components/Header/Header';
 import SnackBar from '@/components/SnackBar/SnackBar';
 import QuizModal from '@/components/Modal/QuizModal';
+import AlertModal from '@/components/Modal/AlertModal';
 import Button from '@/components/Button/Button';
+import EditTimer from '@/components/EditTimer/EditTimer';
+import { useIdleTimer } from '@/hooks/useIdleTimer';
 import { ProfileData, WikiPageProps } from '@/types/Wiki';
 
 export default function WikiPage({ params }: WikiPageProps) {
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showQuizModal, setShowQuizModal] = useState(false);
-  const [hasEditPermission, setHasEditPermission] = useState(true);
+  const [showTimeoutModal, setShowTimeoutModal] = useState(false);
+  const [hasEditPermission, setHasEditPermission] = useState(false);
   const [isMyWiki] = useState(true);
   const [code, setCode] = useState<string>('');
 
   useEffect(() => {
     params.then(({ code }) => setCode(code));
   }, [params]);
+
+  // 5분 타임아웃 핸들러
+  const handleTimeout = useCallback(() => {
+    setShowTimeoutModal(true);
+  }, []);
+
+  // 아이들 타이머 훅 (5분 = 300,000ms)
+  const { startTimer, stopTimer, formattedTime, isActive } = useIdleTimer(
+    5 * 60 * 1000,
+    handleTimeout
+  );
+
+  // 타임아웃 모달 닫기 핸들러
+  const handleTimeoutModalClose = useCallback(() => {
+    setShowTimeoutModal(false);
+    setHasEditPermission(false);
+    stopTimer();
+  }, [stopTimer]);
 
   const handleProfileChange = useCallback((newData: ProfileData) => {
     console.log('프로필 데이터 변경:', newData);
@@ -32,12 +54,14 @@ export default function WikiPage({ params }: WikiPageProps) {
   const handleSave = useCallback(() => {
     console.log('위키 저장');
     setHasEditPermission(false);
-  }, []);
+    stopTimer();
+  }, [stopTimer]);
 
   const handleCancel = useCallback(() => {
     console.log('위키 편집 취소');
     setHasEditPermission(false);
-  }, []);
+    stopTimer();
+  }, [stopTimer]);
 
   const wikiData = useMemo(
     () => ({
@@ -183,8 +207,33 @@ export default function WikiPage({ params }: WikiPageProps) {
         onCorrectAnswer={() => {
           setShowQuizModal(false);
           setHasEditPermission(true);
+          startTimer(); // 타이머 시작
           console.log('퀴즈 정답! 위키 편집 권한 획득');
         }}
+      />
+
+      {/* 타임아웃 모달 */}
+      <AlertModal
+        isOpen={showTimeoutModal}
+        onClose={handleTimeoutModalClose}
+        title="5분 이상 글을 쓰지 않아 접속이 끊어졌어요"
+        message="위키 참여하기를 통해 다시 위키를 수정해 주세요."
+        buttonText="확인"
+        buttonVariant="primary"
+      />
+
+      {/* 편집 타이머 - 데스크톱 */}
+      <EditTimer
+        formattedTime={formattedTime}
+        isVisible={hasEditPermission && isActive}
+        position="desktop"
+      />
+
+      {/* 편집 타이머 - 모바일/태블릿 */}
+      <EditTimer
+        formattedTime={formattedTime}
+        isVisible={hasEditPermission && isActive}
+        position="mobile"
       />
     </div>
   );

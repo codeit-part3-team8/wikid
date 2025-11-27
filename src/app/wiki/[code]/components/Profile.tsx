@@ -137,7 +137,7 @@ export default function Profile({
   return (
     <div
       className={clsx(profileClass, className, {
-        'pb-9': isEditMode && typeof window !== 'undefined' && window.innerWidth > 1024,
+        'min-[1025px]:pb-9': isEditMode,
         'max-[1024px]:px-4 max-[1024px]:pt-5 max-[1024px]:pb-[35px]': isEditMode,
         'max-[640px]:px-[30px] max-[640px]:pt-6 max-[640px]:pb-[17px]': isEditMode,
       })}
@@ -154,7 +154,7 @@ export default function Profile({
               />
               <SVGIcon
                 icon="IC_Camera"
-                className="relative z-10 text-white max-[640px]:h-[17px] max-[640px]:w-[17px] min-[640px]:h-5 min-[640px]:w-5"
+                className="relative z-10 text-white max-[1024px]:h-5 max-[1024px]:w-5 max-[640px]:h-[17px] max-[640px]:w-[17px] min-[1025px]:h-9 min-[1025px]:w-9"
               />
             </div>
           )}
