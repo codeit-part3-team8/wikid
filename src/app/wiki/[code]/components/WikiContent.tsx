@@ -7,7 +7,7 @@ import WikiTextEditor from '../textEditor/WikiTextEditorSample';
 
 // WikiContent 컨테이너 스타일
 const wikiContentStyle = tv({
-  base: 'border-grayscale-200 w-full rounded-lg bg-gray-100 py-10',
+  base: 'w-full rounded-lg bg-gray-100 py-10',
 });
 
 // 빈 컨텐츠 영역 스타일

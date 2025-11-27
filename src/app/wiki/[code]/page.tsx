@@ -22,7 +22,11 @@ export default function WikiPage({ params }: WikiPageProps) {
   const [code, setCode] = useState<string>('');
 
   useEffect(() => {
-    params.then(({ code }) => setCode(code));
+    params
+      .then(({ code }) => setCode(code))
+      .catch((err) => {
+        console.error('Failed to get params:', err);
+      });
   }, [params]);
 
   // 5분 타임아웃 핸들러

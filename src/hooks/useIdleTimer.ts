@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 
 export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [remainingTime, setRemainingTime] = useState(timeoutMs);
   const [isActive, setIsActive] = useState(false);
 
@@ -29,6 +29,7 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
         setIsActive(false);
         setRemainingTime(0);
         onTimeout();
+        clearTimers(); // Ensure cleanup after callback executes
       }, timeoutMs);
 
       // 1초마다 남은 시간 업데이트
@@ -39,7 +40,11 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
         setRemainingTime(remaining);
 
         if (remaining === 0) {
-          clearTimers();
+          // Only clear interval here; onTimeout clears both timers
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
         }
       }, 1000);
     },
