@@ -4,6 +4,7 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const eventListenerRef = useRef<(() => void) | null>(null);
+  const eventsRef = useRef<string[]>(['keydown']);
   const [remainingTime, setRemainingTime] = useState(timeoutMs);
   const [isActive, setIsActive] = useState(false);
 
@@ -27,10 +28,13 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
 
       // 타임아웃 설정
       timeoutRef.current = setTimeout(() => {
-        setIsActive(false);
-        setRemainingTime(0);
-        onTimeout();
-        clearTimers(); // Ensure cleanup after callback executes
+        try {
+          setIsActive(false);
+          setRemainingTime(0);
+          onTimeout();
+        } finally {
+          clearTimers();
+        }
       }, timeoutMs);
 
       // 1초마다 남은 시간 업데이트
@@ -54,7 +58,7 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
   const startTimer = useCallback(() => {
     setIsActive(true);
 
-    const events = ['keydown'];
+    const events = eventsRef.current;
 
     const handleActivity = () => {
       resetTimer(true);
@@ -77,14 +81,16 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
     setTimeout(() => {
       resetTimer(true);
     }, 0);
-  }, [resetTimer, clearTimers]);
+  }, [resetTimer]);
 
   const stopTimer = useCallback(() => {
     setIsActive(false);
     clearTimers();
     setRemainingTime(timeoutMs);
     if (eventListenerRef.current) {
-      document.removeEventListener('keydown', eventListenerRef.current);
+      eventsRef.current.forEach((event) => {
+        document.removeEventListener(event, eventListenerRef.current!);
+      });
       eventListenerRef.current = null;
     }
   }, [clearTimers, timeoutMs]);
