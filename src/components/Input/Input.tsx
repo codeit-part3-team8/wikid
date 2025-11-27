@@ -9,10 +9,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className={`${fullWidth ? 'w-full' : ''}`}>
         {/* Label */}
         {label && (
-          <label
-            htmlFor={props.id}
-            className="text-md-regular mb-2 block text-[var(--grayscale-500)]"
-          >
+          <label htmlFor={props.id} className="text-md-regular text-grayscale-500 mb-2 block">
             {label}
           </label>
         )}
@@ -20,10 +17,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {/* Input Field */}
         <input
           ref={ref}
-          className={`text-md-regular w-full rounded-lg border bg-white px-4 py-3 text-[var(--grayscale-600)] transition-all duration-200 placeholder:text-[var(--grayscale-400)] focus:outline-none disabled:cursor-not-allowed disabled:bg-[var(--grayscale-100)] ${
+          className={`text-md-regular bg-grayscale-100 text-grayscale-600 placeholder:text-grayscale-400 disabled:bg-grayscale-100 w-full rounded-lg px-4 py-3 transition-all duration-200 focus:outline-none disabled:cursor-not-allowed ${
             hasError
-              ? 'border-[var(--secondary-red-200)] focus:border-[var(--secondary-red-200)] focus:ring-2 focus:ring-[var(--secondary-red-200)]/20'
-              : 'border-[var(--grayscale-300)] focus:border-[var(--primary-200)] focus:ring-2 focus:ring-[var(--primary-200)]/20'
+              ? 'border-secondary-red-200 focus:border-secondary-red-200 focus:ring-secondary-red-200/20 focus:ring-2'
+              : 'border-grayscale-300 focus:border-primary-200 focus:ring-primary-200/20 focus:ring-2'
           } ${className} `}
           {...props}
         />
@@ -32,7 +29,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {(helperText || error) && (
           <p
             className={`text-xs-regular mt-2 ${
-              hasError ? 'text-[var(--secondary-red-200)]' : 'text-[var(--grayscale-400)]'
+              hasError ? 'text-secondary-red-200' : 'text-grayscale-400'
             }`}
           >
             {error || helperText}
