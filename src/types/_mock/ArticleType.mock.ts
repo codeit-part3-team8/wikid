@@ -10,7 +10,7 @@ export const mockArticle: ArticleType = {
     id: 1,
   },
   image: '',
-  title: '게시글 제목입니다.',
+  title: '게시글 제목입니다.게시글 제목입',
   id: 1,
   isLiked: true,
   content:

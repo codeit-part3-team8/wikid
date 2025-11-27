@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Button from '../components/Button/Button';
 import Header from '../components/Header/Header';
 import Input from '../components/Input/Input';
-import WikiTextEditor from '@/components/TextEditor/WikiTextEditor';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);

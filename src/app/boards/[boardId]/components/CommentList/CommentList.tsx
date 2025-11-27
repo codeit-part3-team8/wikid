@@ -9,9 +9,10 @@ const VIEW_COUNT = 10;
 
 interface CommentListProps {
   comments: CommentType[];
+  currentUserId: number | null;
 }
 
-const CommentList = ({ comments }: CommentListProps) => {
+const CommentList = ({ comments, currentUserId }: CommentListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // 댓글 리스트 잘라오기
@@ -24,7 +25,7 @@ const CommentList = ({ comments }: CommentListProps) => {
       <ul className="flex flex-col gap-6">
         {currentComments.map((comment) => (
           <li key={comment.id}>
-            <Comment comment={comment} />
+            <Comment comment={comment} currentUserId={currentUserId} />
           </li>
         ))}
       </ul>
