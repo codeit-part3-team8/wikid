@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import BaseModal from './BaseModal';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
-import { BaseModalProps } from '@/types/modal';
+import { BaseModalProps } from '@/types/Modal';
 
 // Quiz input 스타일 정의
 const quizInputStyle = tv({

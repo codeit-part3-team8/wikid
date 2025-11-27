@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
-import { BaseModalProps } from '@/types/modal';
+import { BaseModalProps } from '@/types/Modal';
 
 // Modal 스타일 정의
 const modalOverlayStyle = tv({

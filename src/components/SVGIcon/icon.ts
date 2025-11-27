@@ -4,6 +4,7 @@ import IC_Camera from '@/assets/icons/camera-icon.svg';
 import IC_Check from '@/assets/icons/check-icon.svg';
 import IC_Close from '@/assets/icons/close-icon.svg';
 import IC_Delete from '@/assets/icons/delete-icon.svg';
+import IC_Drop from '@/assets/icons/drop-icon.svg';
 import IC_Edit from '@/assets/icons/edit-icon.svg';
 import IC_Error from '@/assets/icons/error-icon.svg';
 import IC_Expand from '@/assets/icons/expand-icon.svg';
@@ -36,6 +37,7 @@ export const IconMap = {
   IC_Check,
   IC_Close,
   IC_Delete,
+  IC_Drop,
   IC_Edit,
   IC_Error,
   IC_Expand,

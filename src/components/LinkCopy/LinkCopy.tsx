@@ -7,6 +7,7 @@ const BASE_URL = 'https://www.wikied.kr'; //수정 예정
 
 interface LinkCopyProps {
   code: string;
+  onCopySuccess?: () => void;
 }
 
 const LinkCopyStyle = tv({
@@ -20,12 +21,13 @@ const SvgStyle = tv({
 // 커스텀이라 안먹어서 css로 대체 팀미팅때 물어보고 수정하겠습니다.
 // const UrlStyle = tv({ base: 'text-xs-regular md:text-md-regular', });
 
-export default function LinkCopy({ code }: LinkCopyProps) {
+export default function LinkCopy({ code, onCopySuccess }: LinkCopyProps) {
   const profileUrl = `${BASE_URL}/profiles/${code}`;
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(profileUrl);
+      onCopySuccess?.();
     } catch (err) {
       console.error(err, '복사에 실패했습니다.');
     }
