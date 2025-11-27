@@ -1,6 +1,7 @@
 /* ========== EDITOR CONTENT STYLE ========== */
 .editor-style .ProseMirror:focus {
   outline: none;
+  color: var(--color-grayscale-500);
 }
 
 .editor-style .ProseMirror {
@@ -57,14 +58,38 @@
 .editor-style .ProseMirror ol {
   list-style-type: decimal;
   margin-left: 1.25rem;
+  text-align: inherit;
 }
 
 .editor-style .ProseMirror li {
   margin: 0.25rem 0;
+  text-align: inherit;
 }
 
+/* ---------- link ---------- */
 .editor-style .ProseMirror a {
-  color: #2563eb;
+  color: #1658e4;
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* ---------- divider ---------- */
+.editor-style .ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--color-grayscale-400);
+  margin: 0.75rem 0;
+}
+
+/* ---------- table ---------- */
+.editor-style table {
+  @apply w-full border-collapse border border-gray-300 text-left;
+}
+
+.editor-style th,
+.editor-style td {
+  @apply border border-gray-300 px-2 py-1;
+}
+
+.editor-style th {
+  @apply bg-gray-100 font-medium;
 }

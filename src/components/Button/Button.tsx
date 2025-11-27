@@ -42,12 +42,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const widthStyles = fullWidth ? 'w-full' : '';
 
     if (href) {
-      const handleClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+      const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         if (disabled || loading) {
           e.preventDefault();
           return;
         }
-        props.onClick?.(e as React.MouseEvent<HTMLAnchorElement>);
+        const event = e as unknown as React.MouseEvent<HTMLButtonElement, MouseEvent>;
+        props.onClick?.(event);
       };
       return (
         <Link

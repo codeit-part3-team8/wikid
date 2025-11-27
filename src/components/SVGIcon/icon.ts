@@ -30,6 +30,19 @@ import TTIC_Italic from '@/assets/tiptap_icons/ic_italic.svg';
 import TTIC_Movie from '@/assets/tiptap_icons/ic_movie.svg';
 import TTIC_Numbering from '@/assets/tiptap_icons/ic_numbering.svg';
 import TTIC_Underline from '@/assets/tiptap_icons/ic_underline.svg';
+import TTIC_AddColumn from '@/assets/tiptap_icons/ic_add_column.svg';
+import TTIC_AddRow from '@/assets/tiptap_icons/ic_add_row.svg';
+import TTIC_ColorText from '@/assets/tiptap_icons/ic_color_text.svg';
+import TTIC_Divider from '@/assets/tiptap_icons/ic_divider.svg';
+import TTIC_File from '@/assets/tiptap_icons/ic_file.svg';
+import TTIC_Photo from '@/assets/tiptap_icons/ic_photo.svg';
+import TTIC_Table from '@/assets/tiptap_icons/ic_table.svg';
+import TTIC_Video from '@/assets/tiptap_icons/ic_video.svg';
+import TTIC_H1 from '@/assets/tiptap_icons/ic_h1.svg';
+import TTIC_H2 from '@/assets/tiptap_icons/ic_h2.svg';
+import TTIC_H3 from '@/assets/tiptap_icons/ic_h3.svg';
+import TTIC_Text from '@/assets/tiptap_icons/ic_text.svg';
+import TTIC_ArrowDown from '@/assets/tiptap_icons/ic_arrow_down.svg';
 
 export const IconMap = {
   IC_Alarm,
@@ -64,6 +77,19 @@ export const IconMap = {
   TTIC_Movie,
   TTIC_Numbering,
   TTIC_Underline,
+  TTIC_AddColumn,
+  TTIC_AddRow,
+  TTIC_ColorText,
+  TTIC_Divider,
+  TTIC_File,
+  TTIC_Photo,
+  TTIC_Table,
+  TTIC_Video,
+  TTIC_H1,
+  TTIC_H2,
+  TTIC_H3,
+  TTIC_Text,
+  TTIC_ArrowDown,
 } as const;
 
 export const IconSizes = {
