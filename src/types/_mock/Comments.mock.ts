@@ -1,4 +1,4 @@
-import { CommentType } from '../CommentType';
+import { Comment as CommentType } from '../Comment';
 
 export const mockComments: CommentType[] = [
   {

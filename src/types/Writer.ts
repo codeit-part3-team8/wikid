@@ -1,4 +1,4 @@
-export type WriterType = {
+export type Writer = {
   image: string;
   name: string;
   id: number;

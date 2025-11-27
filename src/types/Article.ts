@@ -1,6 +1,5 @@
-import { WriterType } from './writerType';
-
-export type ArticleType = {
+import { Writer as WriterType } from './Writer';
+export type Article = {
   updatedAt: string;
   createdAt: string;
   likeCount: number;

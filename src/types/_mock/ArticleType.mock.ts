@@ -1,4 +1,4 @@
-import { ArticleType } from '../ArticleType';
+import { Article as ArticleType } from '../Article';
 
 export const mockArticle: ArticleType = {
   updatedAt: '2025-11-19T06:07:42.299Z',
