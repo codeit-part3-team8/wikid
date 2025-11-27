@@ -1,6 +1,6 @@
 'use client';
 
-import { CommentType } from '@/types/CommentType';
+import { Comment as CommentType } from '@/types/Comment';
 import { useState } from 'react';
 import Comment from '../Comment/Comment';
 import Pagination from '@/components/Pagination/Pagination';

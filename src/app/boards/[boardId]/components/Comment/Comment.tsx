@@ -3,7 +3,7 @@
 import Avatar from '@/components/Avatar/Avatar';
 // import useAuthStore
 import { useState } from 'react';
-import { CommentType } from '@/types/CommentType';
+import { Comment as CommentType } from '@/types/Comment';
 import { getFormatDate } from '@/utils/getFormatDate';
 import IconButton from '@/components/IconButton/IconButton';
 import TextArea from '../TextArea/TextArea';

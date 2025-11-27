@@ -1,6 +1,6 @@
-import { WriterType } from './writerType';
+import { Writer as WriterType } from './Writer';
 
-export type CommentType = {
+export type Comment = {
   writer: WriterType;
   updatedAt: string;
   createdAt: string;

@@ -1,6 +1,6 @@
 // import Button from '@/components/Button/Button'
 import { getFormatDate } from '@/utils/getFormatDate';
-import { ArticleType } from '@/types/ArticleType';
+import { Article as ArticleType } from '@/types/Article';
 
 import Image from 'next/image';
 

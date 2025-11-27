@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import LoadingDots from '../LoadingDots/LoadingDots';
-import { ButtonProps } from '../../types/Button.types';
+import { ButtonProps } from '../../types/Button';
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (

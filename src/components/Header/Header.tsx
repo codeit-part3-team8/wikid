@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { HeaderProps } from '@/types/Header.types';
+import { HeaderProps } from '@/types/Header';
 import WikiedLogo from '@/assets/logo/wikied-logo.svg';
 import AlarmIcon from '@/assets/icons/alarm-icon.svg';
 import ProfileIcon from '@/assets/icons/profile-icon.svg';

@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { InputProps } from '../../types/Input.types';
+import { InputProps } from '../../types/Input';
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, fullWidth = false, className = '', ...props }, ref) => {

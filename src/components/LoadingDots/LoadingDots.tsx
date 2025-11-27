@@ -1,5 +1,5 @@
 import React from 'react';
-import { LoadingDotsProps } from '../../types/LoadingDots.Types';
+import { LoadingDotsProps } from '../../types/LoadingDots';
 
 const LoadingDots: React.FC<LoadingDotsProps> = ({ className = '' }) => {
   return (
