@@ -139,6 +139,7 @@ export default function WikiPage({ params }: WikiPageProps) {
               content={''} // TODO: API에서 실제 컨텐츠 로드
               onStartEdit={() => setShowQuizModal(true)}
               className="max-[1024px]:hidden"
+              name={wikiData.name}
             />
           </div>
 
@@ -183,6 +184,7 @@ export default function WikiPage({ params }: WikiPageProps) {
             hasEditPermission={hasEditPermission}
             content={''}
             onStartEdit={() => setShowQuizModal(true)}
+            name={wikiData.name}
           />
         </div>
       </div>

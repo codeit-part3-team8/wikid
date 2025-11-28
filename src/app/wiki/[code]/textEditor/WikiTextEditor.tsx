@@ -8,10 +8,11 @@ import styles from './WikiTextEditor.module.css';
 interface WikiTextEditorProps {
   content: string;
   onContentChange?: (content: string) => void;
+  name: string;
 }
 
-const WikiTextEditor = ({ content }: WikiTextEditorProps) => {
-  const editor = useCommonEditor(content);
+const WikiTextEditor = ({ content, onContentChange, name }: WikiTextEditorProps) => {
+  const editor = useCommonEditor(content, onContentChange);
   if (!editor) return null;
 
   return (
@@ -27,7 +28,7 @@ const WikiTextEditor = ({ content }: WikiTextEditorProps) => {
         <div className="flex w-full min-w-0 items-start py-4">
           {/* 데스크탑에서만 이름 표시 */}
           <div className="hidden h-full items-center min-[1025px]:flex">
-            <span className="shrink-0 text-lg font-medium">이지동</span>
+            <span className="shrink-0 text-lg font-medium">{name}</span>
           </div>
           <div
             className={`min-w-0 flex-1 ${styles.toolbarContainer}`}

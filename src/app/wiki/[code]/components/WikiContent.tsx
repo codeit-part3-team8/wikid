@@ -33,6 +33,7 @@ export default function WikiContent({
   content = '',
   onStartEdit,
   className,
+  name,
 }: WikiContentProps) {
   // 편집 모드에서 사용할 컨텐츠 결정
   const getEditorContent = () => {
@@ -47,7 +48,7 @@ export default function WikiContent({
     return (
       <div className={wikiContentStyle({ editMode: true, className })}>
         <div className={editContentStyle()}>
-          <WikiTextEditor content={getEditorContent()} />
+          <WikiTextEditor content={getEditorContent()} name={name} />
         </div>
       </div>
     );

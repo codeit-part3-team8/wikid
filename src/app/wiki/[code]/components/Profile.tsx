@@ -86,12 +86,21 @@ export default function Profile({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file && file.type.startsWith('image/')) {
+        // 파일 크기 검증 (예: 5MB 제한)
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        if (file.size > MAX_FILE_SIZE) {
+          console.error('파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+          return;
+        }
+
         // 이미지 파일을 읽어서 Data URL 생성
         const reader = new FileReader();
         reader.onload = (e) => {
           const result = e.target?.result as string;
-          // 타입 단언을 통해 imageUrl 매개변수 전달
-          (onAvatarChange as ((imageUrl?: string) => void) | undefined)?.(result);
+          onAvatarChange?.(result);
+        };
+        reader.onerror = () => {
+          console.error('이미지 파일을 읽는 중 오류가 발생했습니다.');
         };
         reader.readAsDataURL(file);
         console.log('Selected file:', file);
