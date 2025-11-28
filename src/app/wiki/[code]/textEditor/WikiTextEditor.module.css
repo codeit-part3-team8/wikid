@@ -19,12 +19,9 @@
     align-items: flex-start !important;
   }
 
-  /* 이름 부분 중앙 정렬 */
+  /* 540px 이하에서는 이름 부분 완전히 숨기기 */
   .toolbarWrapper > :global(div) > :global(div:first-child) {
-    align-self: center !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
+    display: none !important;
   }
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { tv } from 'tailwind-variants';
 import { clsx } from 'clsx';
 import Avatar from '@/components/Avatar/Avatar';
@@ -55,6 +55,7 @@ export default function Profile({
 }: ProfileProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [editData, setEditData] = useState<ProfileData>(data);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const profileClass = ProfileStyle();
   const contentsClass = ProfileContentsStyle();
@@ -75,6 +76,30 @@ export default function Profile({
       onProfileChange?.(newData);
     },
     [editData, onProfileChange]
+  );
+
+  const handleAvatarClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file && file.type.startsWith('image/')) {
+        // 이미지 파일을 읽어서 Data URL 생성
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          // 타입 단언을 통해 imageUrl 매개변수 전달
+          (onAvatarChange as ((imageUrl?: string) => void) | undefined)?.(result);
+        };
+        reader.readAsDataURL(file);
+        console.log('Selected file:', file);
+      }
+      // 파일 입력 초기화 (같은 파일을 다시 선택할 수 있도록)
+      event.target.value = '';
+    },
+    [onAvatarChange]
   );
 
   const basicItems = useMemo(
@@ -147,16 +172,28 @@ export default function Profile({
         <div className="relative">
           <Avatar imgUrl={imgUrl} name={name} variant="profile" priority={true} />
           {isEditMode && canEditProfile && (
-            <div className={overlayClass} onClick={onAvatarChange}>
+            <>
               <div
-                className="absolute inset-0 rounded-full transition-opacity"
-                style={{ backgroundColor: 'black', opacity: 0.5 }}
+                className={`${overlayClass} opacity-0 transition-opacity duration-200 hover:opacity-100`}
+                onClick={handleAvatarClick}
+              >
+                <div
+                  className="absolute inset-0 rounded-full transition-opacity"
+                  style={{ backgroundColor: 'black', opacity: 0.5 }}
+                />
+                <SVGIcon
+                  icon="IC_Camera"
+                  className="relative z-10 h-9 w-9 text-white max-[1024px]:h-5 max-[1024px]:w-5 max-[640px]:h-[17px] max-[640px]:w-[17px]"
+                />
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
               />
-              <SVGIcon
-                icon="IC_Camera"
-                className="relative z-10 h-9 w-9 text-white max-[1024px]:h-5 max-[1024px]:w-5 max-[640px]:h-[17px] max-[640px]:w-[17px]"
-              />
-            </div>
+            </>
           )}
         </div>
       </div>

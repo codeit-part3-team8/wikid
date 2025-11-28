@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import LinkCopy from '@/components/LinkCopy/LinkCopy';
 import Profile from './components/Profile';
 import WikiContent from './components/WikiContent';
@@ -18,8 +18,30 @@ export default function WikiPage({ params }: WikiPageProps) {
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
-  const [isMyWiki] = useState(true);
   const [code, setCode] = useState<string>('');
+  const [myCode] = useState<string>('my-code-123'); // TODO: 실제로는 사용자 코드를 가져와야 함
+
+  const [wikiData, setWikiData] = useState({
+    name: '이지동',
+    code: code,
+    hasContent: false,
+    profile: {
+      imgUrl: '',
+      data: {
+        거주도시: '서울',
+        MBTI: 'INFJ',
+        직업: '코드잇 콘텐츠 프로듀서',
+        SNS계정: 'dlwlehd_official',
+        생일: '1999-12-31',
+        별명: '없음',
+        혈액형: 'A',
+        국적: '대한민국',
+      },
+    },
+  });
+
+  // 내 위키인지 판단 - 위키 코드와 내 코드가 일치하는지 확인
+  const isMyWiki = code === myCode;
 
   useEffect(() => {
     params
@@ -51,9 +73,23 @@ export default function WikiPage({ params }: WikiPageProps) {
     console.log('프로필 데이터 변경:', newData);
   }, []);
 
-  const handleAvatarChange = useCallback(() => {
-    console.log('아바타 변경 요청');
-  }, []);
+  const handleAvatarChange = useCallback(
+    (imageUrl?: string) => {
+      if (imageUrl) {
+        setWikiData((prev) => ({
+          ...prev,
+          profile: {
+            ...prev.profile,
+            imgUrl: imageUrl,
+          },
+        }));
+        console.log('아바타 이미지 변경:', imageUrl);
+      } else {
+        console.log('아바타 변경 요청');
+      }
+    },
+    [setWikiData]
+  );
 
   const handleSave = useCallback(() => {
     console.log('위키 저장');
@@ -66,28 +102,6 @@ export default function WikiPage({ params }: WikiPageProps) {
     setHasEditPermission(false);
     stopTimer();
   }, [stopTimer]);
-
-  const wikiData = useMemo(
-    () => ({
-      name: '이지동',
-      code: code,
-      hasContent: false,
-      profile: {
-        imgUrl: '',
-        data: {
-          거주도시: '서울',
-          MBTI: 'INFJ',
-          직업: '코드잇 콘텐츠 프로듀서',
-          SNS계정: 'dlwlehd_official',
-          생일: '1999-12-31',
-          별명: '없음',
-          혈액형: 'A',
-          국적: '대한민국',
-        },
-      },
-    }),
-    [code]
-  );
 
   return (
     <div className="bg-grayscale-50 min-h-screen overflow-x-hidden">
@@ -135,7 +149,7 @@ export default function WikiPage({ params }: WikiPageProps) {
               name={wikiData.name}
               data={wikiData.profile.data}
               isEditMode={hasEditPermission}
-              canEditProfile={isMyWiki}
+              canEditProfile={isMyWiki} // 내 위키일 때만 프로필 수정 가능
               onProfileChange={handleProfileChange}
               onAvatarChange={handleAvatarChange}
             />
@@ -173,23 +187,32 @@ export default function WikiPage({ params }: WikiPageProps) {
         </div>
       </div>
 
-      {/* 태블릿/모바일용 편집 버튼 */}
+      {/* 태블릿/모바일용 이름 표시 및 버튼 */}
       {hasEditPermission && (
-        <div className="absolute top-22 right-6 z-50 hidden gap-2.5 max-[1024px]:flex">
-          <Button
-            variant="secondary"
-            onClick={handleCancel}
-            className="border-primary-200! text-primary-200! text-lg-semibold! flex! h-10! min-w-0! items-center! justify-center! border! px-5! py-[11px]!"
-          >
-            취소
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSave}
-            className="text-lg-semibold! flex h-10! min-w-0! items-center justify-center px-5! py-[11px]!"
-          >
-            저장
-          </Button>
+        <div
+          className="bg-grayscale-100 absolute top-22 z-40 hidden rounded-md px-6 py-2.5 max-[1024px]:flex max-[1024px]:items-center max-[1024px]:justify-between max-[640px]:px-5"
+          style={{
+            left: 'clamp(20px, 6vw, 24px)',
+            right: 'clamp(20px, 6vw, 24px)',
+          }}
+        >
+          <h1 className="text-xl-semibold text-grayscale-500">{wikiData.name}</h1>
+          <div className="flex gap-2.5">
+            <Button
+              variant="secondary"
+              onClick={handleCancel}
+              className="border-primary-200! text-primary-200! text-lg-semibold! flex! h-10! min-w-0! items-center! justify-center! border! px-5! py-[11px]!"
+            >
+              취소
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              className="text-lg-semibold! flex h-10! min-w-0! items-center justify-center px-5! py-[11px]!"
+            >
+              저장
+            </Button>
+          </div>
         </div>
       )}
 
@@ -212,7 +235,12 @@ export default function WikiPage({ params }: WikiPageProps) {
           setShowQuizModal(false);
           setHasEditPermission(true);
           startTimer(); // 타이머 시작
-          console.log('퀴즈 정답! 위키 편집 권한 획득');
+
+          if (isMyWiki) {
+            console.log('내 위키 - 모든 영역 수정 가능');
+          } else {
+            console.log('다른 사람의 위키 - 콘텐츠만 수정 가능');
+          }
         }}
       />
 

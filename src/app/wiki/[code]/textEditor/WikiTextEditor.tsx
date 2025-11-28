@@ -25,13 +25,14 @@ const WikiTextEditor = ({ content }: WikiTextEditorProps) => {
         }}
       >
         <div className="flex w-full min-w-0 items-start py-4">
-          <div className="flex h-full items-center">
-            <span className="shrink-0 text-sm font-medium">이지동</span>
+          {/* 데스크탑에서만 이름 표시 */}
+          <div className="hidden h-full items-center min-[1025px]:flex">
+            <span className="shrink-0 text-lg font-medium">이지동</span>
           </div>
           <div
             className={`min-w-0 flex-1 ${styles.toolbarContainer}`}
             style={{
-              marginLeft: 'clamp(15px, 3vw, 120px)',
+              marginLeft: 'clamp(0px, 3vw, 120px)', // 데스크톱에서만 여백, 태블릿 이하에서는 0px
             }}
           >
             <div className="flex items-center">
