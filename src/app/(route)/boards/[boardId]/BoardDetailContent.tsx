@@ -7,7 +7,7 @@ import Board from './components/Board/Board';
 import CommentCount from './components/CommentCount/CommentCount';
 import CommentList from './components/CommentList/CommentList';
 import CommentUploadBox from './components/CommentUploadBox/CommentUploadBox';
-import ToListButton from './components/ToListButton/ToListButton';
+import ToListButton from '@/components/Button/ToListButton/ToListButton';
 
 // interface BoardDetailContentProps {
 //   boardId: number;

@@ -20,6 +20,7 @@ const modalContainerStyle = tv({
       md: 'max-w-md max-[641px]:w-[335px] max-[641px]:h-[211px]',
       lg: 'max-w-lg max-[641px]:w-[335px] max-[641px]:h-[211px]',
       quiz: 'w-[395px] min-h-[435px] max-[641px]:w-[335px] max-[641px]:h-[435px]',
+      image: '',
     },
   },
   defaultVariants: {
@@ -33,7 +34,7 @@ const closeButtonStyle = tv({
 
 interface BaseModalComponentProps extends BaseModalProps {
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'quiz';
+  size?: 'sm' | 'md' | 'lg' | 'quiz' | 'image';
   'aria-labelledby'?: string;
   'aria-describedby'?: string;
 }
