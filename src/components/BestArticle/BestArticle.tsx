@@ -12,11 +12,11 @@ interface BestArticleProps {
 }
 
 const bestStyle = tv({
-  base: 'w-[250px] h-[200px] lg:w-[250px] lg:h-[220px] md:w-[302px] md:h-[220px] rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.08)] ',
+  base: ' w-[250px] h-[200px] lg:w-[250px] lg:h-[220px]  sm:w-full sm:h-auto rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.08)] ',
 });
 
 const bestTextStyle = tv({
-  base: 'flex flex-col justify-center items-start px-[20px] gap-[6px]',
+  base: 'flex flex-col justify-center items-start px-[20px] gap-[6px] pb-[14px]',
 });
 
 export default function BestArticle({
@@ -44,11 +44,11 @@ export default function BestArticle({
           alt={`${image} 이미지`}
           width={250}
           height={131}
-          className="mb-[19px] h-[131px] w-full object-cover"
+          className="mb-[19px] h-[131px] w-full object-cover sm:h-[180px] lg:h-[131px]"
         />
       ) : (
         <Image
-          className="mb-[19px] h-[131px] w-full border-b border-gray-200 object-cover"
+          className="mb-[19px] h-[131px] w-full border-b border-gray-200 object-cover sm:h-[180px] lg:h-[131px]"
           src={noImage}
           alt="이미지 없음"
           width={250}

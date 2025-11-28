@@ -13,11 +13,11 @@ interface DropDownProps {
 const options: SortOption[] = ['최신순', '인기순'];
 
 const dropDownStyle = tv({
-  base: 'bg-grayscale-100 flex h-[45px] w-[335px] max-w-full items-center justify-between  px-[20px] py-[10px] sm:w-[120px] lg:w-[140px] cursor-pointer rounded-[10px]',
+  base: 'bg-grayscale-100 flex h-[45px] w-[335px] w-full items-center justify-between  px-[20px] py-[10px] sm:w-[120px] lg:w-[140px] cursor-pointer rounded-[10px]',
 });
 
 const dropDownValueStyle = tv({
-  base: 'absolute bottom-[-70px] flex flex-col items-start px-[20px] py-[10px] bg-grayscale-100 text-md-regular  w-[335px] max-w-full sm:w-[120px] lg:w-[140px] gap-[8px] cursor-pointer rounded-b-[10px]',
+  base: 'absolute bottom-[-70px] flex flex-col items-start px-[20px] py-[10px] bg-grayscale-100 text-md-regular  w-[335px] w-full sm:w-[120px] lg:w-[140px] gap-[8px] cursor-pointer rounded-b-[10px]',
 });
 
 export default function DropDown({ onSelect }: DropDownProps) {
