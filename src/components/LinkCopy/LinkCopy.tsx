@@ -11,7 +11,7 @@ interface LinkCopyProps {
 }
 
 const LinkCopyStyle = tv({
-  base: 'flex items-center gap-[5px] text-primary-200 cursor-pointer',
+  base: 'flex items-center gap-[5px] text-primary-200 cursor-pointer bg-primary-100 px-[10px] py-[4px] rounded-[10px]',
 });
 
 const SvgStyle = tv({
