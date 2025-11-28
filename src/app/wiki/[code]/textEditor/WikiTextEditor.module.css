@@ -1,0 +1,56 @@
+/* 툴바 래퍼 */
+.toolbarWrapper {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+/* 툴바 컨테이너 */
+.toolbarContainer {
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+}
+
+/* 540px 이하에서 툴바 2줄 정렬 */
+@media (max-width: 540px) {
+  .toolbarContainer :global(.flex) {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+  }
+
+  /* 이름 부분 중앙 정렬 */
+  .toolbarWrapper > :global(div) > :global(div:first-child) {
+    align-self: center !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+}
+
+/* 툴바 아이콘 간격 반응형 설정 */
+.toolbarContainer :global([class*='gap-3']) {
+  gap: clamp(5px, 2vw, 13px) !important;
+}
+
+.toolbarContainer :global(.flex.gap-1) {
+  gap: clamp(5px, 2vw, 13px) !important;
+}
+
+/* 540px 이하에서 아이콘 간격 조정 */
+@media (max-width: 540px) {
+  .toolbarContainer :global([class*='gap-3']),
+  .toolbarContainer :global(.flex.gap-1) {
+    gap: 8px !important;
+    row-gap: 8px !important;
+  }
+}
+
+/* 드롭다운 버튼 내부 간격은 0으로 유지 */
+.toolbarContainer :global([class*='relative']) :global([class*='flex']) {
+  gap: 0px !important;
+}
+
+.toolbarContainer :global(.relative.inline-block) :global([class*='flex']) {
+  gap: 0px !important;
+}
