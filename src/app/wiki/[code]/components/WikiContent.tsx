@@ -3,11 +3,18 @@
 import React from 'react';
 import { tv } from 'tailwind-variants';
 import { WikiContentProps } from '@/types/Wiki';
-import WikiTextEditor from '../textEditor/WikiTextEditorSample';
+import WikiTextEditor from '../textEditor/WikiTextEditor';
+import { wikiDefaultTemplate } from '../textEditor/WikiTemplate';
 
 // WikiContent 컨테이너 스타일
 const wikiContentStyle = tv({
-  base: 'w-full rounded-lg bg-gray-100 py-10',
+  base: 'w-full max-w-[1120px] rounded-lg relative z-10 max-[1024px]:mt-4',
+  variants: {
+    editMode: {
+      true: 'bg-white',
+      false: 'bg-grayscale-100 py-10',
+    },
+  },
 });
 
 // 빈 컨텐츠 영역 스타일
@@ -17,7 +24,7 @@ const emptyContentStyle = tv({
 
 // 편집 모드 컨텐츠 영역 스타일
 const editContentStyle = tv({
-  base: 'px-6 py-4',
+  base: 'rounded-lg',
 });
 
 export default function WikiContent({
@@ -26,32 +33,37 @@ export default function WikiContent({
   content = '',
   onStartEdit,
   className,
+  name,
 }: WikiContentProps) {
-  if (hasEditPermission && !hasContent) {
-    // 편집 권한이 있고 컨텐츠가 없는 경우 - 에디터 모드
+  // 편집 모드에서 사용할 컨텐츠 결정
+  const getEditorContent = () => {
+    if (hasContent && content) {
+      return content;
+    }
+    return wikiDefaultTemplate;
+  };
+
+  if (hasEditPermission) {
+    // 편집 모드 - 항상 WikiTextEditor 사용, 배경색 흰색
     return (
-      <div className={wikiContentStyle({ className })}>
+      <div className={wikiContentStyle({ editMode: true, className })}>
         <div className={editContentStyle()}>
-          <WikiTextEditor content={content} />
+          <WikiTextEditor content={getEditorContent()} name={name} />
         </div>
       </div>
     );
   }
 
   if (hasContent) {
-    // 컨텐츠가 있는 경우 - 뷰어 모드 또는 편집 모드
+    // 컨텐츠가 있는 경우 - 뷰어 모드
     return (
-      <div className={wikiContentStyle({ className })}>
-        <div className={hasEditPermission ? editContentStyle() : 'px-6 py-4'}>
-          {hasEditPermission ? (
-            <WikiTextEditor content={content} />
-          ) : (
-            <div className="prose max-w-none">
-              <p className="responsive-text text-md-to-sm text-grayscale-500">
-                {content || '위키 컨텐츠가 여기에 표시됩니다.'}
-              </p>
-            </div>
-          )}
+      <div className={wikiContentStyle({ editMode: false, className })}>
+        <div>
+          <div className="prose max-w-none">
+            <p className="responsive-text text-md-to-sm text-grayscale-500">
+              {content || '위키 컨텐츠가 여기에 표시됩니다.'}
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -59,7 +71,7 @@ export default function WikiContent({
 
   // 컨텐츠가 없고 편집 권한도 없는 경우 - 초기 상태
   return (
-    <div className={wikiContentStyle({ className })}>
+    <div className={wikiContentStyle({ editMode: false, className })}>
       <div className={emptyContentStyle()}>
         <p className="responsive-text text-lg-to-md text-grayscale-400 mb-5 text-center leading-relaxed">
           아직 작성된 내용이 없네요.
