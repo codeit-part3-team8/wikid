@@ -9,25 +9,20 @@ import { useModal } from '@/hooks/useModal';
 import ToLoginModal from './ToLoginModal';
 
 interface LikeButtonProps {
-  isLogin: boolean;
   likeCount: number;
-  liked?: boolean;
+  liked: boolean;
 }
 
-const LikeButton = ({ likeCount, liked = false, isLogin }: LikeButtonProps) => {
+const LikeButton = ({ likeCount, liked }: LikeButtonProps) => {
   const [like, setLike] = useState(liked);
   const [scale, setScale] = useState(1);
   // const { isLogin } = useAuthStore();
   const { closeModal, isOpen, openModal } = useModal();
 
   const handleClick = () => {
-    if (!isLogin) {
-      openModal();
-    } else {
-      setLike((prev) => !prev);
-      setScale(1.3);
-      setTimeout(() => setScale(1), 150);
-    }
+    setLike((prev) => !prev);
+    setScale(1.3);
+    setTimeout(() => setScale(1), 150);
   };
 
   return (

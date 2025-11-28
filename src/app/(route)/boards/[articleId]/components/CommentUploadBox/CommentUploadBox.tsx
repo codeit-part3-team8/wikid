@@ -9,11 +9,7 @@ import Button from '@/components/Button/Button';
 
 const COMMENT_PLACEHOLDER = '허위사실, 비방, 욕설 등은 삼가해주세요.';
 
-interface CommentUploadBoxProps {
-  isLogin: boolean;
-}
-
-const CommentUploadBox = ({ isLogin }: CommentUploadBoxProps) => {
+const CommentUploadBox = () => {
   const [comment, setComment] = useState('');
   // const { isLogin } = useAuthStore();
 
@@ -29,18 +25,6 @@ const CommentUploadBox = ({ isLogin }: CommentUploadBoxProps) => {
   };
 
   const isDisabled = !comment.trim();
-
-  if (!isLogin) {
-    return (
-      <div className="bg-grayscale-100 flex h-40 w-84 flex-col items-center justify-center gap-5 rounded-lg md:w-156 lg:w-264">
-        <span>댓글 달기는 로그인 후 이용 가능합니다.</span>
-        <Button href="/login" size="sm" className="flex h-10 justify-center py-0!">
-          로그인 페이지로 이동
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <>
       <form className="relative w-fit" onSubmit={handleSubmit}>
