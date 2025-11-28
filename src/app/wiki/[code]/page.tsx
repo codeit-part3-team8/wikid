@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import LinkCopy from '@/components/LinkCopy/LinkCopy';
 import Profile from './components/Profile';
 import WikiContent from './components/WikiContent';
@@ -11,14 +12,15 @@ import AlertModal from '@/components/Modal/AlertModal';
 import Button from '@/components/Button/Button';
 import EditTimer from '@/components/EditTimer/EditTimer';
 import { useIdleTimer } from '@/hooks/useIdleTimer';
-import { ProfileData, WikiPageProps } from '@/types/Wiki';
+import { ProfileData } from '@/types/Wiki';
 
-export default function WikiPage({ params }: WikiPageProps) {
+export default function WikiPage() {
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
-  const [code, setCode] = useState<string>('');
+  const params = useParams();
+  const code = params.code as string;
   const [myCode] = useState<string>('my-code-123'); // TODO: 실제로는 사용자 코드를 가져와야 함
 
   const [wikiData, setWikiData] = useState({
@@ -42,14 +44,6 @@ export default function WikiPage({ params }: WikiPageProps) {
 
   // 내 위키인지 판단 - 위키 코드와 내 코드가 일치하는지 확인
   const isMyWiki = code === myCode;
-
-  useEffect(() => {
-    params
-      .then(({ code }) => setCode(code))
-      .catch((err) => {
-        console.error('Failed to get params:', err);
-      });
-  }, [params]);
 
   // 5분 타임아웃 핸들러
   const handleTimeout = useCallback(() => {

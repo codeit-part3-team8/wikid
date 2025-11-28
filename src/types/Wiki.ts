@@ -38,9 +38,3 @@ export interface WikiContentProps {
   className?: string;
   name: string;
 }
-
-export interface WikiPageProps {
-  params: Promise<{
-    code: string;
-  }>;
-}
