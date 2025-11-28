@@ -814,7 +814,7 @@ export default function BoardsPage() {
     useEffect(() => {
       const container = bestArticleRef.current;
       if (container) {
-        container.addEventListener('wheel', handleWheel);
+        container.addEventListener('wheel', handleWheel, { passive: false });
 
         return () => {
           container.removeEventListener('wheel', handleWheel);
