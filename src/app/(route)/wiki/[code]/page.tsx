@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import LinkCopy from '@/components/LinkCopy/LinkCopy';
 import Profile from './components/Profile';
 import WikiContent from './components/WikiContent';
-import Header from '@/components/Header/Header';
 import SnackBar from '@/components/SnackBar/SnackBar';
 import QuizModal from '@/components/Modal/QuizModal';
 import AlertModal from '@/components/Modal/AlertModal';
@@ -99,7 +98,6 @@ export default function WikiPage() {
 
   return (
     <div className="bg-grayscale-50 min-h-screen overflow-x-hidden">
-      <Header />
       <div
         className={`mx-auto px-6 pb-8 max-[1024px]:px-6 max-[1024px]:pt-[60px] max-[640px]:px-5 max-[640px]:pt-10 min-[1024px]:px-6 ${
           hasEditPermission ? 'pt-10' : 'pt-20'

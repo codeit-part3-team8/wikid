@@ -1,7 +1,6 @@
 'use client';
 
 import BestArticle from '@/components/BestArticle/BestArticle';
-import Headers from '@/components/Header/Header';
 import Button from '@/components/Button/Button';
 import { tv } from 'tailwind-variants';
 import SearchInput from '@/components/SearchInput/SearchInput';
@@ -831,7 +830,6 @@ export default function BoardsPage() {
 
   return (
     <>
-      <Headers />
       <div className={boardStyle()}>
         <div className="mt-[40px] mb-[40px] flex items-center justify-between sm:mt-[60px] sm:mb-[60px]">
           <h1 className="responsive-text text-3xl-to-2xl text-grayscale-500">베스트 게시글</h1>

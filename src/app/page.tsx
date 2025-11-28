@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import Button from '../components/Button/Button';
-import Header from '../components/Header/Header';
 import Input from '../components/Input/Input';
-import WikiTextEditor from '@/components/TextEditor/WikiTextEditor';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +30,6 @@ export default function Home() {
 
   return (
     <div className="bg-grayscale-50 min-h-screen">
-      <Header isLoggedIn={isLoggedIn} />
-      <WikiTextEditor content="dd" />
       <main className="p-8">
         <div className="mx-auto max-w-4xl">
           {/* 헤더 상태 토글 */}
