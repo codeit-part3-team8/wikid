@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
+import type React from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
