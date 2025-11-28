@@ -76,3 +76,11 @@
 .animation-delay-300 {
   animation-delay: 0.3s;
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

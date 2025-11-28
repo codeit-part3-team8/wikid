@@ -8,8 +8,9 @@ import SearchInput from '@/components/SearchInput/SearchInput';
 import DropDown from '@/components/DropDown/DropDown';
 import ArticleList from '@/components/ArticleList/ArticleList';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Pagination from '@/components/Pagination/Pagination';
+import Link from 'next/link';
 
 type ArticleProps = {
   id: number;
@@ -750,7 +751,7 @@ const boardStyle = tv({
 
 export default function BoardsPage() {
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<SortOption>('최신순'); // ✅ 부모에서도 상태 생성 (확인용)
+  const [sort, setSort] = useState<SortOption>('최신순');
   const [filteredArticles, setFilteredArticles] = useState<ArticleProps[]>(dummyArticles);
   const [page, setPage] = useState(1);
 
@@ -786,29 +787,70 @@ export default function BoardsPage() {
   const startIndex = (page - 1) * PAGE_SIZE;
   const sortedArticles = [...filteredArticles].sort((a, b) => {
     if (sort === '인기순') {
-      return b.likeCount - a.likeCount; // 좋아요 내림차순
+      return b.likeCount - a.likeCount;
     }
 
-    // 최신순 (문자열 비교지만 YYYY.MM.DD 포맷이라 괜찮음)
     return b.createdAt.localeCompare(a.createdAt);
   });
 
   const pagedArticles = sortedArticles.slice(startIndex, startIndex + PAGE_SIZE);
+  //마우스 드래그
+  const useHorizontalScroll = () => {
+    const bestArticleRef = useRef<HTMLDivElement>(null);
+
+    const handleWheel = useCallback((e: WheelEvent) => {
+      const container = bestArticleRef.current;
+
+      if (container) {
+        if (window.innerWidth >= 640) {
+          return;
+        }
+
+        const delta = e.deltaY;
+        container.scrollLeft += delta;
+        e.preventDefault();
+      }
+    }, []);
+    useEffect(() => {
+      const container = bestArticleRef.current;
+      if (container) {
+        container.addEventListener('wheel', handleWheel);
+
+        return () => {
+          container.removeEventListener('wheel', handleWheel);
+        };
+      }
+      return () => {};
+    }, [handleWheel]);
+    return bestArticleRef;
+  };
+
+  const bestRef = useHorizontalScroll();
+
+  //마우스 드래그
+
   return (
     <>
       <Headers />
       <div className={boardStyle()}>
         <div className="mt-[40px] mb-[40px] flex items-center justify-between sm:mt-[60px] sm:mb-[60px]">
           <h1 className="responsive-text text-3xl-to-2xl text-grayscale-500">베스트 게시글</h1>
-          <Button
-            variant="primary"
-            size="md"
-            className="text-md-semibold flex h-[45px] items-center justify-center"
-          >
-            게시물 등록하기
-          </Button>
+          <Link href={'/addboard'}>
+            <Button
+              variant="primary"
+              size="md"
+              className="text-md-semibold flex h-[45px] items-center justify-center"
+            >
+              게시물 등록하기
+            </Button>
+          </Link>
         </div>
-        <div className="mb-[40px] grid auto-cols-[250px] grid-flow-col gap-[16px] overflow-x-auto min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 min-[640px]:overflow-visible sm:mb-[60px] lg:grid-cols-4">
+
+        <div
+          ref={bestRef}
+          id="dragBox"
+          className="no-scrollbar mb-[40px] grid auto-cols-[250px] grid-flow-col gap-[16px] overflow-x-auto min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4"
+        >
           {' '}
           {[...bestArticleData]
             .sort((a, b) => b.likeCount - a.likeCount)
