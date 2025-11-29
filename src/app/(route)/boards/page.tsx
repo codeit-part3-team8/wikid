@@ -116,11 +116,9 @@ export default function BoardsPage() {
     async function fetcharticleData() {
       try {
         const res = await axios.get(API.ARTICLES);
-        console.log(res.data.list);
 
-        // ✅ list가 배열이니까 그대로 넣어버리기
         setArticleData(res.data.list);
-        setFilteredarticleData(res.data.list); // (테이블도 실제 데이터 쓰고 싶을 때)
+        setFilteredarticleData(res.data.list);
       } catch (error) {
         console.error(error);
       }
