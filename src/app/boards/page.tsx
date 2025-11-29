@@ -131,7 +131,6 @@ export default function BoardsPage() {
   }, []);
   return (
     <>
-      <Headers />
       <div className={boardStyle()}>
         <div className="mt-[40px] mb-[40px] flex items-center justify-between sm:mt-[60px] sm:mb-[60px]">
           <h1 className="responsive-text text-3xl-to-2xl text-grayscale-500">베스트 게시글</h1>
