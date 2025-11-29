@@ -27,13 +27,13 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
             {/* 데스크톱 네비게이션 */}
             <nav className="hidden items-center gap-10 md:flex">
               <Link
-                href="/wiki"
+                href="/wikilist"
                 className="text-md-regular text-grayscale-500 hover:text-primary-200 transition-colors"
               >
                 위키목록
               </Link>
               <Link
-                href="/board"
+                href="/boards"
                 className="text-md-regular text-grayscale-500 hover:text-primary-200 transition-colors"
               >
                 자유게시판

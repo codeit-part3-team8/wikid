@@ -9,7 +9,7 @@ const DesktopMenu: React.FC<DesktopMenuProps> = ({ onClose }) => {
     <div className="border-grayscale-200 absolute top-12 right-0 z-50 w-[176px] rounded-2xl border bg-white px-2 py-4 shadow-lg">
       <nav className="flex flex-col">
         <Link
-          href="/settings"
+          href="/mypage"
           className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 text-center transition-colors"
           onClick={onClose}
         >

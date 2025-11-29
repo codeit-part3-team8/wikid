@@ -35,7 +35,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isLoggedIn, onClose }) => {
               알림
             </Link>
             <Link
-              href="/settings"
+              href="/mypage"
               className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
               onClick={onClose}
             >
