@@ -7,9 +7,12 @@ import WikiedLogo from '@/assets/logo/wikied-logo.svg';
 import AlarmIcon from '@/assets/icons/alarm-icon.svg';
 import ProfileIcon from '@/assets/icons/profile-icon.svg';
 import MenuIcon from '@/assets/icons/menu-icon.svg';
+import MobileMenu from '@/components/MobileMenu/MobileMenu';
+import DesktopMenu from '@/components/DesktopMenu/DesktopMenu';
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
 
   return (
     <header className="border-grayscale-200 relative sticky top-0 z-50 border-b bg-white">
@@ -51,12 +54,18 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
                 </button>
 
                 {/* 프로필 아이콘 */}
-                <button
-                  className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
-                  aria-label="프로필"
-                >
-                  <ProfileIcon className="text-grayscale-400 h-6 w-6" />
-                </button>
+                <div className="relative">
+                  <button
+                    className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
+                    aria-label="프로필"
+                    onClick={() => setIsDesktopMenuOpen(!isDesktopMenuOpen)}
+                  >
+                    <ProfileIcon className="text-grayscale-400 h-6 w-6" />
+                  </button>
+
+                  {/* 프로필 드롭다운 */}
+                  {isDesktopMenuOpen && <DesktopMenu onClose={() => setIsDesktopMenuOpen(false)} />}
+                </div>
               </>
             ) : (
               <Link
@@ -70,17 +79,17 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
 
           {/* 모바일 우측 영역 */}
           <div className="flex items-center gap-2 md:hidden">
-            {isLoggedIn ? (
-              /* 로그인 상태 - 햄버거 메뉴만 */
-              <button
-                className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="메뉴"
-              >
-                <MenuIcon className="text-grayscale-500 h-6 w-6" />
-              </button>
-            ) : (
-              /* 비로그인 상태 - 로그인 버튼만 */
+            {/* 햄버거 메뉴 - 항상 표시 */}
+            <button
+              className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="메뉴"
+            >
+              <MenuIcon className="text-grayscale-500 h-6 w-6" />
+            </button>
+
+            {/* 비로그인 상태 - 로그인 버튼 추가 표시 */}
+            {!isLoggedIn && (
               <Link
                 href="/login"
                 className="text-md-regular text-grayscale-400 hover:text-primary-200 transition-colors"
@@ -91,40 +100,9 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
           </div>
         </div>
 
-        {/* 모바일 메뉴 (로그인 상태일 때만) */}
-        {isMobileMenuOpen && isLoggedIn && (
-          <div className="border-grayscale-200 absolute top-16 right-4 z-50 w-[120px] rounded-2xl border bg-white px-2 py-4 shadow-lg md:hidden">
-            <nav className="flex flex-col">
-              <Link
-                href="/wiki"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                위키목록
-              </Link>
-              <Link
-                href="/board"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                자유게시판
-              </Link>
-              <Link
-                href="/notifications"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                알림
-              </Link>
-              <Link
-                href="/profile"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                마이페이지
-              </Link>
-            </nav>
-          </div>
+        {/* 모바일 메뉴 */}
+        {isMobileMenuOpen && (
+          <MobileMenu isLoggedIn={isLoggedIn} onClose={() => setIsMobileMenuOpen(false)} />
         )}
       </div>
     </header>
