@@ -11,11 +11,11 @@ import LikeButton from './LikeButton';
 import Divider from '@/components/Divider/Divider';
 
 interface BoardProps {
-  isLogin: boolean;
   article: ArticleType;
+  onDelete: () => void;
 }
 
-const Board = ({ article, isLogin }: BoardProps) => {
+const Board = ({ article, onDelete }: BoardProps) => {
   const formatDate = getFormatDate(article.createdAt);
 
   return (
@@ -24,7 +24,7 @@ const Board = ({ article, isLogin }: BoardProps) => {
         <span className="responsive-text text-3xl-to-2xl-semibold">{article.title}</span>{' '}
         <div className="flex gap-3">
           <EditButton />
-          <DeleteButton />
+          <DeleteButton onDelete={onDelete} />
         </div>
       </div>
       <div className="subheader text-md-regular text-grayscale-400 flex flex-col gap-2">
@@ -33,7 +33,7 @@ const Board = ({ article, isLogin }: BoardProps) => {
             <span>{article.writer.name}</span>
             <span>{formatDate}</span>
           </div>
-          <LikeButton likeCount={article.likeCount} isLogin={isLogin} />
+          <LikeButton likeCount={article.likeCount} liked={article.isLiked} />
         </div>
         <Divider className="lg:hidden" />
       </div>

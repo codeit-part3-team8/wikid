@@ -1,42 +1,48 @@
 'use client';
 
-import { mockArticle } from '@/types/_mock/ArticleType.mock';
 import { mockComments } from '@/types/_mock/Comments.mock';
 import { useState } from 'react';
+import { useArticle } from './hooks/useArticle';
+import { useDeleteArticle } from './hooks/useDeleteArticle';
+import { useRouter } from 'next/navigation';
 import Board from './components/Board/Board';
 import CommentCount from './components/CommentCount/CommentCount';
 import CommentList from './components/CommentList/CommentList';
 import CommentUploadBox from './components/CommentUploadBox/CommentUploadBox';
 import ToListButton from '@/components/Button/ToListButton/ToListButton';
 
-// interface BoardDetailContentProps {
-//   boardId: number;
-// }
+interface BoardDetailContentProps {
+  articleId: string;
+  commentId: string;
+}
 
-const BoardDetailContent = () => {
-  const [isLogin, setIsLogin] = useState(false); // 임시 로그인/로그아웃 버튼
+const BoardDetailContent = ({ articleId }: BoardDetailContentProps) => {
+  const router = useRouter();
+
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-  // const article = await fetchArticle(boardId);
-  // const comments = await fetchComments(boardId);
+
+  // article
+  const { article, loading, error } = useArticle({ articleId });
+  const { deleteArticle } = useDeleteArticle({
+    articleId,
+    onSuccess: () => router.push('/boards'),
+  });
+
+  // comment
+  // const {comments, loading, error} = useComments({commentId});
+
+  if (loading) return <p>로딩중...</p>;
+  if (error) return <p>에러: {error}</p>;
+  if (!article) return null;
 
   return (
     <div className="mt-15 mb-33 flex flex-col items-center gap-15">
-      <Board article={mockArticle} isLogin={isLogin} />
+      <Board article={article} onDelete={deleteArticle} />
       <ToListButton />
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-3">
           <CommentCount count={mockComments.length} />
-          <button
-            onClick={() => {
-              const newIsLogin = !isLogin;
-              setIsLogin(newIsLogin);
-              setCurrentUserId(newIsLogin ? 101 : null);
-            }}
-            className="absolute top-100 right-0 w-fit cursor-pointer rounded border bg-lime-400 px-2 py-1"
-          >
-            <span>{isLogin ? '로그아웃' : '로그인'}</span>
-          </button>
-          <CommentUploadBox isLogin={isLogin} />
+          <CommentUploadBox />
         </div>
         <CommentList comments={mockComments} currentUserId={currentUserId} />
       </div>
