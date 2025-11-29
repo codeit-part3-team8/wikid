@@ -19,12 +19,14 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    // ✅ Next 14~16에서 권장되는 방식
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
-        pathname: '/**', // 쿼리 붙어도 전부 허용
+        hostname: 'loremflickr.com', // ✅ loremflickr 이미지 허용
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // ✅ unsplash 이미지도 같이 허용
       },
     ],
   },
