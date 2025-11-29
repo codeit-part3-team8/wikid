@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 // import axios from 'axios';
 import ListCard from '@/components/ListCard/ListCard';
 import Pagination from '@/components/Pagination/Pagination';
-import Header from '@/components/Header/Header';
 import { tv } from 'tailwind-variants';
 import Image from 'next/image';
 import NoSearch from '@/assets/images/no-search.png';
@@ -259,7 +258,6 @@ function WikiListContent() {
 
   return (
     <div>
-      <Header />
       <div className={wikiWrap()}>
         <div className={searchStyle()}>
           <SearchInput value={search} onChange={handleChange} onSubmit={handleSubmit} />

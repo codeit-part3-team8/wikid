@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Header from '@/components/Header/Header';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 
@@ -36,8 +35,6 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header isLoggedIn={false} />
-
       <main className="flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
           <h1 className="text-2xl-semibold text-grayscale-500 mb-8 text-center">회원가입</h1>
