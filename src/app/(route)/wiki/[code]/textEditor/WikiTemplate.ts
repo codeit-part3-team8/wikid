@@ -7,7 +7,7 @@ export const wikiDefaultTemplate = `
 <p>평소에 취미로 하는 생활들을 공유해 보세요.</p>
 <br />
 
-<h3>03. 여담</h3>
+<h2>03. 여담</h2>
 <p>나만 알고 있는 재미있는 여담을 공유해 보세요.</p>
 <br />
 

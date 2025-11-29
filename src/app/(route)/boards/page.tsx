@@ -1,7 +1,6 @@
 'use client';
 
 import BestArticle from '@/components/BestArticle/BestArticle';
-import Headers from '@/components/Header/Header';
 import Button from '@/components/Button/Button';
 import { tv } from 'tailwind-variants';
 import SearchInput from '@/components/SearchInput/SearchInput';

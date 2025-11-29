@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { tv } from 'tailwind-variants';
 import { clsx } from 'clsx';
 import Avatar from '@/components/Avatar/Avatar';
@@ -55,6 +55,7 @@ export default function Profile({
 }: ProfileProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [editData, setEditData] = useState<ProfileData>(data);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const profileClass = ProfileStyle();
   const contentsClass = ProfileContentsStyle();
@@ -75,6 +76,39 @@ export default function Profile({
       onProfileChange?.(newData);
     },
     [editData, onProfileChange]
+  );
+
+  const handleAvatarClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file && file.type.startsWith('image/')) {
+        // 파일 크기 검증 (예: 5MB 제한)
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        if (file.size > MAX_FILE_SIZE) {
+          console.error('파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+          return;
+        }
+
+        // 이미지 파일을 읽어서 Data URL 생성
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          onAvatarChange?.(result);
+        };
+        reader.onerror = () => {
+          console.error('이미지 파일을 읽는 중 오류가 발생했습니다.');
+        };
+        reader.readAsDataURL(file);
+        console.log('Selected file:', file);
+      }
+      // 파일 입력 초기화 (같은 파일을 다시 선택할 수 있도록)
+      event.target.value = '';
+    },
+    [onAvatarChange]
   );
 
   const basicItems = useMemo(
@@ -137,7 +171,7 @@ export default function Profile({
   return (
     <div
       className={clsx(profileClass, className, {
-        'min-[1025px]:pb-9': isEditMode,
+        'pb-9': isEditMode,
         'max-[1024px]:px-4 max-[1024px]:pt-5 max-[1024px]:pb-[35px]': isEditMode,
         'max-[640px]:px-[30px] max-[640px]:pt-6 max-[640px]:pb-[17px]': isEditMode,
       })}
@@ -147,16 +181,28 @@ export default function Profile({
         <div className="relative">
           <Avatar imgUrl={imgUrl} name={name} variant="profile" priority={true} />
           {isEditMode && canEditProfile && (
-            <div className={overlayClass} onClick={onAvatarChange}>
+            <>
               <div
-                className="absolute inset-0 rounded-full transition-opacity"
-                style={{ backgroundColor: 'black', opacity: 0.5 }}
+                className={`${overlayClass} opacity-0 transition-opacity duration-200 hover:opacity-100`}
+                onClick={handleAvatarClick}
+              >
+                <div
+                  className="absolute inset-0 rounded-full transition-opacity"
+                  style={{ backgroundColor: 'black', opacity: 0.5 }}
+                />
+                <SVGIcon
+                  icon="IC_Camera"
+                  className="relative z-10 h-9 w-9 text-white max-[1024px]:h-5 max-[1024px]:w-5 max-[640px]:h-[17px] max-[640px]:w-[17px]"
+                />
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
               />
-              <SVGIcon
-                icon="IC_Camera"
-                className="relative z-10 text-white max-[1024px]:h-5 max-[1024px]:w-5 max-[640px]:h-[17px] max-[640px]:w-[17px] min-[1025px]:h-9 min-[1025px]:w-9"
-              />
-            </div>
+            </>
           )}
         </div>
       </div>
@@ -169,7 +215,7 @@ export default function Profile({
         })}
       >
         {/* PC에서는 모든 항목 표시 */}
-        <div className="hidden min-[1025px]:flex min-[1025px]:flex-col min-[1025px]:gap-4">
+        <div className="flex flex-col gap-4 max-[1024px]:hidden">
           {allItems.map((item) => (
             <div key={item.label} className={itemClass}>
               <span className={labelClass}>{item.label}</span>

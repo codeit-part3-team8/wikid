@@ -27,7 +27,7 @@ export interface ProfileProps {
   isEditMode?: boolean;
   canEditProfile?: boolean;
   onProfileChange?: (data: ProfileData) => void;
-  onAvatarChange?: () => void;
+  onAvatarChange?: (imageUrl?: string) => void;
 }
 
 export interface WikiContentProps {
@@ -36,10 +36,5 @@ export interface WikiContentProps {
   content?: string;
   onStartEdit: () => void;
   className?: string;
-}
-
-export interface WikiPageProps {
-  params: Promise<{
-    code: string;
-  }>;
+  name: string;
 }

@@ -3,6 +3,7 @@ import './globals.css';
 import '../styles/typography-system.css';
 import '../styles/color-variables.css';
 import { SnackBarProvider } from '@/contexts/SnackBarContext';
+import Header from '@/components/Header/Header';
 
 export const metadata: Metadata = {
   title: 'WIKID',
@@ -30,6 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <Header />
         <SnackBarProvider>{children}</SnackBarProvider>
       </body>
     </html>
