@@ -11,6 +11,20 @@
   box-sizing: border-box;
 }
 
+.board p.is-editor-empty:first-child::before {
+  color: var(--color-grayscale-200);
+  font-size: 20px;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+@media (max-width: 768px) {
+  .board p.is-editor-empty:first-child::before {
+    font-size: 16px;
+  }
+}
+
 /* ========== CUSTOM SCROLLBAR ========== */
 .editor-style .ProseMirror::-webkit-scrollbar {
   width: 4px; /* 스크롤바 너비 */
@@ -82,7 +96,7 @@
 
 /* ---------- table ---------- */
 .editor-style table {
-  @apply w-full border-collapse border border-gray-300 text-left;
+  @apply border-collapse border border-gray-300 text-left;
 }
 
 .editor-style th,
