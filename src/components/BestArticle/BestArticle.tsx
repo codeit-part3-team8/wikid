@@ -2,17 +2,21 @@ import Image from 'next/image';
 import noImage from '@/assets/noImage/noImage.avif';
 import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
+import { useRouter } from 'next/navigation';
 interface BestArticleProps {
   id?: number;
   title: string;
-  writer: string;
+  writer: {
+    id: number;
+    name: string;
+  };
   createdAt: string;
   likeCount: number;
-  image: string;
+  image?: string;
 }
 
 const bestStyle = tv({
-  base: ' w-[250px] h-[200px] lg:w-[250px] lg:h-[220px]  sm:w-full sm:h-auto rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.08)] ',
+  base: ' w-[250px] h-[200px] lg:w-[250px] lg:h-[220px]  sm:w-full sm:h-auto rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.08)] cursor-pointer',
 });
 
 const bestTextStyle = tv({
@@ -27,6 +31,7 @@ export default function BestArticle({
   likeCount,
   image,
 }: BestArticleProps) {
+  const router = useRouter();
   function formatDate(createDate: string) {
     const date = new Date(createDate);
     const year = date.getFullYear();
@@ -35,9 +40,12 @@ export default function BestArticle({
 
     return `${year}.${month}.${day}`;
   }
+  function handleClick() {
+    router.push(`/articles/${id}`);
+  }
 
   return (
-    <div className={bestStyle()}>
+    <div onClick={handleClick} className={bestStyle()}>
       {image ? (
         <Image
           src={image}
@@ -62,7 +70,7 @@ export default function BestArticle({
         </span>
         <div className="responsive-text text-md-to-xs text-weight-regular text-grayscale-400 flex w-full items-center justify-between">
           <div className="flex gap-[8px]">
-            <span>{writer}</span>
+            <span>{writer.name}</span>
             <span>{formatDate(createdAt)}</span>
           </div>
           <div className="flex items-center justify-center gap-[4px]">

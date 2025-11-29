@@ -11,20 +11,20 @@ interface LinkCopyProps {
 }
 
 const LinkCopyStyle = tv({
-  base: 'flex items-center gap-[5px] text-primary-200 cursor-pointer bg-primary-100 px-[10px] py-[4px] rounded-[10px]',
+  base: 'inline-flex max-w-full items-center gap-[5px] text-primary-200 cursor-pointer bg-primary-100 px-[10px] py-[4px] rounded-[10px]',
 });
 
 const SvgStyle = tv({
-  base: 'w-[16px] h-[16px] md:w-[20px] md:h-[20px]',
+  base: 'w-[16px] h-[16px] md:w-[20px] md:h-[20px] shrink-0',
 });
-
-// 커스텀이라 안먹어서 css로 대체 팀미팅때 물어보고 수정하겠습니다.
-// const UrlStyle = tv({ base: 'text-xs-regular md:text-md-regular', });
 
 export default function LinkCopy({ code, onCopySuccess }: LinkCopyProps) {
   const profileUrl = `${BASE_URL}/profiles/${code}`;
 
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     try {
       await navigator.clipboard.writeText(profileUrl);
       onCopySuccess?.();
@@ -38,7 +38,9 @@ export default function LinkCopy({ code, onCopySuccess }: LinkCopyProps) {
   return (
     <button className={clsx(classes)} onClick={handleCopy}>
       <SVGIcon icon="IC_Link" className={SvgStyle()} />
-      <span className="text-[14px] max-[640px]:text-xs">{profileUrl}</span>
+      <span className="w-full max-w-[240px] truncate text-[14px] max-[640px]:text-xs max-[480px]:max-w-[200px] max-[430px]:max-w-[150px] lg:max-w-[240px]">
+        {profileUrl}
+      </span>
     </button>
   );
 }
