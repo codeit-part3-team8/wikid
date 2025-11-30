@@ -2,21 +2,23 @@
 import React from 'react';
 
 import { useState } from 'react';
-import TextArea from '../TextArea/TextArea';
+import TextArea from '../../TextArea/TextArea';
 import UploadButton from './UploadButton';
-import Button from '@/components/Button/Button';
-// import { useAuthStore } from '@/stores/useAuthStore';
 
 const COMMENT_PLACEHOLDER = '허위사실, 비방, 욕설 등은 삼가해주세요.';
 
-const CommentUploadBox = () => {
+interface CommentUploadBoxProps {
+  onSubmit: (v: string) => void;
+}
+
+const CommentUploadBox = ({ onSubmit }: CommentUploadBoxProps) => {
   const [comment, setComment] = useState('');
-  // const { isLogin } = useAuthStore();
 
   // Enter 제출 구현을 위해 작성 (TextArea의 onSubmit과 handleSubmit의 타입이 다름)
-  // Enter 제출을 지원하지 않는다면 handleSubmit에 합치면 됨
   const submitComment = () => {
     if (!comment.trim()) return; // 입력값이 없을 시, 제출 불가
+    onSubmit(comment);
+    setComment('');
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
