@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { API } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
 import { CONFIG } from '@/constants/config';
-import { BaseParams, APIProfileData, ProfileUpdateRequest } from '@/types/Api';
+import { BaseParams, APIProfileData } from '@/types/Api';
 import {
   createErrorResponse,
   createSuccessResponse,
