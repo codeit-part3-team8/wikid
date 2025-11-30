@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { API } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
 import { CONFIG } from '@/constants/config';
-import { BaseParams, APIProfileData } from '@/types/Api';
+import { BaseParams, APIProfileData, ProfileUpdateRequest } from '@/types/Api';
 import {
   createErrorResponse,
   createSuccessResponse,
@@ -40,6 +40,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     const { code } = await params;
     const body = await request.json();
+
+    if (!body.securityAnswer || !body.securityQuestion) {
+      return createErrorResponse(
+        new Error('보안 질문과 답변이 필요합니다'),
+        '필수 필드가 누락되었습니다'
+      );
+    }
 
     const updatedProfile = await safeFetch(`${CONFIG.API_BASE_URL}profiles/${code}`, {
       method: 'PATCH',

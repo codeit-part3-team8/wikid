@@ -290,7 +290,7 @@ export default function WikiPage() {
         job: editedProfileData?.job || profileData.job || '',
         mbti: editedProfileData?.mbti || profileData.mbti || '',
         city: editedProfileData?.city || profileData.city || '',
-        image: profileData.image || '',
+        image: (profileData.image?.startsWith('data:') ? '' : profileData.image) || '',
         content: contentToSave,
       };
 

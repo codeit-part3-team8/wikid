@@ -42,8 +42,13 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await response.json();
+    const imageUrl = result?.url || result?.data?.url;
 
-    return createSuccessResponse({ url: result.url }, '이미지 업로드 성공');
+    if (!imageUrl) {
+      throw new Error('이미지 URL을 받지 못했습니다.');
+    }
+
+    return createSuccessResponse({ url: imageUrl }, '이미지 업로드 성공');
   } catch (error) {
     return createErrorResponse(
       error instanceof Error ? error : String(error),

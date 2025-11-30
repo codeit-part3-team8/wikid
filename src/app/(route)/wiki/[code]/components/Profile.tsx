@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { tv } from 'tailwind-variants';
 import { clsx } from 'clsx';
 import Avatar from '@/components/Avatar/Avatar';
@@ -57,6 +57,10 @@ export default function Profile({
   const [isExpanded, setIsExpanded] = useState(false);
   const [editData, setEditData] = useState<APIProfileData>(data);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setEditData(data);
+  }, [data]);
 
   const profileClass = ProfileStyle();
   const contentsClass = ProfileContentsStyle();

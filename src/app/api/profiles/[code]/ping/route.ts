@@ -25,7 +25,13 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<B
     });
 
     if (response.status === 200) {
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        // JSON 파싱 실패 시 기본값 사용
+        data = {};
+      }
       const pingResponse: PingResponse = {
         userId: data.userId,
         registeredAt: data.registeredAt,
@@ -78,7 +84,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<B
       throw new Error(`API 호출 실패: ${response.status}, 응답: ${errorText}`);
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      // JSON 파싱 실패 시 기본값 사용
+      data = {};
+    }
     const pingResponse: PingResponse = {
       userId: data.userId,
       registeredAt: data.registeredAt,

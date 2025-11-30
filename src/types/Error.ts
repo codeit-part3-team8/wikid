@@ -9,7 +9,7 @@ export class APIError extends Error {
     this.code = code;
   }
 
-  static badRequest(message: string, code?: string): APIError {
+  static badRequest(message: string = '잘못된 요청입니다.', code?: string): APIError {
     return new APIError(400, message, code);
   }
 
@@ -25,7 +25,7 @@ export class APIError extends Error {
     return new APIError(404, message, code);
   }
 
-  static payloadTooLarge(message: string, code?: string): APIError {
+  static payloadTooLarge(message: string = '요청 크기가 너무 큽니다.', code?: string): APIError {
     return new APIError(413, message, code);
   }
 

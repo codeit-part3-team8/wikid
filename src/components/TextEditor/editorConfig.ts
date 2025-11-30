@@ -42,7 +42,7 @@ export const useCommonEditor = (
       }
 
       const result = await response.json();
-      return result.url;
+      return result.data?.url || result.url;
     } catch (error) {
       console.error('이미지 업로드 오류:', error);
       throw error;

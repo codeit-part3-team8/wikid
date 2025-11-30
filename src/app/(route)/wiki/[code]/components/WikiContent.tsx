@@ -106,12 +106,12 @@ export default function WikiContent({
         'id',
         'data-type',
       ],
-      ALLOW_DATA_ATTR: false,
+      ALLOW_DATA_ATTR: true,
       FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input'],
     });
 
     return (
-      <div className={wikiContentStyle({ editMode: true, className })}>
+      <div className={wikiContentStyle({ editMode: false, className })}>
         <div className="p-6">
           <div
             className={styles.wikiContent}
