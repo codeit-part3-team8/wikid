@@ -67,28 +67,28 @@ export default function WikiPage() {
   // 위키 코드와 내 코드가 일치하는지 확인
   const isMyWiki = code === currentUserCode;
 
-  const checkEditingStatus = useCallback(async () => {
+  const checkEditingStatus = useCallback(async (): Promise<boolean> => {
     try {
       const response = await fetch(`/api/profiles/${code}/ping`);
       const result = await response.json();
 
       if (response.ok && result.data) {
         const { isEditing, userId } = result.data;
+        const editingByOther = !isMyWiki && isEditing && userId && userId !== currentUserID;
 
-        // 내 위키가 아니고, 다른 사용자가 편집 중일 때만 경고 표시
-        if (!isMyWiki && isEditing && userId && userId !== currentUserID) {
-          setIsBeingEdited(true);
+        setIsBeingEdited(editingByOther);
+        if (editingByOther) {
           setShowErrorSnackBar(true);
-        } else {
-          setIsBeingEdited(false);
         }
-      } else {
-        setIsBeingEdited(false);
+
+        return editingByOther;
       }
     } catch (error) {
       console.error('편집 상태 확인 실패:', error);
-      setIsBeingEdited(false);
     }
+
+    setIsBeingEdited(false);
+    return false;
   }, [code, currentUserID, isMyWiki]);
   useEffect(() => {
     if (code) {
@@ -179,13 +179,11 @@ export default function WikiPage() {
 
   // 위키 참여하기 버튼 클릭 핸들러 (편집 상태 확인 후 퀴즈 모달 열기)
   const handleWikiParticipate = useCallback(async () => {
-    // 편집 상태 확인
-    await checkEditingStatus();
-
-    if (!isBeingEdited) {
+    const editingByOther = await checkEditingStatus();
+    if (!editingByOther) {
       setShowQuizModal(true);
     }
-  }, [checkEditingStatus, isBeingEdited]);
+  }, [checkEditingStatus]);
 
   // HTML 태그만 있고 실제 텍스트가 없는지 확인하는 함수
   const hasOnlyEmptyTags = useCallback((content: string): boolean => {
@@ -411,7 +409,7 @@ export default function WikiPage() {
     await performCancel();
   }, [performCancel]);
 
-  if (isLoading || !profileData) {
+  if (isLoading) {
     return (
       <div className="bg-grayscale-50 flex min-h-screen items-center justify-center overflow-x-hidden">
         <div className="text-center">
@@ -432,6 +430,22 @@ export default function WikiPage() {
             className="bg-primary-200 hover:bg-primary-300 rounded px-4 py-2 text-white"
           >
             다시 시도
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <div className="bg-grayscale-50 flex min-h-screen items-center justify-center overflow-x-hidden">
+        <div className="text-center">
+          <p className="text-grayscale-500 mb-4">위키 데이터를 찾을 수 없습니다.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-primary-200 hover:bg-primary-300 rounded px-4 py-2 text-white"
+          >
+            새로고침
           </button>
         </div>
       </div>
@@ -487,7 +501,7 @@ export default function WikiPage() {
               hasContent={!!(profileData.content && profileData.content.trim())}
               hasEditPermission={hasEditPermission}
               content={profileData.content || ''}
-              onStartEdit={() => setShowQuizModal(true)}
+              onStartEdit={isBeingEdited ? handleDisabledButtonClick : handleWikiParticipate}
               onContentChange={handleContentChange}
               className="block max-[1024px]:hidden"
               name={profileData.name || ''}
@@ -532,7 +546,7 @@ export default function WikiPage() {
             hasContent={!!(profileData.content && profileData.content.trim())}
             hasEditPermission={hasEditPermission}
             content={profileData.content || ''}
-            onStartEdit={() => setShowQuizModal(true)}
+            onStartEdit={isBeingEdited ? handleDisabledButtonClick : handleWikiParticipate}
             onContentChange={handleContentChange}
             name={profileData.name || ''}
             className="block"
