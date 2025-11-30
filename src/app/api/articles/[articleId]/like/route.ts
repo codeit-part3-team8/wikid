@@ -4,9 +4,9 @@ import { safeFetch } from '@/utils/safeFetch';
 import { handlerServerError } from '@/utils/handlerServerError';
 import { Params, parseArticleId } from '../route';
 
-export async function POST(_request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function POST(_request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
-    const { articleId } = await params;
+    const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
     const data = await safeFetch(`${API.ARTICLES}${id}/like/`, { method: 'POST' });
@@ -19,9 +19,9 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function DELETE(_request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
-    const { articleId } = await params;
+    const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
     const data = await safeFetch(`${API.ARTICLES}${id}/like/`, { method: 'DELETE' });

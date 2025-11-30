@@ -1,9 +1,10 @@
 'use client';
 
-import { mockComments } from '@/types/_mock/Comments.mock';
 import { useState } from 'react';
 import { useArticle } from './hooks/useArticle';
 import { useDeleteArticle } from './hooks/useDeleteArticle';
+import { useComments } from './hooks/comment/useComments';
+import { useCreateComment } from './hooks/comment/useCreateComment';
 import { useRouter } from 'next/navigation';
 import Board from './components/Board/Board';
 import CommentCount from './components/CommentCount/CommentCount';
@@ -13,13 +14,11 @@ import ToListButton from '@/components/Button/ToListButton/ToListButton';
 
 interface BoardDetailContentProps {
   articleId: string;
-  commentId: string;
 }
 
 const BoardDetailContent = ({ articleId }: BoardDetailContentProps) => {
   const router = useRouter();
-
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [currentUserId] = useState<number | null>(null);
 
   // article
   const { article, loading, error } = useArticle({ articleId });
@@ -29,7 +28,13 @@ const BoardDetailContent = ({ articleId }: BoardDetailContentProps) => {
   });
 
   // comment
-  // const {comments, loading, error} = useComments({commentId});
+  const { comments } = useComments({ articleId });
+  const { createComment } = useCreateComment(articleId);
+  const handleUpload = async (content: string) => {
+    const newComment = await createComment(content);
+    if (newComment) {
+    }
+  };
 
   if (loading) return <p>로딩중...</p>;
   if (error) return <p>에러: {error}</p>;
@@ -41,10 +46,10 @@ const BoardDetailContent = ({ articleId }: BoardDetailContentProps) => {
       <ToListButton />
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-3">
-          <CommentCount count={mockComments.length} />
-          <CommentUploadBox />
+          <CommentCount count={comments.length} />
+          <CommentUploadBox onSubmit={handleUpload} />
         </div>
-        <CommentList comments={mockComments} currentUserId={currentUserId} />
+        <CommentList comments={comments} currentUserId={currentUserId} />
       </div>
     </div>
   );

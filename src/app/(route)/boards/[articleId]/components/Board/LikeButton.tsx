@@ -5,8 +5,6 @@ import { useState } from 'react';
 import IconButton from '@/components/IconButton/IconButton';
 import clsx from 'clsx';
 // import { useAuthStore } from '@/stores/useAuthStore';
-import { useModal } from '@/hooks/useModal';
-import ToLoginModal from './ToLoginModal';
 
 interface LikeButtonProps {
   likeCount: number;
@@ -17,7 +15,6 @@ const LikeButton = ({ likeCount, liked }: LikeButtonProps) => {
   const [like, setLike] = useState(liked);
   const [scale, setScale] = useState(1);
   // const { isLogin } = useAuthStore();
-  const { closeModal, isOpen, openModal } = useModal();
 
   const handleClick = () => {
     setLike((prev) => !prev);
@@ -42,7 +39,6 @@ const LikeButton = ({ likeCount, liked }: LikeButtonProps) => {
         </motion.div>
         <span className="responsive-text text-md-to-xs">{likeCount}</span>
       </div>
-      <ToLoginModal isOpen={isOpen} onClose={closeModal} />
     </>
   );
 };
