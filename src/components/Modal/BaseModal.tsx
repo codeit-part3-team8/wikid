@@ -29,7 +29,7 @@ const modalContainerStyle = tv({
 });
 
 const closeButtonStyle = tv({
-  base: 'absolute top-4 right-4 z-10 text-grayscale-400 transition-colors hover:opacity-70',
+  base: 'absolute top-4 right-4 z-10 text-grayscale-400 transition-colors hover:opacity-70 cursor-pointer',
 });
 
 interface BaseModalComponentProps extends BaseModalProps {
@@ -69,7 +69,7 @@ export default function BaseModal({
     };
   }, [isOpen, onClose]);
 
-  // 이벤트 핸들러 최적화
+  // 이벤트 핸들러
   const handleBackdropClick = useCallback(
     (event: React.MouseEvent) => {
       if (event.target === event.currentTarget && closeOnBackdropClick) {
@@ -100,7 +100,6 @@ export default function BaseModal({
       >
         {/* 모달 컨테이너 */}
         <div className={containerClassName} onClick={handleStopPropagation}>
-          {/* 닫기 버튼 */}
           {showCloseButton && (
             <button
               type="button"
@@ -130,6 +129,5 @@ export default function BaseModal({
 
   if (!isOpen) return null;
 
-  // Portal을 사용하여 body에 렌더링
   return createPortal(modalContent, document.body);
 }
