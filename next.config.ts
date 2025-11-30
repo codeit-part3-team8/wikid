@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
   turbopack: {
     rules: {
@@ -19,12 +18,11 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    // ✅ Next 14~16에서 권장되는 방식
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-        pathname: '/**', // 쿼리 붙어도 전부 허용
+        pathname: '/**',
       },
       {
         protocol: 'https',
@@ -64,6 +62,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'i.imgur.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'sprint-fe-project.s3.ap-northeast-2.amazonaws.com',
         pathname: '/**',
       },
     ],

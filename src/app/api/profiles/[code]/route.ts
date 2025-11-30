@@ -1,87 +1,63 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { API } from '@/constants/api';
-import { handlerServerError } from '@/utils/handlerServerError';
 import { safeFetch } from '@/utils/safeFetch';
+import { CONFIG } from '@/constants/config';
+import { BaseParams, APIProfileData } from '@/types/Api';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
 
-export type Params = {
-  code: string;
-};
-
-const ACCESS_TOKEN = process.env.WIKID_ACCESS_TOKEN || '';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-export async function GET(_request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
+    validateEnvironmentVariables({ name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN });
+
     const { code } = await params;
 
     const profile = await safeFetch(`${API.PROFILE}${code}`, {
       headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
         'Content-Type': 'application/json',
       },
     });
 
-    return NextResponse.json({
-      message: `코드 ${code}의 프로필 정보를 조회했습니다`,
-      data: profile,
-    });
-  } catch (err) {
-    return handlerServerError(err, '프로필 조회에 실패했습니다');
+    return createSuccessResponse<APIProfileData>(profile, '프로필 정보 조회 성공');
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '프로필 조회에 실패했습니다'
+    );
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
+    validateEnvironmentVariables(
+      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
+      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
+    );
+
     const { code } = await params;
+    const body = await request.json();
 
-    const contentType = request.headers.get('content-type');
-    let body: Record<string, string | File>;
-
-    if (contentType?.startsWith('multipart/form-data')) {
-      const formData = await request.formData();
-      body = {} as Record<string, string>;
-
-      for (const [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          body[key] = value.name || '';
-        } else {
-          body[key] = value.toString();
-        }
-      }
-    } else {
-      body = await request.json();
-    }
-
-    const apiUrl = `${API_BASE_URL}profiles/${code}`;
-    const requestBody = JSON.stringify(body);
-
-    const response = await fetch(apiUrl, {
+    const updatedProfile = await safeFetch(`${CONFIG.API_BASE_URL}profiles/${code}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
       },
-      body: requestBody,
+      body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('External API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText,
-        requestData: Object.keys(body),
-      });
-      throw new Error(`프로필 수정 실패: ${response.status} ${response.statusText} - ${errorText}`);
-    }
-
-    const updatedProfile = await response.json();
-
-    return NextResponse.json({
-      message: '프로필이 성공적으로 업데이트되었습니다',
-      data: updatedProfile,
-    });
-  } catch (err) {
-    return handlerServerError(err, '프로필 업데이트에 실패했습니다');
+    return createSuccessResponse<APIProfileData>(
+      updatedProfile,
+      '프로필이 성공적으로 업데이트되었습니다'
+    );
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '프로필 업데이트에 실패했습니다'
+    );
   }
 }

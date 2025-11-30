@@ -5,7 +5,8 @@ import { tv } from 'tailwind-variants';
 import { clsx } from 'clsx';
 import Avatar from '@/components/Avatar/Avatar';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
-import { ProfileData, ProfileProps } from '@/types/Wiki';
+import { ProfileProps } from '@/types/Wiki';
+import { APIProfileData } from '@/types/Api';
 
 const ProfileStyle = tv({
   base: 'relative w-[400px] max-[1024px]:w-full h-auto bg-white rounded-[10px] flex flex-col items-center pt-[60px] max-[1024px]:pt-5 max-[640px]:pt-[15px] px-[30px] max-[1024px]:px-[30px] max-[640px]:px-5 pb-[48px] max-[1024px]:pb-6 max-[640px]:pb-[22px]',
@@ -54,7 +55,7 @@ export default function Profile({
   onAvatarChange,
 }: ProfileProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [editData, setEditData] = useState<ProfileData>(data);
+  const [editData, setEditData] = useState<APIProfileData>(data);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const profileClass = ProfileStyle();
@@ -70,12 +71,14 @@ export default function Profile({
   }, [isExpanded]);
 
   const handleInputChange = useCallback(
-    (key: keyof ProfileData, value: string) => {
+    (key: keyof APIProfileData, value: string) => {
+      if (!isEditMode) return; // 편집 모드가 아니면 수정 불가
+
       const newData = { ...editData, [key]: value };
       setEditData(newData);
       onProfileChange?.(newData);
     },
-    [editData, onProfileChange]
+    [editData, onProfileChange, isEditMode]
   );
 
   const handleAvatarClick = useCallback(() => {
@@ -86,18 +89,19 @@ export default function Profile({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file && file.type.startsWith('image/')) {
-        // 파일 크기 검증 (예: 5MB 제한)
-        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        // 파일 크기 검증 (5MB 제한)
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
         if (file.size > MAX_FILE_SIZE) {
-          console.error('파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+          console.error('파일 크기 초과:', file.size, 'bytes');
+          alert('파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
           return;
         }
 
-        // 이미지 파일을 읽어서 Data URL 생성
+        // 이미지 파일을 읽어서 Data URL 생성 (미리보기용)
         const reader = new FileReader();
         reader.onload = (e) => {
           const result = e.target?.result as string;
-          onAvatarChange?.(result);
+          onAvatarChange?.(result, file); // Data URL과 File 객체를 모두 전달
         };
         reader.onerror = () => {
           console.error('이미지 파일을 읽는 중 오류가 발생했습니다.');
@@ -114,18 +118,18 @@ export default function Profile({
     () => [
       {
         label: '거주 도시',
-        key: '거주도시' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.거주도시 : data.거주도시,
+        key: 'city' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.city : data.city,
       },
       {
         label: 'MBTI',
-        key: 'MBTI' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.MBTI : data.MBTI,
+        key: 'mbti' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.mbti : data.mbti,
       },
       {
         label: '직업',
-        key: '직업' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.직업 : data.직업,
+        key: 'job' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.job : data.job,
       },
     ],
     [isEditMode, canEditProfile, editData, data]
@@ -135,28 +139,28 @@ export default function Profile({
     () => [
       {
         label: 'SNS 계정',
-        key: 'SNS계정' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.SNS계정 : data.SNS계정,
+        key: 'sns' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.sns : data.sns,
       },
       {
         label: '생일',
-        key: '생일' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.생일 : data.생일,
+        key: 'birthday' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.birthday : data.birthday,
       },
       {
         label: '별명',
-        key: '별명' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.별명 : data.별명,
+        key: 'nickname' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.nickname : data.nickname,
       },
       {
         label: '혈액형',
-        key: '혈액형' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.혈액형 : data.혈액형,
+        key: 'bloodType' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.bloodType : data.bloodType,
       },
       {
         label: '국적',
-        key: '국적' as keyof ProfileData,
-        value: isEditMode && canEditProfile ? editData.국적 : data.국적,
+        key: 'nationality' as keyof APIProfileData,
+        value: isEditMode && canEditProfile ? editData.nationality : data.nationality,
       },
     ],
     [isEditMode, canEditProfile, editData, data]

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { tv } from 'tailwind-variants';
+import DOMPurify from 'dompurify';
 import { WikiContentProps } from '@/types/Wiki';
 import WikiTextEditor from '../textEditor/WikiTextEditor';
 import { wikiDefaultTemplate } from '../textEditor/WikiTemplate';
@@ -46,7 +47,7 @@ export default function WikiContent({
   };
 
   if (hasEditPermission) {
-    // 편집 모드 - 항상 WikiTextEditor 사용, 배경색 흰색
+    // 편집 모드
     return (
       <div className={wikiContentStyle({ editMode: true, className })}>
         <div className={editContentStyle()}>
@@ -61,11 +62,61 @@ export default function WikiContent({
   }
 
   if (hasContent) {
-    // 컨텐츠가 있는 경우 - 뷰어 모드 (HTML 콘텐츠 렌더링, 흰색 배경)
+    // 컨텐츠가 있는 경우 - 뷰어 모드
+    // XSS 보안을 위해 DOMPurify로 HTML 콘텐츠 정제
+    const sanitizedContent = DOMPurify.sanitize(content || '', {
+      ALLOWED_TAGS: [
+        'p',
+        'br',
+        'strong',
+        'em',
+        'u',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'ul',
+        'ol',
+        'li',
+        'blockquote',
+        'a',
+        'img',
+        'table',
+        'thead',
+        'tbody',
+        'tr',
+        'th',
+        'td',
+        'hr',
+        'pre',
+        'code',
+      ],
+      ALLOWED_ATTR: [
+        'href',
+        'target',
+        'src',
+        'alt',
+        'title',
+        'width',
+        'height',
+        'style',
+        'class',
+        'id',
+        'data-type',
+      ],
+      ALLOW_DATA_ATTR: false,
+      FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input'],
+    });
+
     return (
       <div className={wikiContentStyle({ editMode: true, className })}>
         <div className="p-6">
-          <div className={styles.wikiContent} dangerouslySetInnerHTML={{ __html: content }} />
+          <div
+            className={styles.wikiContent}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+          />
         </div>
       </div>
     );

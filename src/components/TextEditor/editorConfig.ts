@@ -13,6 +13,8 @@ import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { EditorView } from '@tiptap/pm/view';
 import StarterKit from '@tiptap/starter-kit';
 import Strike from '@tiptap/extension-strike';
 import TextAlign from '@tiptap/extension-text-align';
@@ -23,6 +25,29 @@ export const useCommonEditor = (
   onChange?: (html: string) => void // ✅ 여기 추가
 ) => {
   const prevRef = useRef('');
+
+  // 이미지 업로드 함수
+  const uploadImage = async (file: File): Promise<string> => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('이미지 업로드에 실패했습니다.');
+      }
+
+      const result = await response.json();
+      return result.url;
+    } catch (error) {
+      console.error('이미지 업로드 오류:', error);
+      throw error;
+    }
+  };
 
   // 표 관련 커스텀
   const CustomTable = Table.extend({
@@ -56,7 +81,7 @@ export const useCommonEditor = (
     },
   });
 
-  // 이미지 크기 제한을 위한 커스텀 Image 익스텐션
+  // 이미지 업로드가 가능한 커스텀 Image 익스텐션
   const CustomImage = Image.extend({
     addAttributes() {
       return {
@@ -65,12 +90,6 @@ export const useCommonEditor = (
           default: null,
           parseHTML: (element) => {
             const src = element.getAttribute('src');
-            // Base64 이미지 크기 체크하되, 너무 큰 경우에도 일단 표시하고 경고만 출력
-            if (src && src.startsWith('data:') && src.length > 5242880) {
-              // 5MB 제한 (5 * 1024 * 1024 bytes in base64)
-              console.warn('이미지가 너무 큽니다. 크기를 5MB 이하로 줄여주세요.');
-              // null을 반환하지 않고 src를 그대로 반환하여 이미지가 표시되도록 함
-            }
             return src;
           },
           renderHTML: (attributes) => {
@@ -109,13 +128,71 @@ export const useCommonEditor = (
       };
     },
 
+    // 이미지 붙여넣기와 드롭 처리
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          key: new PluginKey('imageUpload'),
+          props: {
+            handlePaste: (view: EditorView, event: ClipboardEvent) => {
+              const items = Array.from(event.clipboardData?.items || []);
+              const imageItem = items.find((item: DataTransferItem) =>
+                item.type.startsWith('image/')
+              );
+
+              if (imageItem) {
+                event.preventDefault();
+                const file = imageItem.getAsFile();
+                if (file) {
+                  uploadImage(file)
+                    .then((url) => {
+                      const { schema } = view.state;
+                      const node = schema.nodes.image.create({ src: url });
+                      const transaction = view.state.tr.replaceSelectionWith(node);
+                      view.dispatch(transaction);
+                    })
+                    .catch((error) => {
+                      console.error('이미지 업로드 실패:', error);
+                    });
+                }
+                return true;
+              }
+              return false;
+            },
+            handleDrop: (view: EditorView, event: DragEvent) => {
+              const files = Array.from(event.dataTransfer?.files || []);
+              const imageFile = files.find((file: File) => file.type.startsWith('image/'));
+
+              if (imageFile) {
+                event.preventDefault();
+                uploadImage(imageFile)
+                  .then((url) => {
+                    const { schema } = view.state;
+                    const node = schema.nodes.image.create({ src: url });
+                    const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                    if (pos) {
+                      const transaction = view.state.tr.insert(pos.pos, node);
+                      view.dispatch(transaction);
+                    }
+                  })
+                  .catch((error) => {
+                    console.error('이미지 업로드 실패:', error);
+                  });
+                return true;
+              }
+              return false;
+            },
+          },
+        }),
+      ];
+    },
+
     parseHTML() {
       return [
         {
           tag: 'img[src]',
           getAttrs: (element) => {
             const src = element.getAttribute('src');
-            // 빈 src는 무시
             if (!src) return false;
             return {
               src,
@@ -136,14 +213,11 @@ export const useCommonEditor = (
     extensions: [
       // StarterKit에서 중복되는 익스텐션들 비활성화
       StarterKit.configure({
-        // 중복되는 익스텐션 비활성화
         horizontalRule: false,
         strike: false,
-        link: false, // Link 중복 방지
+        link: false,
       }),
-      // 커스텀 이미지 (기본 Image 대체)
       CustomImage,
-      // 추가 익스텐션들
       Color,
       HorizontalRule,
       Link.configure({ openOnClick: true }),
@@ -162,8 +236,8 @@ export const useCommonEditor = (
     onUpdate: ({ editor }) => {
       const newHTML = editor.getHTML();
       if (newHTML !== prevRef.current) {
-        prevRef.current = newHTML; // ✅ 새 값으로 업데이트
-        onChange?.(newHTML); // 안전하게 호출
+        prevRef.current = newHTML;
+        onChange?.(newHTML);
       }
     },
   });

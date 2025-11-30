@@ -1,87 +1,95 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { CONFIG } from '@/constants/config';
+import { BaseParams, PingResponse, PingRequest } from '@/types/Api';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
 
-interface PingResponse {
-  registeredAt: string;
-  userId: number;
-}
-
-const ACCESS_TOKEN = process.env.WIKID_ACCESS_TOKEN || '';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
+    validateEnvironmentVariables(
+      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
+      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
+    );
+
     const { code } = await params;
 
-    const response = await fetch(`${API_BASE_URL}profiles/${code}/ping`, {
+    const response = await fetch(`${CONFIG.API_BASE_URL}profiles/${code}/ping`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
         'Content-Type': 'application/json',
       },
     });
 
     if (response.status === 200) {
       const data = await response.json();
-      return NextResponse.json({ userId: data.userId }, { status: 200 });
+      const pingResponse: PingResponse = {
+        userId: data.userId,
+        registeredAt: data.registeredAt,
+        isEditing: Boolean(data.userId), // 누군가 편집 중 (본인 포함)
+      };
+      return createSuccessResponse(pingResponse, '편집 상태 확인 성공');
     } else if (response.status === 204) {
-      return new NextResponse(null, { status: 204 });
+      const pingResponse: PingResponse = {
+        isEditing: false,
+      };
+      return createSuccessResponse(pingResponse, '편집 상태 확인 성공');
     } else {
-      return NextResponse.json(
-        { error: '편집 상태 확인에 실패했습니다' },
-        { status: response.status }
-      );
+      throw new Error('편집 상태 확인에 실패했습니다');
     }
   } catch (error) {
-    console.error('error:', error);
-    return NextResponse.json({ error: '서버 내부 오류가 발생했습니다' }, { status: 500 });
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '서버 내부 오류가 발생했습니다'
+    );
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
-    const { code } = await params;
-    const body = await request.json();
+    validateEnvironmentVariables(
+      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
+      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
+    );
 
-    const apiUrl = `${API_BASE_URL}profiles/${code}/ping`;
-    const requestBody = JSON.stringify(body);
+    const { code } = await params;
+    const body = (await request.json()) as PingRequest;
+
+    const apiUrl = `${CONFIG.API_BASE_URL}profiles/${code}/ping`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
       },
-      body: requestBody,
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
 
       if (response.status === 400) {
-        return NextResponse.json({ error: '잘못된 답입니다.' }, { status: 400 });
+        throw new Error('잘못된 답입니다.');
       }
       throw new Error(`API 호출 실패: ${response.status}, 응답: ${errorText}`);
     }
 
-    const data: PingResponse = await response.json();
+    const data = await response.json();
+    const pingResponse: PingResponse = {
+      userId: data.userId,
+      registeredAt: data.registeredAt,
+      isEditing: Boolean(data.userId),
+    };
 
-    return NextResponse.json({
-      success: true,
-      data,
-    });
+    return createSuccessResponse(pingResponse, '편집 권한 확인 성공');
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : '서버 오류가 발생했습니다.',
-        success: false,
-      },
-      { status: 500 }
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '서버 오류가 발생했습니다'
     );
   }
 }

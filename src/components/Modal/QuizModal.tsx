@@ -103,7 +103,7 @@ export default function QuizModal({
       const newValue = e.target.value;
       setInputValue(newValue);
 
-      // 입력값이 변경되면 에러 상태 초기화 (더 나은 UX)
+      // 입력값이 변경되면 에러 상태 초기화
       if (hasError && newValue.trim().length > 0) {
         setHasError(false);
       }
@@ -131,11 +131,9 @@ export default function QuizModal({
       aria-describedby="quiz-modal-description"
     >
       <div className="flex h-full flex-col pt-4">
-        {/* 자물쇠 아이콘 */}
         <div className="text-grayscale-400 flex justify-center">
           <SVGIcon icon="IC_Lock" size="sm" />
         </div>
-        {/* 안내 텍스트 */}
         <p
           id="quiz-modal-description"
           className="responsive-text text-md-to-md text-grayscale-400 mt-5 text-center"
@@ -144,7 +142,6 @@ export default function QuizModal({
           <br />
           위키를 작성해 보세요.
         </p>
-        {/* 퀴즈 제목 */}
         <h3
           id="quiz-modal-title"
           className="responsive-text text-2lg-to-lg text-weight-semibold text-grayscale-500 mt-9 w-full text-left"
@@ -166,7 +163,6 @@ export default function QuizModal({
             aria-describedby={hasError ? 'quiz-error' : undefined}
           />
         </div>
-        {/* 에러 메시지 */}
         {hasError && (
           <p
             className="responsive-text text-xs-to-xs text-secondary-red-200 mt-2.5 w-full text-left"
@@ -176,7 +172,6 @@ export default function QuizModal({
             <br />
           </p>
         )}
-        {/* 확인 버튼 */}
         <div className={clsx('w-full', hasError ? 'mt-9' : 'mt-10')}>
           <button
             type="button"
@@ -194,7 +189,6 @@ export default function QuizModal({
             {isSubmitting ? '확인 중...' : '확인'}
           </button>
         </div>
-        {/* 하단 안내 텍스트 */}
         <div className="responsive-text text-xs-to-xs text-grayscale-400 mt-5 text-center">
           <p>위키드는 지인들과 함께하는 즐거운 공간입니다.</p>
           <p>지인에게 상처를 주지 않도록 작성해 주세요.</p>

@@ -13,27 +13,7 @@ import ConfirmModal from '@/components/Modal/ConfirmModal';
 import Button from '@/components/Button/Button';
 import EditTimer from '@/components/EditTimer/EditTimer';
 import { useIdleTimer } from '@/hooks/useIdleTimer';
-import { ProfileData } from '@/types/Wiki';
-
-interface ApiProfileData {
-  id: number;
-  code: string;
-  image: string | null;
-  city: string;
-  mbti: string;
-  job: string;
-  sns: string;
-  birthday: string;
-  nickname: string;
-  bloodType: string;
-  family: string;
-  nationality: string;
-  content: string;
-  teamId: string;
-  securityQuestion: string;
-  updatedAt: string;
-  name: string;
-}
+import { APIProfileData } from '@/types/Api';
 
 export default function WikiPage() {
   const [showSnackBar, setShowSnackBar] = useState(false);
@@ -49,64 +29,70 @@ export default function WikiPage() {
   const params = useParams();
   const code = params.code as string;
 
-  // 현재 사용자 정보 (환경변수에서 로드)
+  // 현재 사용자 정보 (클라이언트에서 직접 환경변수 로드)
   const currentUserCode = process.env.NEXT_PUBLIC_WIKID_CURRENT_USER_CODE || '';
   const currentUserID = parseInt(process.env.NEXT_PUBLIC_WIKID_CURRENT_USER_ID || '0');
 
-  const [profileData, setProfileData] = useState<ApiProfileData | null>(null);
+  const [profileData, setProfileData] = useState<APIProfileData | null>(null);
   // 보안 질문과 답변을 저장 (프로필 수정 시 사용)
   const [securityData, setSecurityData] = useState<{ question: string; answer: string } | null>(
     null
   );
   // 편집된 프로필 데이터를 임시 저장
-  const [editedProfileData, setEditedProfileData] = useState<ProfileData | null>(null);
-  // 편집된 컨텐츠를 임시 저장
+  const [editedProfileData, setEditedProfileData] = useState<APIProfileData | null>(null);
   const [editedContent, setEditedContent] = useState<string>('');
+  const [changedAvatar, setChangedAvatar] = useState<string | File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // 유효한 이미지 URL인지 확인하는 함수
   const getValidImageUrl = (imageUrl: string | null): string => {
     if (!imageUrl) return '';
-    if (imageUrl.includes('example.com') || imageUrl === 'https://example.com/...') return '';
+
+    // 예시 URL 필터링
+    const INVALID_PATTERNS = ['example.com', 'placeholder', 'mock', 'test.com'];
+    if (INVALID_PATTERNS.some((pattern) => imageUrl.includes(pattern))) return '';
+
     try {
-      new URL(imageUrl);
-      return imageUrl;
+      const url = new URL(imageUrl);
+      // HTTPS만 허용하거나, 프로토콜 검증 추가 가능
+      return url.protocol === 'https:' ? imageUrl : '';
     } catch {
       return '';
     }
   };
 
-  // 내 위키인지 판단 - 위키 코드와 내 코드가 일치하는지 확인
+  // 위키 코드와 내 코드가 일치하는지 확인
   const isMyWiki = code === currentUserCode;
 
   const checkEditingStatus = useCallback(async () => {
     try {
       const response = await fetch(`/api/profiles/${code}/ping`);
+      const result = await response.json();
 
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.userId && data.userId !== currentUserID) {
+      if (response.ok && result.data) {
+        const { isEditing, userId } = result.data;
+
+        // 내 위키가 아니고, 다른 사용자가 편집 중일 때만 경고 표시
+        if (!isMyWiki && isEditing && userId && userId !== currentUserID) {
           setIsBeingEdited(true);
           setShowErrorSnackBar(true);
         } else {
           setIsBeingEdited(false);
         }
-      } else if (response.status === 204) {
-        setIsBeingEdited(false);
       } else {
         setIsBeingEdited(false);
       }
     } catch (error) {
-      console.error('편집 상태 확인 오류:', error);
+      console.error('편집 상태 확인 실패:', error);
       setIsBeingEdited(false);
     }
-  }, [code, currentUserID]);
+  }, [code, currentUserID, isMyWiki]);
   useEffect(() => {
     if (code) {
       checkEditingStatus();
     }
   }, [code, checkEditingStatus, isMyWiki]);
 
-  // API를 통해 위키 데이터 로드하는 함수
   const fetchWikiData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -135,7 +121,7 @@ export default function WikiPage() {
     }
   }, [code, fetchWikiData]);
 
-  // 5분 타임아웃 핸들러
+  // 5분 타임아웃 핸들러 - 알림 모달 표시
   const handleTimeout = useCallback(() => {
     setShowTimeoutModal(true);
   }, []);
@@ -146,27 +132,36 @@ export default function WikiPage() {
     handleTimeout
   );
 
-  // 타임아웃 모달 닫기 핸들러
-  const handleTimeoutModalClose = useCallback(() => {
+  // 타임아웃 모달 닫기 핸들러 - 편집 상태 정리하고 데이터 새로고침
+  const handleTimeoutModalClose = useCallback(async () => {
     setShowTimeoutModal(false);
     setHasEditPermission(false);
+    setEditedProfileData(null);
+    setEditedContent('');
+    setChangedAvatar(null);
     stopTimer();
-  }, [stopTimer]);
 
-  const handleProfileChange = useCallback((newData: ProfileData) => {
+    // 프로필 데이터와 편집 상태 새로고침
+    await fetchWikiData();
+    await checkEditingStatus();
+  }, [stopTimer, fetchWikiData, checkEditingStatus]);
+
+  const handleProfileChange = useCallback((newData: APIProfileData) => {
     setEditedProfileData(newData);
   }, []);
 
-  const handleAvatarChange = useCallback((imageUrl?: string) => {
+  const handleAvatarChange = useCallback((imageUrl?: string, file?: File) => {
     if (imageUrl) {
-      setProfileData((prev) => {
+      // File 객체가 있으면 우선적으로 사용
+      setChangedAvatar(file || imageUrl);
+      // 미리보기를 위해 profileData도 업데이트 (Data URL 사용)
+      setProfileData((prev: APIProfileData | null) => {
         if (!prev) return null;
         return {
           ...prev,
           image: imageUrl,
         };
       });
-    } else {
     }
   }, []);
 
@@ -181,10 +176,9 @@ export default function WikiPage() {
 
   // 위키 참여하기 버튼 클릭 핸들러 (편집 상태 확인 후 퀴즈 모달 열기)
   const handleWikiParticipate = useCallback(async () => {
-    // 먼저 편집 상태 확인
+    // 편집 상태 확인
     await checkEditingStatus();
 
-    // 편집 중이 아닌 경우에만 퀴즈 모달 열기
     if (!isBeingEdited) {
       setShowQuizModal(true);
     }
@@ -196,9 +190,9 @@ export default function WikiPage() {
 
     // HTML 태그를 모두 제거하고 남은 텍스트를 확인
     const textContent = content
-      .replace(/<[^>]*>/g, '') // HTML 태그 제거
-      .replace(/&nbsp;/g, ' ') // &nbsp; 엔티티를 공백으로 변환
-      .replace(/\s+/g, ' ') // 여러 공백을 하나로 변환
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ')
       .trim();
 
     return textContent === '';
@@ -210,8 +204,8 @@ export default function WikiPage() {
       return;
     }
 
+    setIsSaving(true);
     try {
-      // 저장할 데이터 준비
       let contentToSave = editedContent.trim() ? editedContent : profileData.content || '';
 
       // 태그만 있고 실제 텍스트가 없다면 빈 문자열로 처리
@@ -219,64 +213,133 @@ export default function WikiPage() {
         contentToSave = '';
       }
 
-      // 컨텐츠 크기 체크 (100KB 제한)
-      if (contentToSave.length > 95000) {
-        // 95,000자 제한 (약 100KB)
-        alert(
-          `컨텐츠가 너무 큽니다. 현재: ${contentToSave.length}자\n최대 95,000자까지 가능합니다. 이미지 크기나 개수를 줄여주세요.`
-        );
-        return;
+      // 컨텐츠 내의 base64 이미지를 S3 URL로 변환
+      const base64ImageRegex = /<img[^>]*src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/g;
+      const base64Images = [...contentToSave.matchAll(base64ImageRegex)];
+
+      if (base64Images.length > 0) {
+        try {
+          // 병렬 이미지 업로드 처리
+          const uploadResults = await Promise.all(
+            base64Images.map(async (match) => {
+              const [fullMatch, imageType, base64Data] = match;
+
+              // base64를 File 객체로 변환
+              const byteCharacters = atob(base64Data);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const file = new File([byteArray], `image.${imageType}`, {
+                type: `image/${imageType}`,
+              });
+
+              // 이미지 업로드 API 호출
+              const imageFormData = new FormData();
+              imageFormData.append('image', file);
+
+              const imageResponse = await fetch('/api/images/upload', {
+                method: 'POST',
+                body: imageFormData,
+              });
+
+              const imageResult = await imageResponse.json();
+
+              if (imageResponse.ok) {
+                return {
+                  success: true,
+                  fullMatch,
+                  newUrl: imageResult.url,
+                };
+              } else {
+                console.error('이미지 업로드 실패:', imageResult);
+                throw new Error(`이미지 업로드 실패: ${imageResult.error}`);
+              }
+            })
+          );
+
+          // 모든 업로드가 성공하면 컨텐츠 내 이미지 URL 교체
+          uploadResults.forEach(({ fullMatch, newUrl }) => {
+            const newImgTag = fullMatch.replace(/src="data:[^"]+"/g, `src="${newUrl}"`);
+            contentToSave = contentToSave.replace(fullMatch, newImgTag);
+          });
+        } catch (error) {
+          console.error('이미지 변환 또는 업로드 오류:', error);
+          alert(error instanceof Error ? error.message : '이미지 처리 중 오류가 발생했습니다.');
+          return;
+        }
       }
 
       const saveData = {
         securityAnswer: securityData.answer,
         securityQuestion: securityData.question,
-        nationality: editedProfileData?.국적 || profileData.nationality || '',
+        nationality: editedProfileData?.nationality || profileData.nationality || '',
         family: profileData.family || '',
-        bloodType: editedProfileData?.혈액형 || profileData.bloodType || '',
-        nickname: editedProfileData?.별명 || profileData.nickname || '',
-        birthday: editedProfileData?.생일 || profileData.birthday || '',
-        sns: editedProfileData?.SNS계정 || profileData.sns || '',
-        job: editedProfileData?.직업 || profileData.job || '',
-        mbti: editedProfileData?.MBTI || profileData.mbti || '',
-        city: editedProfileData?.거주도시 || profileData.city || '',
+        bloodType: editedProfileData?.bloodType || profileData.bloodType || '',
+        nickname: editedProfileData?.nickname || profileData.nickname || '',
+        birthday: editedProfileData?.birthday || profileData.birthday || '',
+        sns: editedProfileData?.sns || profileData.sns || '',
+        job: editedProfileData?.job || profileData.job || '',
+        mbti: editedProfileData?.mbti || profileData.mbti || '',
+        city: editedProfileData?.city || profileData.city || '',
         image: profileData.image || '',
         content: contentToSave,
       };
 
-      const hasImages = saveData.content.includes('data:image');
+      // 이미지 업로드 처리
+      let imageUrl = saveData.image;
 
-      // 컨텐츠가 너무 크고 이미지가 포함된 경우 경고 (90,000자 제한)
-      if (saveData.content.length > 90000 && hasImages) {
-        const shouldTryWithoutImages = confirm(
-          `컨텐츠가 너무 클 수 있습니다. (${saveData.content.length}자)\n` +
-            '이미지를 제거하고 텍스트만 저장해보시겠습니까?'
-        );
-        if (shouldTryWithoutImages) {
-          const contentWithoutImages = saveData.content.replace(/<img[^>]*>/g, '[이미지 제거됨]');
-          saveData.content = contentWithoutImages;
+      if (changedAvatar && changedAvatar instanceof File) {
+        try {
+          const imageFormData = new FormData();
+          imageFormData.append('image', changedAvatar);
+
+          const imageResponse = await fetch('/api/images/upload', {
+            method: 'POST',
+            body: imageFormData,
+          });
+
+          const imageResult = await imageResponse.json();
+
+          if (imageResponse.ok && imageResult.data?.url) {
+            imageUrl = imageResult.data.url;
+          } else {
+            console.error('아바타 이미지 업로드 실패:', imageResult);
+            alert(`이미지 업로드 실패: ${imageResult.error || '알 수 없는 오류'}`);
+            return;
+          }
+        } catch (error) {
+          console.error('아바타 이미지 업로드 오류:', error);
+          alert('이미지 업로드 중 오류가 발생했습니다.');
+          return;
         }
+      } else if (
+        changedAvatar &&
+        typeof changedAvatar === 'string' &&
+        changedAvatar.startsWith('http')
+      ) {
+        // 이미 HTTP URL인 경우
+        imageUrl = changedAvatar;
       }
 
-      // FormData로 전송 (큰 이미지 데이터 처리에 더 적합)
-      const formData = new FormData();
-
-      // 모든 필드를 FormData에 추가
-      Object.entries(saveData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          formData.append(key, String(value));
-        }
-      });
+      // 프로필 업데이트용 데이터
+      const finalSaveData = {
+        ...saveData,
+        image: imageUrl,
+      };
 
       const response = await fetch(`/api/profiles/${code}`, {
         method: 'PATCH',
-        body: formData, // FormData는 Content-Type 헤더를 자동으로 설정함
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalSaveData),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        // 더 구체적인 에러 메시지 제공
         let errorMessage = `프로필 저장에 실패했습니다. (상태: ${response.status})`;
         if (result.message) {
           errorMessage += `\n서버 메시지: ${result.message}`;
@@ -290,16 +353,20 @@ export default function WikiPage() {
 
       setProfileData(result.data);
       setEditedProfileData(null);
+      setChangedAvatar(null);
       setHasEditPermission(false);
       stopTimer();
     } catch (error) {
       alert(error instanceof Error ? error.message : '프로필 저장 중 오류가 발생했습니다.');
+    } finally {
+      setIsSaving(false);
     }
   }, [
     profileData,
     securityData,
     editedProfileData,
     editedContent,
+    changedAvatar,
     code,
     stopTimer,
     hasOnlyEmptyTags,
@@ -310,17 +377,18 @@ export default function WikiPage() {
     setShowSaveConfirmModal(true);
   }, []);
 
-  // 저장 확인 후 실제 저장
+  // 저장
   const handleConfirmSave = useCallback(async () => {
     setShowSaveConfirmModal(false);
     await performSave();
   }, [performSave]);
 
-  // 실제 취소 로직
+  // 취소
   const performCancel = useCallback(async () => {
     setHasEditPermission(false);
     setEditedProfileData(null);
     setEditedContent('');
+    setChangedAvatar(null);
     stopTimer();
     await fetchWikiData();
   }, [stopTimer, fetchWikiData]);
@@ -330,7 +398,7 @@ export default function WikiPage() {
     setShowCancelConfirmModal(true);
   }, []);
 
-  // 취소 확인 후 실제 취소
+  // 취소 확인 후 취소
   const handleConfirmCancel = useCallback(async () => {
     setShowCancelConfirmModal(false);
     await performCancel();
@@ -423,18 +491,9 @@ export default function WikiPage() {
             <Profile
               imgUrl={getValidImageUrl(profileData.image)}
               name={profileData.name || ''}
-              data={{
-                거주도시: profileData.city || '',
-                MBTI: profileData.mbti || '',
-                직업: profileData.job || '',
-                SNS계정: profileData.sns || '',
-                생일: profileData.birthday || '',
-                별명: profileData.nickname || '',
-                혈액형: profileData.bloodType || '',
-                국적: profileData.nationality || '',
-              }}
+              data={profileData}
               isEditMode={hasEditPermission}
-              canEditProfile={isMyWiki} // 내 위키일 때만 프로필 수정 가능
+              canEditProfile={isMyWiki}
               onProfileChange={handleProfileChange}
               onAvatarChange={handleAvatarChange}
             />
@@ -451,9 +510,10 @@ export default function WikiPage() {
                 <Button
                   variant="primary"
                   onClick={handleSave}
+                  disabled={isSaving}
                   className="text-lg-semibold! flex h-10! min-w-0! items-center justify-center px-5! py-[11px]!"
                 >
-                  저장
+                  {isSaving ? '저장 중...' : '저장'}
                 </Button>
               </div>
             )}
@@ -493,9 +553,10 @@ export default function WikiPage() {
             <Button
               variant="primary"
               onClick={handleSave}
+              disabled={isSaving}
               className="text-lg-semibold! flex h-10! min-w-0! items-center justify-center px-5! py-[11px]!"
             >
-              저장
+              {isSaving ? '저장 중...' : '저장'}
             </Button>
           </div>
         </div>
