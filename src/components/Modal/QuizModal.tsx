@@ -27,20 +27,11 @@ const quizButtonStyle = tv({
 });
 
 interface QuizModalProps extends BaseModalProps {
-  onCorrectAnswer: () => void;
+  onCorrectAnswer: (securityQuestion: string, securityAnswer: string) => void;
   title: string;
   placeholder?: string;
-  correctAnswer: string;
+  code: string; // API 호출에 필요한 위키 코드
 }
-
-// 답안 정규화 함수 (공백, 대소문자, 특수문자 처리)
-const normalizeAnswer = (answer: string): string => {
-  return answer
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '') // 연속된 공백을 하나로
-    .replace(/[^\w\uac00-\ud7af]/g, ''); // 특수문자 제거 (한글, 영문, 숫자만)
-};
 
 export default function QuizModal({
   isOpen,
@@ -48,12 +39,13 @@ export default function QuizModal({
   onCorrectAnswer,
   title,
   placeholder = '정답을 입력하세요',
-  correctAnswer,
+  code,
   showCloseButton = true,
   closeOnBackdropClick = false, // 퀴즈 모달은 배경 클릭으로 닫히지 않음
 }: QuizModalProps) {
   const [inputValue, setInputValue] = useState('');
   const [hasError, setHasError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // 모달이 열리면 입력 필드로 포커스 이동
@@ -69,25 +61,42 @@ export default function QuizModal({
     onClose();
   }, [onClose]);
 
-  const handleSubmit = useCallback(() => {
-    const userAnswer = normalizeAnswer(inputValue);
-    const correctNormalized = normalizeAnswer(correctAnswer);
+  const handleSubmit = useCallback(async () => {
+    if (isSubmitting || !inputValue.trim()) return;
 
-    if (userAnswer === correctNormalized) {
-      // 정답인 경우
-      onCorrectAnswer();
-      handleModalClose();
-    } else {
-      // 오답인 경우 - UX 개선
-      setHasError(true);
+    setIsSubmitting(true);
+    setHasError(false);
 
-      // 입력 필드 전체 선택으로 재입력 용이하게 만들기
-      if (inputRef.current) {
-        inputRef.current.focus();
-        inputRef.current.select();
+    try {
+      const response = await fetch(`/api/profiles/${code}/ping`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          securityAnswer: inputValue.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        // 정답인 경우 - 질문과 답변을 함께 전달
+        onCorrectAnswer(title, inputValue.trim());
+        handleModalClose();
+      } else {
+        // 오답인 경우
+        setHasError(true);
+        if (inputRef.current) {
+          inputRef.current.focus();
+          inputRef.current.select();
+        }
       }
+    } catch (error) {
+      console.error('보안 질문 확인 에러:', error);
+      setHasError(true);
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [inputValue, correctAnswer, onCorrectAnswer, handleModalClose]);
+  }, [inputValue, code, title, onCorrectAnswer, handleModalClose, isSubmitting]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,12 +181,17 @@ export default function QuizModal({
           <button
             type="button"
             onClick={handleSubmit}
+            disabled={isSubmitting || !inputValue.trim()}
             className={clsx(
               quizButtonStyle(),
-              'responsive-text text-lg-to-md text-weight-semibold'
+              'responsive-text text-lg-to-md text-weight-semibold',
+              {
+                'cursor-not-allowed opacity-50': isSubmitting || !inputValue.trim(),
+                'cursor-pointer': !isSubmitting && inputValue.trim(),
+              }
             )}
           >
-            확인
+            {isSubmitting ? '확인 중...' : '확인'}
           </button>
         </div>
         {/* 하단 안내 텍스트 */}

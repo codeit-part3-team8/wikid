@@ -103,7 +103,6 @@ export default function Profile({
           console.error('이미지 파일을 읽는 중 오류가 발생했습니다.');
         };
         reader.readAsDataURL(file);
-        console.log('Selected file:', file);
       }
       // 파일 입력 초기화 (같은 파일을 다시 선택할 수 있도록)
       event.target.value = '';

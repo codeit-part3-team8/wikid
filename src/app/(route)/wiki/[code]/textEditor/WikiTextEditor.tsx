@@ -4,6 +4,7 @@ import TextEditor from '@/components/TextEditor/TextEditor';
 import Toolbar from '@/components/TextEditor/Toolbar';
 import { useCommonEditor } from '@/components/TextEditor/editorConfig';
 import styles from './WikiTextEditor.module.css';
+import editorStyles from './WikiTextEditorContent.module.css';
 
 interface WikiTextEditorProps {
   content: string;
@@ -12,7 +13,11 @@ interface WikiTextEditorProps {
 }
 
 const WikiTextEditor = ({ content, onContentChange, name }: WikiTextEditorProps) => {
-  const editor = useCommonEditor(content, onContentChange);
+  const handleContentChange = (newContent: string) => {
+    onContentChange?.(newContent);
+  };
+
+  const editor = useCommonEditor(content, handleContentChange);
   if (!editor) return null;
 
   return (
@@ -45,31 +50,9 @@ const WikiTextEditor = ({ content, onContentChange, name }: WikiTextEditorProps)
 
       {/* 텍스트 에디터 영역 */}
       <div className="mt-6 flex-1 md:mt-8 lg:mt-12">
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              /* 에디터 제목 스타일 */
-              .ProseMirror h1,
-              .ProseMirror h2,
-              .ProseMirror h3 {
-                border-bottom: 1px solid #e5e7eb;
-                padding-bottom: 8px;
-                margin-bottom: 16px;
-                font-weight: 600;
-              }
-              .ProseMirror p {
-                color: #6b7280;
-                line-height: 1.6;
-              }
-              .ProseMirror h1 + p,
-              .ProseMirror h2 + p,
-              .ProseMirror h3 + p {
-                color: #9ca3af;
-              }
-            `,
-          }}
-        />
-        <TextEditor editor={editor} />
+        <div className={`wiki-text-editor-container ${editorStyles.wikiEditor}`}>
+          <TextEditor editor={editor} className="wiki-editor-wrapper" />
+        </div>
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ const modalContainerStyle = tv({
 });
 
 const closeButtonStyle = tv({
-  base: 'absolute top-4 right-4 z-10 text-grayscale-400 transition-colors hover:opacity-70',
+  base: 'absolute top-4 right-4 z-10 text-grayscale-400 transition-colors hover:opacity-70 cursor-pointer',
 });
 
 interface BaseModalComponentProps extends BaseModalProps {

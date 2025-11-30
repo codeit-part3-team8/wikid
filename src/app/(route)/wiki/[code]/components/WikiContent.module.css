@@ -1,0 +1,140 @@
+/* WikiContent 전용 스타일 */
+.wikiContent {
+  color: #6b7280;
+}
+
+/* 제목 스타일 */
+.wikiContent h1,
+.wikiContent h2,
+.wikiContent h3 {
+  color: #6b7280;
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 8px;
+}
+
+.wikiContent h1 {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.wikiContent h2 {
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.wikiContent h3 {
+  margin-bottom: 8px;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* 텍스트 스타일 */
+.wikiContent p {
+  color: #6b7280;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.wikiContent strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.wikiContent em {
+  font-style: italic;
+}
+
+/* 링크 스타일 */
+.wikiContent a {
+  color: #2563eb !important;
+  text-decoration: underline !important;
+}
+
+/* 리스트 스타일 */
+.wikiContent ul,
+.wikiContent ol {
+  margin-bottom: 16px !important;
+  margin-left: 20px !important;
+}
+
+.wikiContent ul {
+  list-style-type: disc !important;
+}
+
+.wikiContent ol {
+  list-style-type: decimal !important;
+}
+
+.wikiContent li {
+  margin-bottom: 4px !important;
+}
+
+/* 구분선 스타일 */
+.wikiContent hr {
+  margin: 12px 0 !important;
+  border: none !important;
+  border-top: 1px solid #9ca3af !important;
+}
+
+/* 인용문 스타일 */
+.wikiContent blockquote {
+  border-left: 4px solid #fbbf24 !important;
+  padding-left: 16px !important;
+  font-style: italic !important;
+}
+
+/* 표 스타일 */
+.wikiContent table {
+  margin: 16px 0 !important;
+  border-collapse: collapse !important;
+  border: 1px solid #d1d5db !important;
+  text-align: left !important;
+  width: auto !important;
+}
+
+.wikiContent th,
+.wikiContent td {
+  border: 1px solid #d1d5db !important;
+  padding: 12px 16px !important;
+  vertical-align: top !important;
+  position: relative !important;
+  min-width: 60px !important;
+  height: auto !important;
+}
+
+.wikiContent th {
+  background-color: #f3f4f6 !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+}
+
+.wikiContent td {
+  background-color: white !important;
+}
+
+.wikiContent .selectedCell {
+  background-color: #e0f2fe !important;
+}
+
+/* 이미지 스타일 */
+.wikiContent img {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 16px 0 !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.wikiContent img[data-drag-handle] {
+  cursor: grab !important;
+}
+
+.wikiContent img:hover {
+  opacity: 0.9 !important;
+}

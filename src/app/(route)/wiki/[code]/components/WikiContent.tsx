@@ -5,6 +5,7 @@ import { tv } from 'tailwind-variants';
 import { WikiContentProps } from '@/types/Wiki';
 import WikiTextEditor from '../textEditor/WikiTextEditor';
 import { wikiDefaultTemplate } from '../textEditor/WikiTemplate';
+import styles from './WikiContent.module.css';
 
 // WikiContent 컨테이너 스타일
 const wikiContentStyle = tv({
@@ -32,6 +33,7 @@ export default function WikiContent({
   hasEditPermission,
   content = '',
   onStartEdit,
+  onContentChange,
   className,
   name,
 }: WikiContentProps) {
@@ -48,22 +50,22 @@ export default function WikiContent({
     return (
       <div className={wikiContentStyle({ editMode: true, className })}>
         <div className={editContentStyle()}>
-          <WikiTextEditor content={getEditorContent()} name={name} />
+          <WikiTextEditor
+            content={getEditorContent()}
+            name={name}
+            onContentChange={onContentChange}
+          />
         </div>
       </div>
     );
   }
 
   if (hasContent) {
-    // 컨텐츠가 있는 경우 - 뷰어 모드
+    // 컨텐츠가 있는 경우 - 뷰어 모드 (HTML 콘텐츠 렌더링, 흰색 배경)
     return (
-      <div className={wikiContentStyle({ editMode: false, className })}>
-        <div>
-          <div className="prose max-w-none">
-            <p className="responsive-text text-md-to-sm text-grayscale-500">
-              {content || '위키 컨텐츠가 여기에 표시됩니다.'}
-            </p>
-          </div>
+      <div className={wikiContentStyle({ editMode: true, className })}>
+        <div className="p-6">
+          <div className={styles.wikiContent} dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       </div>
     );

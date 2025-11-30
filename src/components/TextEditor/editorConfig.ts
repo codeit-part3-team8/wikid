@@ -56,14 +56,98 @@ export const useCommonEditor = (
     },
   });
 
+  // 이미지 크기 제한을 위한 커스텀 Image 익스텐션
+  const CustomImage = Image.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        src: {
+          default: null,
+          parseHTML: (element) => {
+            const src = element.getAttribute('src');
+            // Base64 이미지 크기 체크하되, 너무 큰 경우에도 일단 표시하고 경고만 출력
+            if (src && src.startsWith('data:') && src.length > 5242880) {
+              // 5MB 제한 (5 * 1024 * 1024 bytes in base64)
+              console.warn('이미지가 너무 큽니다. 크기를 5MB 이하로 줄여주세요.');
+              // null을 반환하지 않고 src를 그대로 반환하여 이미지가 표시되도록 함
+            }
+            return src;
+          },
+          renderHTML: (attributes) => {
+            if (!attributes.src) {
+              return {};
+            }
+            return {
+              src: attributes.src,
+            };
+          },
+        },
+        alt: {
+          default: null,
+          parseHTML: (element) => element.getAttribute('alt'),
+          renderHTML: (attributes) => {
+            if (!attributes.alt) {
+              return {};
+            }
+            return {
+              alt: attributes.alt,
+            };
+          },
+        },
+        title: {
+          default: null,
+          parseHTML: (element) => element.getAttribute('title'),
+          renderHTML: (attributes) => {
+            if (!attributes.title) {
+              return {};
+            }
+            return {
+              title: attributes.title,
+            };
+          },
+        },
+      };
+    },
+
+    parseHTML() {
+      return [
+        {
+          tag: 'img[src]',
+          getAttrs: (element) => {
+            const src = element.getAttribute('src');
+            // 빈 src는 무시
+            if (!src) return false;
+            return {
+              src,
+              alt: element.getAttribute('alt'),
+              title: element.getAttribute('title'),
+            };
+          },
+        },
+      ];
+    },
+
+    renderHTML({ HTMLAttributes }) {
+      return ['img', HTMLAttributes];
+    },
+  });
+
   const editor = useEditor({
     extensions: [
+      // StarterKit에서 중복되는 익스텐션들 비활성화
+      StarterKit.configure({
+        // 중복되는 익스텐션 비활성화
+        horizontalRule: false,
+        strike: false,
+        link: false, // Link 중복 방지
+      }),
+      // 커스텀 이미지 (기본 Image 대체)
+      CustomImage,
+      // 추가 익스텐션들
       Color,
-      HorizontalRule, // Divider
-      Image, // 이미지 추가
+      HorizontalRule,
       Link.configure({ openOnClick: true }),
       Placeholder.configure({ placeholder: '본문을 입력해주세요' }),
-      StarterKit,
       Strike,
       CustomTable,
       TableCell,

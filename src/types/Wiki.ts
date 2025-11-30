@@ -35,6 +35,7 @@ export interface WikiContentProps {
   hasEditPermission: boolean;
   content?: string;
   onStartEdit: () => void;
+  onContentChange?: (content: string) => void;
   className?: string;
   name: string;
 }
