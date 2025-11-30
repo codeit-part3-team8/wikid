@@ -217,6 +217,7 @@ export const useCommonEditor = (
         strike: false,
         link: false,
       }),
+      TextStyle,
       CustomImage,
       Color,
       HorizontalRule,
@@ -228,8 +229,14 @@ export const useCommonEditor = (
       TableHeader,
       TableRow,
       TextAlign.configure({ types: ['paragraph', 'heading', 'listItem'] }),
-      TextStyle,
-      Underline,
+      // Underline을 커스텀 이름으로 등록하여 충돌 방지
+      Underline.extend({
+        name: 'customUnderline',
+      }).configure({
+        HTMLAttributes: {
+          class: 'custom-underline',
+        },
+      }),
     ],
     content: content || '',
     immediatelyRender: false,

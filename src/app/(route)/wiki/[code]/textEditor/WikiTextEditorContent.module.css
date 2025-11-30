@@ -54,9 +54,29 @@
   line-height: 1.6 !important;
 }
 
-.wikiEditor strong {
+.wikiEditor strong:not([style*='color']) {
   color: #374151 !important;
   font-weight: 600 !important;
+}
+
+.wikiEditor strong {
+  font-weight: 600 !important;
+}
+
+/* 컬러 텍스트 및 조합 스타일 */
+.wikiEditor strong[style*='color'] {
+  font-weight: 600 !important;
+  /* 인라인 스타일의 컬러를 그대로 유지 */
+}
+
+.wikiEditor span[style*='color'] strong {
+  font-weight: 600 !important;
+  /* 부모 span의 컬러를 상속받도록 */
+}
+
+.wikiEditor strong span[style*='color'] {
+  font-weight: 600 !important;
+  /* strong 내부 span의 인라인 컬러 적용 */
 }
 
 .wikiEditor em {
@@ -205,8 +225,38 @@
   padding-bottom: 8px !important;
 }
 
-.wikiEditor .ProseMirror strong {
+.wikiEditor .ProseMirror strong:not([style*='color']) {
   color: #374151 !important;
+  font-weight: 600 !important;
+}
+
+.wikiEditor .ProseMirror strong {
+  font-weight: 600 !important;
+}
+
+/* 컬러 텍스트 스타일 - ProseMirror 내부 - 강제 적용 */
+
+.wikiEditor .ProseMirror span[style*='color'] * {
+  color: inherit !important;
+}
+
+/* 모든 인라인 색상 강제 적용 */
+.wikiEditor .ProseMirror span[style*='rgb'] * {
+  color: inherit !important;
+}
+
+/* 컬러 스타일 규칙들은 inherit으로 처리 */
+
+.wikiEditor .ProseMirror span[style*='color'] strong {
+  font-weight: 600 !important;
+  color: inherit !important;
+}
+
+.wikiEditor .ProseMirror strong[style*='color'] {
+  font-weight: 600 !important;
+}
+
+.wikiEditor .ProseMirror strong span[style*='color'] {
   font-weight: 600 !important;
 }
 
@@ -384,4 +434,36 @@
 
 .wikiEditor .ProseMirror::-webkit-scrollbar-track {
   background-color: transparent !important;
+}
+
+/* 강제 컬러 적용 - CSS 모듈 호환 */
+.wikiEditor .ProseMirror span[style*='color'] {
+  position: relative;
+}
+
+.wikiEditor .ProseMirror span[style*='color'] * {
+  color: inherit !important;
+}
+
+.wikiEditor .ProseMirror span[style*='color'] strong {
+  font-weight: 600 !important;
+  color: inherit !important;
+}
+
+/* 글로벌 스타일 - :global() 래퍼 사용 */
+:global(div[contenteditable='true'] span[style*='color']) {
+  position: relative;
+}
+
+:global(div[contenteditable='true'] span[style*='color'] *) {
+  color: inherit !important;
+}
+
+:global(div[contenteditable='true'] span[style*='color'] strong) {
+  font-weight: 600 !important;
+  color: inherit !important;
+}
+
+:global(.tiptap span[style*='color'] *) {
+  color: inherit !important;
 }

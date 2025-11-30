@@ -48,6 +48,9 @@ export default function WikiPage() {
   const getValidImageUrl = (imageUrl: string | null): string => {
     if (!imageUrl) return '';
 
+    // Data URL (base64)인 경우 그대로 반환 (미리보기용)
+    if (imageUrl.startsWith('data:image/')) return imageUrl;
+
     // 예시 URL 필터링
     const INVALID_PATTERNS = ['example.com', 'placeholder', 'mock', 'test.com'];
     if (INVALID_PATTERNS.some((pattern) => imageUrl.includes(pattern))) return '';
@@ -247,10 +250,14 @@ export default function WikiPage() {
               const imageResult = await imageResponse.json();
 
               if (imageResponse.ok) {
+                const newUrl = imageResult.data?.url || imageResult.url;
+                if (!newUrl) {
+                  throw new Error('업로드된 이미지 URL을 찾을 수 없습니다.');
+                }
                 return {
                   success: true,
                   fullMatch,
-                  newUrl: imageResult.url,
+                  newUrl,
                 };
               } else {
                 console.error('이미지 업로드 실패:', imageResult);
