@@ -5,6 +5,8 @@ import Avatar from '@/components/Avatar/Avatar';
 import { useState } from 'react';
 import { Comment as CommentType } from '@/types/Comment';
 import { getFormatDate } from '@/utils/getFormatDate';
+import { useUpdateComment } from '../../hooks/comment/useUpdateComment';
+import { useDeleteComment } from '../../hooks/comment/useDeleteComment';
 import IconButton from '@/components/IconButton/IconButton';
 import TextArea from '../TextArea/TextArea';
 
@@ -21,10 +23,22 @@ const Comment = ({ comment, currentUserId }: CommentProps) => {
   const formattedUpdated = getFormatDate(comment.updatedAt);
   const isWriter = currentUserId && comment.writer.id === currentUserId;
 
-  const handleSubmit = () => {
-    // 실제 서버 전송 로직 필요
-    console.log('submit', content);
-    setIsEditing(false);
+  const { updateComment } = useUpdateComment(comment.id);
+  const { deleteComment } = useDeleteComment(comment.id);
+
+  const handleSubmit = async () => {
+    const updated = await updateComment(content);
+    if (updated) {
+      setIsEditing(false);
+      window.location.reload();
+    }
+  };
+
+  const handleDelete = async () => {
+    const deleted = await deleteComment();
+    if (deleted) {
+      window.location.reload();
+    }
   };
 
   return (
@@ -55,7 +69,7 @@ const Comment = ({ comment, currentUserId }: CommentProps) => {
                 <IconButton
                   icon="IC_Delete"
                   className="h-5 w-5 md:h-6 md:w-6"
-                  onClick={() => console.log('delete')}
+                  onClick={handleDelete}
                 />
               </div>
             )}

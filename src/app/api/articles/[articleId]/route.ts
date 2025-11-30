@@ -16,11 +16,10 @@ export function parseArticleId(articleId: string) {
   return id;
 }
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function GET(_request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
-    const { articleId } = await params;
+    const { articleId } = await context.params;
     const id = parseArticleId(articleId);
-
     const article = await safeFetch(`${API.ARTICLES}${id}`);
 
     return NextResponse.json({
@@ -32,9 +31,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<P
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function PATCH(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
-    const { articleId } = await params;
+    const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
     const body = await request.json();
@@ -55,10 +54,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: { params: Promise<Params> }) {
+export async function DELETE(_request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
-    const { articleId } = await params;
+    const { articleId } = await context.params;
     const id = parseArticleId(articleId);
+
     const data = await safeFetch(`${API.ARTICLES}${id}`, { method: 'DELETE' });
 
     return NextResponse.json({
