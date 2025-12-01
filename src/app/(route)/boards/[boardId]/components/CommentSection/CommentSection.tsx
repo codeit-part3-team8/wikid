@@ -3,20 +3,19 @@
 import { useState } from 'react';
 import { useComments } from '../../hooks/comment/useComments';
 import { useCreateComment } from '../../hooks/comment/useCreateComment';
-import CommentCount from './CommentCount/CommentCount';
-import CommentList from './CommentList/CommentList';
-import CommentUploadBox from './CommentUploadBox/CommentUploadBox';
+import CommentCount from './CommentCount';
+import CommentList from './CommentList';
+import CommentUploadBox from './CommentUploadBox';
 import SnackBar from '@/components/SnackBar/SnackBar';
 
 interface CommentSectionProps {
-  articleId: string;
+  boardId: string;
 }
-export default function CommentSection({ articleId }: CommentSectionProps) {
+export default function CommentSection({ boardId }: CommentSectionProps) {
   const [showSnackBar, setShowSnackBar] = useState(false);
-  const [currentUserId] = useState<number | null>(null);
 
-  const { comments, loading: cloading, error: cerror, refetch } = useComments({ articleId });
-  const { createComment } = useCreateComment(articleId);
+  const { comments, loading: cloading, error: cerror, refetch } = useComments({ boardId });
+  const { createComment } = useCreateComment(boardId);
 
   const handleUpload = async (content: string) => {
     const newComment = await createComment(content);
@@ -36,7 +35,7 @@ export default function CommentSection({ articleId }: CommentSectionProps) {
           {cloading && <p>댓글 불러오는중...</p>}
           {cerror && <p className="bg-secondary-red-200">{cerror}</p>}
         </div>
-        <CommentList comments={comments} currentUserId={currentUserId} refetch={refetch} />
+        <CommentList comments={comments} refetch={refetch} />
       </div>
       <SnackBar
         isOpen={showSnackBar}

@@ -1,7 +1,5 @@
 import { tv } from 'tailwind-variants';
-import Image from 'next/image';
-import Arrow_left from '@/assets/paginationArrow/arrow_left.png';
-import Arrow_right from '@/assets/paginationArrow/arrow_right.png';
+import SVGIcon from '../SVGIcon/SVGIcon';
 const PAGE_BLOCK = 5; // 보여지는 버튼 개수
 
 interface PaginationProps {
@@ -81,7 +79,7 @@ export default function Pagination({
   return (
     <div className={paginationStyle()}>
       <button className={paginationBtnStyle()} disabled={currentPage === 1} onClick={handlePrev}>
-        <Image src={Arrow_left} alt="이전 페이지" />
+        <SVGIcon icon="IC_Expand" className="rotate-270" />
       </button>
       {pageBtn.map((_, num) => {
         const pageNum = startPage + num;
@@ -101,7 +99,7 @@ export default function Pagination({
         disabled={currentPage === totalPage}
         onClick={handleNext}
       >
-        <Image src={Arrow_right} alt="다음 페이지" />
+        <SVGIcon icon="IC_Expand" className="rotate-90" />
       </button>
     </div>
   );

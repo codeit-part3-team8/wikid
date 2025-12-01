@@ -6,12 +6,6 @@ import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  validateName,
-  validateEmail,
-  validatePassword,
-  validatePasswordConfirm,
-} from '@/utils/validation';
 
 // 회원가입 API 함수
 async function signUp(data: {
@@ -75,16 +69,17 @@ export default function SignupPage() {
 
     switch (field) {
       case 'name':
-        error = validateName(formData.name) || '';
+        if (!formData.name) error = '이름을 입력해주세요.';
         break;
       case 'email':
-        error = validateEmail(formData.email) || '';
+        if (!formData.email) error = '이메일을 입력해주세요.';
         break;
       case 'password':
-        error = validatePassword(formData.password) || '';
+        if (!formData.password) error = '비밀번호를 입력해주세요.';
+        else if (formData.password.length < 8) error = '비밀번호는 8자 이상이어야 합니다.';
         break;
       case 'passwordConfirm':
-        error = validatePasswordConfirm(formData.password, formData.passwordConfirm) || '';
+        if (formData.password !== formData.passwordConfirm) error = '비밀번호가 일치하지 않습니다.';
         break;
     }
 
@@ -98,20 +93,22 @@ export default function SignupPage() {
     e.preventDefault();
 
     // 전체 유효성 검사
-    const nameError = validateName(formData.name);
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
-    const passwordConfirmError = validatePasswordConfirm(
-      formData.password,
-      formData.passwordConfirm
-    );
+    const nameError = !formData.name ? '이름을 입력해주세요.' : '';
+    const emailError = !formData.email ? '이메일을 입력해주세요.' : '';
+    const passwordError = !formData.password
+      ? '비밀번호를 입력해주세요.'
+      : formData.password.length < 8
+        ? '비밀번호는 8자 이상이어야 합니다.'
+        : '';
+    const passwordConfirmError =
+      formData.password !== formData.passwordConfirm ? '비밀번호가 일치하지 않습니다.' : '';
 
     if (nameError || emailError || passwordError || passwordConfirmError) {
       setErrors({
-        name: nameError || '',
-        email: emailError || '',
-        password: passwordError || '',
-        passwordConfirm: passwordConfirmError || '',
+        name: nameError,
+        email: emailError,
+        password: passwordError,
+        passwordConfirm: passwordConfirmError,
       });
       return;
     }

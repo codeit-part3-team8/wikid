@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { useAuth } from '@/contexts/AuthContext';
-import { validateEmail, validatePassword } from '@/utils/validation';
 
 // 로그인 API 함수
 async function signIn(data: { email: string; password: string }) {
@@ -61,10 +60,10 @@ export default function LoginPage() {
 
     switch (field) {
       case 'email':
-        error = validateEmail(formData.email) || '';
+        if (!formData.email) error = '이메일을 입력해주세요.';
         break;
       case 'password':
-        error = validatePassword(formData.password) || '';
+        if (!formData.password) error = '비밀번호를 입력해주세요.';
         break;
     }
 
@@ -78,13 +77,13 @@ export default function LoginPage() {
     e.preventDefault();
 
     // 전체 유효성 검사
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
+    const emailError = !formData.email ? '이메일을 입력해주세요.' : '';
+    const passwordError = !formData.password ? '비밀번호를 입력해주세요.' : '';
 
     if (emailError || passwordError) {
       setErrors({
-        email: emailError || '',
-        password: passwordError || '',
+        email: emailError,
+        password: passwordError,
       });
       return;
     }

@@ -12,23 +12,24 @@ import EditButton from './EditButton';
 import DeleteButton from './DeleteButton';
 import LikeButton from './LikeButton';
 import Divider from '@/components/Divider/Divider';
+import LoadingDots from '@/components/LoadingDots/LoadingDots';
 
 interface BoardProps {
-  articleId: string;
+  boardId: string;
 }
 
-const Board = ({ articleId }: BoardProps) => {
+const Board = ({ boardId }: BoardProps) => {
   const router = useRouter();
 
-  const { article, loading, error } = useArticle({ articleId });
+  const { article, loading, error } = useArticle({ boardId });
   const { deleteArticle } = useDeleteArticle({
-    articleId,
+    boardId,
     onSuccess: () => router.push('/boards'),
   });
 
-  if (loading) return <p>로딩중...</p>;
+  if (loading) return <LoadingDots />;
   if (error) return <p>에러: {error}</p>;
-  if (!article) return null;
+  if (!article) return <p>엥</p>;
 
   const formatDate = getFormatDate(article.createdAt);
 
@@ -47,13 +48,13 @@ const Board = ({ articleId }: BoardProps) => {
             <span>{article.writer.name}</span>
             <span>{formatDate}</span>
           </div>
-          <LikeButton articleId={articleId} />
+          <LikeButton boardId={boardId} likeCount={article.likeCount} isLiked={article.isLiked} />
         </div>
         <Divider className="lg:hidden" />
       </div>
       <div className="content flex flex-col">
         <div>
-          <Image src={article.image || defaultImage} alt="게시글 이미지" />
+          <Image src={article.image || defaultImage} alt="게시글 이미지" width={300} height={300} />
         </div>
         <span className="text-lg-regular">{article.content}</span> {/* sm:text-md-regular */}
       </div>

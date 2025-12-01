@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { useState } from 'react';
-import TextArea from '../../TextArea/TextArea';
+import TextArea from '../TextArea/TextArea';
 import UploadButton from './UploadButton';
 
 const COMMENT_PLACEHOLDER = '허위사실, 비방, 욕설 등은 삼가해주세요.';
