@@ -1,4 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+'use client';
+
+import { useState } from 'react';
+import { getAccessToken } from '@/utils/auth';
 
 interface ArticlePayload {
   image?: string;
@@ -12,21 +15,17 @@ interface PostResponse {
 }
 
 export const usePostArticle = () => {
+  const accessToken = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<PostResponse | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
-
-  useEffect(() => {
-    return () => {
-      // 컴포넌트 언마운트 시 진행 중인 요청 취소
-      abortControllerRef.current?.abort();
-    };
-  }, []);
 
   const postArticle = async (payload: ArticlePayload, onSuccess?: (data: PostResponse) => void) => {
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+    if (!accessToken) {
+      setError('로그인이 필요합니다.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -35,14 +34,30 @@ export const usePostArticle = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(payload),
-        signal: abortController.signal,
       });
 
       if (!res.ok) {
-        const errorBody = await res.json();
-        throw new Error(errorBody.message || `HTTP error! status: ${res.status}`);
+        let errorMessage = `HTTP error! status: ${res.status}`;
+        try {
+          const errorBody = await res.json();
+          errorMessage = errorBody.message || errorMessage;
+        } catch {
+          // 서버가 JSON을 안보냈을 경우 그대로 유지
+        }
+
+        switch (res.status) {
+          case 400:
+            throw new Error(errorMessage || '잘못된 요청입니다.');
+          case 401:
+            throw new Error(errorMessage || '로그인이 필요합니다.');
+          case 403:
+            throw new Error(errorMessage || '접근 권한이 없습니다.');
+          default:
+            throw new Error(errorMessage || '게시글 등록에 실패했습니다.');
+        }
       }
 
       const resData: PostResponse = await res.json();
@@ -58,11 +73,10 @@ export const usePostArticle = () => {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred during posting.');
+        setError('알 수 없는 에러가 발생했습니다.');
       }
     } finally {
       setLoading(false);
-      abortControllerRef.current = null;
     }
   };
 

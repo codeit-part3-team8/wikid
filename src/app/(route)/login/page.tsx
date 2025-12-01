@@ -1,106 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Input from '@/components/Input/Input';
-import Button from '@/components/Button/Button';
-import { signIn } from '@/api/auth';
-import { setAccessToken, setRefreshToken } from '@/utils/auth';
-import { validateEmail, validatePassword } from '@/utils/validation';
+import Input from '../../../components/Input/Input';
+import Button from '../../../components/Button/Button';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // 입력 시 에러 제거
-    if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
-  };
-
-  const handleBlur = (field: keyof typeof formData) => {
-    let error = '';
-
-    switch (field) {
-      case 'email':
-        error = validateEmail(formData.email) || '';
-        break;
-      case 'password':
-        error = validatePassword(formData.password) || '';
-        break;
-    }
-
-    setErrors((prev) => ({
-      ...prev,
-      [field]: error,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // 전체 유효성 검사
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
-
-    if (emailError || passwordError) {
-      setErrors({
-        email: emailError || '',
-        password: passwordError || '',
-      });
-      return;
-    }
-
     setIsLoading(true);
 
-    try {
-      const response = await signIn({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      // 토큰 저장
-      setAccessToken(response.accessToken);
-      setRefreshToken(response.refreshToken);
-
-      // 메인 페이지로 이동
-      router.push('/');
-    } catch (error) {
-      console.error('로그인 실패:', error);
-
-      // 비밀번호 에러 표시
-      const errorMessage = error instanceof Error ? error.message : '로그인에 실패했습니다';
-
-      if (errorMessage.includes('비밀번호') || errorMessage.includes('password')) {
-        setErrors((prev) => ({
-          ...prev,
-          password: '비밀번호가 일치하지 않습니다',
-        }));
-      } else {
-        alert(errorMessage);
-      }
-    } finally {
+    // 로그인 로직
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      console.log('로그인:', { email, password });
+    }, 2000);
   };
 
   return (
@@ -113,13 +31,10 @@ export default function LoginPage() {
             {/* 이메일 */}
             <Input
               label="이메일"
-              name="email"
               type="email"
               placeholder="이메일을 입력해 주세요"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={() => handleBlur('email')}
-              error={errors.email}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               fullWidth
             />
@@ -127,13 +42,10 @@ export default function LoginPage() {
             {/* 비밀번호 */}
             <Input
               label="비밀번호"
-              name="password"
               type="password"
               placeholder="비밀번호를 입력해 주세요"
-              value={formData.password}
-              onChange={handleChange}
-              onBlur={() => handleBlur('password')}
-              error={errors.password}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               fullWidth
             />

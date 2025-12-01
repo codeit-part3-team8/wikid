@@ -19,12 +19,20 @@ export async function POST(_request: NextRequest, context: { params: Params | Pr
   }
 }
 
-export async function DELETE(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function DELETE(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
-    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, { method: 'DELETE' });
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      return NextResponse.json({ message: '권한이 없습니다' }, { status: 401 });
+    }
+
+    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, {
+      method: 'DELETE',
+      headers: { Authorization: authHeader },
+    });
     return NextResponse.json({
       message: `${id}/like deleted`,
       data: data,

@@ -1,6 +1,4 @@
-// API 기본 설정
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || '';
+import { API } from '@/constants/api';
 
 // 회원가입 요청 타입
 export interface SignUpRequest {
@@ -37,7 +35,7 @@ export interface ErrorResponse {
  * 회원가입 API
  */
 export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/auth/signUp`, {
+  const response = await fetch(`${API.BASE}/auth/signUp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -57,27 +55,32 @@ export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
  * 로그인 API
  */
 export const signIn = async (data: SignInRequest): Promise<AuthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/auth/signIn`, {
+  const response = await fetch(`${API.BASE}/auth/signIn`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
-  if (!response.ok) {
-    const error: ErrorResponse = await response.json();
-    throw new Error(error.message || '로그인에 실패했습니다.');
-  }
+  const text = await response.text(); // 먼저 텍스트로 받아서
+  try {
+    const json: AuthResponse | ErrorResponse = JSON.parse(text);
 
-  return response.json();
+    if (!response.ok) {
+      throw new Error((json as ErrorResponse).message || '로그인에 실패했습니다.');
+    }
+
+    return json as AuthResponse;
+  } catch {
+    // JSON이 아니면 HTML 등 에러 페이지를 받았다는 의미
+    throw new Error(`서버 응답 오류: ${text}`);
+  }
 };
 
 /**
  * 토큰 새로고침 API
  */
 export const refreshToken = async (refreshToken: string): Promise<AuthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/auth/refresh-token`, {
+  const response = await fetch(`${API.BASE}/auth/refresh-token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
