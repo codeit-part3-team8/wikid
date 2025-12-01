@@ -1,9 +1,10 @@
 'use client';
-import { useRouter } from 'next/navigation';
+
 import Button from '@/components/Button/Button';
+import { useRouter } from 'next/navigation';
 
 export default function MyPage() {
-  const router = useRouter();
+  const router = useRouter(); // ⬅ useRouter 훅 호출
 
   return (
     <div className="min-h-screen bg-white">
