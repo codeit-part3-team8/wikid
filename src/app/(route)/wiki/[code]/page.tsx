@@ -18,6 +18,7 @@ import { APIProfileData } from '@/types/Api';
 export default function WikiPage() {
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showErrorSnackBar, setShowErrorSnackBar] = useState(false);
+  const [showLoginRequiredSnackBar, setShowLoginRequiredSnackBar] = useState(false);
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
@@ -32,6 +33,9 @@ export default function WikiPage() {
   // 현재 사용자 정보 (클라이언트에서 직접 환경변수 로드)
   const currentUserCode = process.env.NEXT_PUBLIC_WIKID_CURRENT_USER_CODE || '';
   const currentUserID = parseInt(process.env.NEXT_PUBLIC_WIKID_CURRENT_USER_ID || '0');
+
+  // 로그인 상태 확인 (code 값이 존재하지 않으면 비로그인 상태)
+  const isLoggedIn = Boolean(currentUserCode);
 
   const [profileData, setProfileData] = useState<APIProfileData | null>(null);
   // 보안 질문과 답변을 저장 (프로필 수정 시 사용)
@@ -124,6 +128,20 @@ export default function WikiPage() {
     }
   }, [code, fetchWikiData]);
 
+  // 초기 로그인 상태 확인
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setShowLoginRequiredSnackBar(true);
+    }
+  }, [isLoggedIn]);
+
+  // 초기 로그인 상태 확인
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setShowLoginRequiredSnackBar(true);
+    }
+  }, [isLoggedIn]);
+
   // 5분 타임아웃 핸들러 - 알림 모달 표시
   const handleTimeout = useCallback(() => {
     setShowTimeoutModal(true);
@@ -168,22 +186,32 @@ export default function WikiPage() {
     }
   }, []);
 
-  const handleContentChange = useCallback((content: string) => {
+  const handleContentChange = (content: string) => {
     setEditedContent(content);
-  }, []);
+  };
 
   // 비활성화된 버튼 클릭 핸들러
-  const handleDisabledButtonClick = useCallback(() => {
+  const handleDisabledButtonClick = () => {
     setShowErrorSnackBar(true);
-  }, []);
+  };
+
+  // 비로그인 상태에서 위키 참여 시도 시 스낵바 표시
+  const handleLoginRequired = () => {
+    setShowLoginRequiredSnackBar(true);
+  };
 
   // 위키 참여하기 버튼 클릭 핸들러 (편집 상태 확인 후 퀴즈 모달 열기)
   const handleWikiParticipate = useCallback(async () => {
+    // 로그인 상태 확인
+    if (!isLoggedIn) {
+      return;
+    }
+
     const editingByOther = await checkEditingStatus();
     if (!editingByOther) {
       setShowQuizModal(true);
     }
-  }, [checkEditingStatus]);
+  }, [checkEditingStatus, isLoggedIn]);
 
   // HTML 태그만 있고 실제 텍스트가 없는지 확인하는 함수
   const hasOnlyEmptyTags = useCallback((content: string): boolean => {
@@ -473,11 +501,11 @@ export default function WikiPage() {
                 {profileData.content && profileData.content.trim() && (
                   <Button
                     onClick={isBeingEdited ? handleDisabledButtonClick : handleWikiParticipate}
-                    disabled={isBeingEdited}
+                    disabled={isBeingEdited || !isLoggedIn}
                     loading={isBeingEdited}
-                    variant="primary"
+                    variant={!isLoggedIn ? 'secondary' : 'primary'}
                     size="md"
-                    className="flex items-center justify-center whitespace-nowrap"
+                    className={`flex items-center justify-center whitespace-nowrap ${!isLoggedIn ? 'bg-grayscale-300! border-grayscale-300! text-white!' : ''}`}
                     style={{
                       width: '160px',
                       height: '45px',
@@ -501,7 +529,13 @@ export default function WikiPage() {
               hasContent={!!(profileData.content && profileData.content.trim())}
               hasEditPermission={hasEditPermission}
               content={profileData.content || ''}
-              onStartEdit={isBeingEdited ? handleDisabledButtonClick : handleWikiParticipate}
+              onStartEdit={
+                isBeingEdited
+                  ? handleDisabledButtonClick
+                  : !isLoggedIn
+                    ? handleLoginRequired
+                    : handleWikiParticipate
+              }
               onContentChange={handleContentChange}
               className="block max-[1024px]:hidden"
               name={profileData.name || ''}
@@ -546,7 +580,13 @@ export default function WikiPage() {
             hasContent={!!(profileData.content && profileData.content.trim())}
             hasEditPermission={hasEditPermission}
             content={profileData.content || ''}
-            onStartEdit={isBeingEdited ? handleDisabledButtonClick : handleWikiParticipate}
+            onStartEdit={
+              isBeingEdited
+                ? handleDisabledButtonClick
+                : !isLoggedIn
+                  ? handleLoginRequired
+                  : handleWikiParticipate
+            }
             onContentChange={handleContentChange}
             name={profileData.name || ''}
             className="block"
@@ -595,6 +635,13 @@ export default function WikiPage() {
         message="다른 친구가 편집하고 있어요. 나중에 다시 시도해 주세요."
         type="error"
         onClose={() => setShowErrorSnackBar(false)}
+      />
+
+      <SnackBar
+        isOpen={showLoginRequiredSnackBar}
+        message="위키를 편집하기 위해서는 로그인이 필요합니다."
+        type="error"
+        onClose={() => setShowLoginRequiredSnackBar(false)}
       />
       <QuizModal
         isOpen={showQuizModal}
