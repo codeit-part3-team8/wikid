@@ -4,7 +4,7 @@ import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import { useRouter } from 'next/navigation';
 interface BestArticleProps {
-  _id?: number;
+  id?: number;
   title: string;
   writer: {
     id: number;
@@ -16,7 +16,7 @@ interface BestArticleProps {
 }
 
 const bestStyle = tv({
-  base: ' w-[250px] h-[200px] lg:w-[250px] lg:h-[220px]  sm:w-full sm:h-auto rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.08)] cursor-pointer',
+  base: ' w-[250px] h-[200px] lg:w-[250px] lg:h-[220px]  sm:w-full sm:h-auto rounded-[10px] overflow-hidden cursor-pointer shadow-[0px_4px_20px_rgba(0,0,0,0.08)]',
 });
 
 const bestTextStyle = tv({
@@ -24,7 +24,7 @@ const bestTextStyle = tv({
 });
 
 export default function BestArticle({
-  _id,
+  id,
   title,
   writer,
   createdAt,
