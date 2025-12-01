@@ -1,4 +1,3 @@
-// 문서 스타일링에 필요한 익스텐션들을 불러오고, 적용하는 파일입니다.
 'use client';
 
 import { Table } from '@tiptap/extension-table';
@@ -20,14 +19,35 @@ import Strike from '@tiptap/extension-strike';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import { API } from '@/constants/api';
+import { Node, CommandProps, mergeAttributes } from '@tiptap/core';
 
-export const useCommonEditor = (
-  content?: string,
-  onChange?: (html: string) => void // ✅ 여기 추가
-) => {
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    youtube: {
+      setYoutube: (url: string) => ReturnType;
+    };
+  }
+}
+
+// YouTube URL을 Embed URL로 변환하는 유틸함수
+function convertToEmbedURL(url: string) {
+  try {
+    const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
+    const match = url.match(youtubeRegex);
+    if (match && match[1]) {
+      // embed URL로 변환하여 반환
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+    return url;
+  } catch {
+    return url;
+  }
+}
+
+export const useCommonEditor = (content?: string, onChange?: (html: string) => void) => {
   const prevRef = useRef('');
 
-  // 이미지 업로드 함수
+  // 이미지 업로드 함수 (외부 API 호출)
   const uploadImage = async (file: File): Promise<string> => {
     try {
       const formData = new FormData();
@@ -64,91 +84,78 @@ export const useCommonEditor = (
     }
   };
 
-  // 표 관련 커스텀
+  const NoNestedTableCell = TableCell.extend({
+    content: '(paragraph | heading | bulletList | orderedList)+',
+  });
+
+  const NoNestedTableHeader = TableHeader.extend({
+    content: '(paragraph | heading | bulletList | orderedList)+',
+  });
+
   const CustomTable = Table.extend({
-    // 중첩 표 생성 금지
-    addOptions() {
-      return {
-        ...this.parent?.(),
-        allowTableInTable: false,
-      };
-    },
-    // 백스페이스로 삭제
     addKeyboardShortcuts() {
       return {
         Backspace: ({ editor }) => {
-          const { $from } = editor.state.selection;
-          let isInTable = false;
+          const { selection } = editor.state;
+          const { $from } = selection;
+
+          // 커서가 테이블 셀 내부에 있는지 확인 (내부에서는 텍스트만 삭제)
+          let isInCell = false;
           for (let d = $from.depth; d > 0; d--) {
-            if ($from.node(d).type.name === 'table') {
-              isInTable = true;
+            const nodeName = $from.node(d).type.name;
+            if (nodeName === 'tableCell' || nodeName === 'tableHeader') {
+              isInCell = true;
               break;
             }
           }
 
-          if (isInTable) {
-            editor.chain().focus().deleteTable().run();
-            return true;
+          if (isInCell) {
+            return false;
           }
+
+          if ($from.parentOffset === 0 && $from.before() > 0) {
+            const posBefore = $from.before();
+            const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);
+
+            if (nodeBefore && nodeBefore.type.name === 'table') {
+              const deleteFrom = posBefore - nodeBefore.nodeSize;
+
+              editor
+                .chain()
+                .focus()
+                .deleteRange({
+                  from: deleteFrom,
+                  to: $from.pos,
+                })
+                .run();
+
+              return true;
+            }
+          }
+
           return false;
         },
       };
     },
   });
 
-  // 이미지 업로드가 가능한 커스텀 Image 익스텐션
   const CustomImage = Image.extend({
     addAttributes() {
       return {
         ...this.parent?.(),
-        src: {
-          default: null,
-          parseHTML: (element) => {
-            const src = element.getAttribute('src');
-            return src;
-          },
-          renderHTML: (attributes) => {
-            if (!attributes.src) {
-              return {};
-            }
-            return {
-              src: attributes.src,
-            };
-          },
-        },
-        alt: {
-          default: null,
-          parseHTML: (element) => element.getAttribute('alt'),
-          renderHTML: (attributes) => {
-            if (!attributes.alt) {
-              return {};
-            }
-            return {
-              alt: attributes.alt,
-            };
-          },
-        },
-        title: {
-          default: null,
-          parseHTML: (element) => element.getAttribute('title'),
-          renderHTML: (attributes) => {
-            if (!attributes.title) {
-              return {};
-            }
-            return {
-              title: attributes.title,
-            };
-          },
-        },
+        src: { default: null },
+        alt: { default: null },
+        title: { default: null },
       };
     },
 
-    // 이미지 붙여넣기와 드롭 처리
+    // 이미지 붙여넣기 및 드롭 처리 로직 (업로드)
     addProseMirrorPlugins() {
       return [
         new Plugin({
           key: new PluginKey('imageUpload'),
           props: {
+            // 붙여넣기 처리
             handlePaste: (view: EditorView, event: ClipboardEvent) => {
               const items = Array.from(event.clipboardData?.items || []);
               const imageItem = items.find((item: DataTransferItem) =>
@@ -174,6 +181,7 @@ export const useCommonEditor = (
               }
               return false;
             },
+            // 드롭 처리
             handleDrop: (view: EditorView, event: DragEvent) => {
               const files = Array.from(event.dataTransfer?.files || []);
               const imageFile = files.find((file: File) => file.type.startsWith('image/'));
@@ -201,32 +209,114 @@ export const useCommonEditor = (
         }),
       ];
     },
-
     parseHTML() {
-      return [
-        {
-          tag: 'img[src]',
-          getAttrs: (element) => {
-            const src = element.getAttribute('src');
-            if (!src) return false;
-            return {
-              src,
-              alt: element.getAttribute('alt'),
-              title: element.getAttribute('title'),
-            };
-          },
-        },
-      ];
+      return [{ tag: 'img[src]' }];
     },
-
     renderHTML({ HTMLAttributes }) {
       return ['img', HTMLAttributes];
     },
   });
 
+  // ========== Youtube Embed ==========
+  const CustomYoutube = Node.create({
+    name: 'youtube',
+    group: 'block',
+    content: '',
+    atom: true,
+
+    addAttributes() {
+      return {
+        src: {
+          default: null,
+        },
+      };
+    },
+
+    parseHTML() {
+      return [
+        {
+          tag: 'iframe[src*="youtube.com/embed"], iframe[src*="youtu.be/embed"]',
+        },
+      ];
+    },
+
+    renderHTML({ HTMLAttributes }) {
+      // 기본 속성과 입력된 속성을 병합하여 iframe을 렌더링
+      return [
+        'iframe',
+        mergeAttributes(
+          {
+            width: '560',
+            height: '315',
+            frameborder: '0',
+            allow:
+              'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+            allowfullscreen: 'true',
+          },
+          HTMLAttributes
+        ),
+      ];
+    },
+
+    addKeyboardShortcuts() {
+      return {
+        Backspace: ({ editor }) => {
+          const { selection } = editor.state;
+
+          if (selection.empty) {
+            const { $from } = selection;
+
+            if ($from.pos === 1) {
+              // 커서가 문서의 첫 위치인지 확인
+              return false;
+            }
+
+            if ($from.parentOffset === 0) {
+              const posBefore = $from.before();
+              const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);
+
+              if (nodeBefore && nodeBefore.type.name === 'youtube') {
+                // 유튜브 노드면 삭제
+                const deleteFrom = posBefore - nodeBefore.nodeSize;
+
+                editor
+                  .chain()
+                  .focus()
+                  .deleteRange({
+                    from: deleteFrom,
+                    to: $from.pos,
+                  })
+                  .run();
+
+                return true;
+              }
+            }
+          }
+          return false;
+        },
+      };
+    },
+
+    addCommands() {
+      return {
+        setYoutube:
+          (url: string) =>
+          ({ tr, dispatch, editor }: CommandProps) => {
+            const embedUrl = convertToEmbedURL(url);
+            const node = editor.schema.nodes.youtube.create({ src: embedUrl });
+            if (dispatch) {
+              // 현재 선택 영역을 YouTube 노드로 대체하여 추가
+              dispatch(tr.replaceSelectionWith(node).scrollIntoView());
+            }
+
+            return true;
+          },
+      };
+    },
+  });
+
   const editor = useEditor({
     extensions: [
-      // StarterKit에서 중복되는 익스텐션들 비활성화
       StarterKit.configure({
         horizontalRule: false,
         strike: false,
@@ -234,17 +324,17 @@ export const useCommonEditor = (
       }),
       TextStyle,
       CustomImage,
+      CustomYoutube,
       Color,
       HorizontalRule,
       Link.configure({ openOnClick: true }),
       Placeholder.configure({ placeholder: '본문을 입력해주세요' }),
       Strike,
       CustomTable,
-      TableCell,
-      TableHeader,
+      NoNestedTableCell,
+      NoNestedTableHeader,
       TableRow,
       TextAlign.configure({ types: ['paragraph', 'heading', 'listItem'] }),
-      // Underline을 커스텀 이름으로 등록하여 충돌 방지
       Underline.extend({
         name: 'customUnderline',
       }).configure({
@@ -255,7 +345,46 @@ export const useCommonEditor = (
     ],
     content: content || '',
     immediatelyRender: false,
+
     onUpdate: ({ editor }) => {
+      const { selection } = editor.state;
+      const youtubeRegex =
+        /^(https?:\/\/(?:www\.)?(youtube\.com\/watch\?v=[\w-]+|youtu\.be\/[\w-]+))\s*$/;
+
+      if (selection.empty) {
+        const { $from } = selection;
+
+        // $from이 존재하고, 깊이가 1보다 크거나 같을 때 (문서 루트가 아닐 때)
+        if ($from.depth >= 1) {
+          const parent = $from.parent;
+
+          // 현재 문단/블록이 'paragraph'인지 확인
+          if (parent.type.name === 'paragraph') {
+            const parentText = parent.textContent;
+            const urlMatch = parentText.match(youtubeRegex);
+
+            // URL을 추출하여 URL 하나로만 구성되어 있는지 확인
+            if (urlMatch) {
+              const url = urlMatch[1];
+
+              const tr = editor.state.tr;
+              const node = editor.schema.nodes.youtube.create({ src: convertToEmbedURL(url) });
+
+              const start = $from.start($from.depth);
+              const end = $from.end($from.depth);
+
+              tr.replaceRangeWith(start, end, node);
+              editor.view.dispatch(tr);
+
+              prevRef.current = editor.getHTML();
+
+              return;
+            }
+          }
+        }
+      }
+
+      // 일반적인 HTML 업데이트 로직
       const newHTML = editor.getHTML();
       if (newHTML !== prevRef.current) {
         prevRef.current = newHTML;
