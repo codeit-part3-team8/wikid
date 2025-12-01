@@ -4,7 +4,7 @@ import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import { useRouter } from 'next/navigation';
 interface BestArticleProps {
-  _id?: number;
+  id?: number;
   title: string;
   writer: {
     id: number;
@@ -24,7 +24,7 @@ const bestTextStyle = tv({
 });
 
 export default function BestArticle({
-  _id,
+  id,
   title,
   writer,
   createdAt,
@@ -41,7 +41,7 @@ export default function BestArticle({
     return `${year}.${month}.${day}`;
   }
   function handleClick() {
-    router.push(`/articles/${id}`);
+    router.push(`/boards/${id}`);
   }
 
   return (

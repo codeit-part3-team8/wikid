@@ -69,6 +69,11 @@ const nextConfig: NextConfig = {
         hostname: 'sprint-fe-project.s3.ap-northeast-2.amazonaws.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'loremflickr.com',
+        pathname: '/**', // 이 줄까지 넣어주면 더 안전
+      },
     ],
   },
 };
