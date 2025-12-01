@@ -236,6 +236,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
               return;
             }
           } catch (error) {
+            console.error('아바타 이미지 업로드 오류:', error);
             alert('이미지 업로드 중 오류가 발생했습니다.');
             return;
           }
@@ -295,6 +296,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           await fetchWikiData();
         }
       } catch (error) {
+        console.error('프로필 저장 오류:', error);
         alert(error instanceof Error ? error.message : '프로필 저장 중 오류가 발생했습니다.');
       } finally {
         setIsSaving(false);

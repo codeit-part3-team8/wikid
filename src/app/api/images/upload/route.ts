@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     } else if (response.status === 413) {
       const errorText = await response.text();
       console.log('POST 이미지 업로드 413 에러 응답:', errorText);
-      return createErrorResponse(APIError.payloadTooLarge('이미지 크기가 너무 폴니다.'));
+      return createErrorResponse(APIError.payloadTooLarge('이미지 크기가 너무 큽니다.'));
     } else if (!response.ok) {
       const errorText = await response.text();
       console.log('POST 이미지 업로드 외부 API 에러 응답:', response.status, errorText);

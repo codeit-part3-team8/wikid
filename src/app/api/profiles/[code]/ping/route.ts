@@ -15,7 +15,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<B
     const { code } = await params;
 
     const apiUrl = `${CONFIG.API_BASE_URL}/profiles/${code}/ping`;
-    console.log('어피 요청 URL:', apiUrl);
+    console.log('API 요청 URL:', apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'GET',
@@ -31,9 +31,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<B
       try {
         data = await response.json();
       } catch {
-        // JSON 파싱 실패 시 기본값 사용
-        console.warn('GET ping 응답 JSON 파싱 실패, 기본값 사용');
-        data = { isEditing: false };
+        console.error('GET ping 응답 JSON 파싱 실패');
+        return createErrorResponse(APIError.internalServerError('서버 응답을 처리할 수 없습니다.'));
       }
       const pingResponse: PingResponse = {
         userId: data.userId,
@@ -124,8 +123,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<B
     try {
       data = await response.json();
     } catch {
-      // JSON 파싱 실패 시 기본값 사용
-      data = { isEditing: false };
+      console.error('POST ping 응답 JSON 파싱 실패');
+      return createErrorResponse(APIError.internalServerError('서버 응답을 처리할 수 없습니다.'));
     }
     const pingResponse: PingResponse = {
       userId: data.userId,

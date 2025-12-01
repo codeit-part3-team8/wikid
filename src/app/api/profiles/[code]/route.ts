@@ -86,13 +86,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     try {
       updatedProfile = await response.json();
     } catch {
-      // JSON 파싱 실패 시 기본값 사용
-      console.warn('PATCH 응답 JSON 파싱 실패, 기본값 사용');
-      updatedProfile = { name: '', content: '' };
+      console.error('PATCH 응답 JSON 파싱 실패');
+      return createErrorResponse(APIError.internalServerError('서버 응답을 처리할 수 없습니다.'));
     }
 
     return createSuccessResponse<APIProfileData>(
-      updatedProfile as APIProfileData,
+      updatedProfile as APIProfileData, // 외부 API가 전체 프로필을 반환한다고 가정
       '프로필이 성공적으로 업데이트되었습니다'
     );
   } catch (error) {
