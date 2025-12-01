@@ -97,9 +97,11 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
 
   // 알림 목록 가져오기
   useEffect(() => {
+    let isMounted = true;
+
     const fetchNotifications = async () => {
       if (!actualIsLoggedIn) {
-        setNotifications([]);
+        if (isMounted) setNotifications([]);
         return;
       }
 
@@ -115,17 +117,21 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
         if (response.ok) {
           const data = await response.json();
           const notificationList = data.list || [];
-          setNotifications(notificationList);
+          if (isMounted) setNotifications(notificationList);
         } else {
-          setNotifications([]);
+          if (isMounted) setNotifications([]);
         }
       } catch (error) {
         console.error('알림 목록 로드 실패:', error);
-        setNotifications([]);
+        if (isMounted) setNotifications([]);
       }
     };
 
     fetchNotifications();
+
+    return () => {
+      isMounted = false;
+    };
   }, [actualIsLoggedIn]);
 
   // 알림 삭제 처리 함수

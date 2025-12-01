@@ -6,6 +6,11 @@ import { NotificationItemProps } from '@/types/Notification';
 const getTimeAgo = (createdAt: string): string => {
   const now = new Date();
   const created = new Date(createdAt);
+
+  if (isNaN(created.getTime())) {
+    return '';
+  }
+
   const diffInMs = now.getTime() - created.getTime();
   const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
