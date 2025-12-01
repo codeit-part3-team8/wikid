@@ -5,15 +5,18 @@ import Avatar from '@/components/Avatar/Avatar';
 import { useState } from 'react';
 import { Comment as CommentType } from '@/types/Comment';
 import { getFormatDate } from '@/utils/getFormatDate';
+import { useUpdateComment } from '../../../hooks/comment/useUpdateComment';
+import { useDeleteComment } from '../../../hooks/comment/useDeleteComment';
 import IconButton from '@/components/IconButton/IconButton';
-import TextArea from '../TextArea/TextArea';
+import TextArea from '../../TextArea/TextArea';
 
 interface CommentProps {
   comment: CommentType;
   currentUserId?: number | null;
+  refetch: () => void;
 }
 
-const Comment = ({ comment, currentUserId }: CommentProps) => {
+const Comment = ({ comment, currentUserId, refetch }: CommentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(comment.content);
 
@@ -21,10 +24,20 @@ const Comment = ({ comment, currentUserId }: CommentProps) => {
   const formattedUpdated = getFormatDate(comment.updatedAt);
   const isWriter = currentUserId && comment.writer.id === currentUserId;
 
-  const handleSubmit = () => {
-    // 실제 서버 전송 로직 필요
-    console.log('submit', content);
-    setIsEditing(false);
+  const { updateComment } = useUpdateComment({ commentId: comment.id, onSuccess: refetch });
+  const { deleteComment } = useDeleteComment({ commentId: comment.id, onSuccess: refetch });
+
+  const handleUpdate = async () => {
+    const updated = await updateComment(content);
+    if (updated) {
+      setIsEditing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const deleted = await deleteComment();
+    if (deleted) {
+    }
   };
 
   return (
@@ -49,13 +62,13 @@ const Comment = ({ comment, currentUserId }: CommentProps) => {
                   <IconButton
                     icon="IC_Check"
                     className="text-primary-200 hover:text-primary-300 h-5 w-5 md:h-6 md:w-6"
-                    onClick={handleSubmit}
+                    onClick={handleUpdate}
                   />
                 )}
                 <IconButton
                   icon="IC_Delete"
                   className="h-5 w-5 md:h-6 md:w-6"
-                  onClick={() => console.log('delete')}
+                  onClick={handleDelete}
                 />
               </div>
             )}
@@ -66,7 +79,7 @@ const Comment = ({ comment, currentUserId }: CommentProps) => {
               maxLength={500}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              onSubmit={handleSubmit}
+              onSubmit={handleUpdate}
             />
           ) : (
             <span className="text-lg-regular text-grayscale-500">{comment.content}</span>

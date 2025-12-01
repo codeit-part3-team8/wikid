@@ -35,7 +35,7 @@ interface SnackBarProviderProps {
 export function SnackBarProvider({ children }: SnackBarProviderProps) {
   const [snackBars, setSnackBars] = useState<SnackBarItem[]>([]);
 
-  // 순차적 제거를 위한 효과
+  // 순차적 제거
   useEffect(() => {
     if (snackBars.length === 0) return;
 
@@ -117,7 +117,6 @@ export function SnackBarProvider({ children }: SnackBarProviderProps) {
     [addSnackBar]
   );
 
-  // Context 값을 메모이제이션하여 불필요한 리렌더링 방지
   const contextValue = useMemo(
     () => ({
       showSnackBar,
@@ -141,7 +140,7 @@ export function SnackBarProvider({ children }: SnackBarProviderProps) {
             isOpen={!snackBar.isClosing}
             type={snackBar.type}
             message={snackBar.message}
-            duration={0} // Context에서 관리하므로 개별 duration 사용하지 않음
+            duration={0}
             stackIndex={index}
             zIndex={1000}
             onClose={() => {

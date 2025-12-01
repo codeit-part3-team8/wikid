@@ -5,11 +5,8 @@ import Button from '@/components/Button/Button';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 import { useModal } from '@/hooks/useModal';
 
-const DeleteButton = () => {
+const DeleteButton = ({ onDelete }: { onDelete: () => void }) => {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleConfirm = () => {
-    console.log('c');
-  };
 
   return (
     <>
@@ -28,7 +25,7 @@ const DeleteButton = () => {
         onClose={closeModal}
         title="정말 삭제하시겠습니까?"
         message="삭제된 게시글은 되돌릴 수 없습니다."
-        onConfirm={handleConfirm}
+        onConfirm={onDelete}
       />
     </>
   );

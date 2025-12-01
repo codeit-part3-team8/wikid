@@ -1,6 +1,9 @@
-// import Button from '@/components/Button/Button'
+'use client';
+
+import { useArticle } from '../../hooks/articles/useArticle';
+import { useDeleteArticle } from '../../hooks/articles/useDeleteArticle';
 import { getFormatDate } from '@/utils/getFormatDate';
-import { Article as ArticleType } from '@/types/Article';
+import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 
@@ -11,11 +14,22 @@ import LikeButton from './LikeButton';
 import Divider from '@/components/Divider/Divider';
 
 interface BoardProps {
-  isLogin: boolean;
-  article: ArticleType;
+  articleId: string;
 }
 
-const Board = ({ article, isLogin }: BoardProps) => {
+const Board = ({ articleId }: BoardProps) => {
+  const router = useRouter();
+
+  const { article, loading, error } = useArticle({ articleId });
+  const { deleteArticle } = useDeleteArticle({
+    articleId,
+    onSuccess: () => router.push('/boards'),
+  });
+
+  if (loading) return <p>로딩중...</p>;
+  if (error) return <p>에러: {error}</p>;
+  if (!article) return null;
+
   const formatDate = getFormatDate(article.createdAt);
 
   return (
@@ -24,7 +38,7 @@ const Board = ({ article, isLogin }: BoardProps) => {
         <span className="responsive-text text-3xl-to-2xl-semibold">{article.title}</span>{' '}
         <div className="flex gap-3">
           <EditButton />
-          <DeleteButton />
+          <DeleteButton onDelete={deleteArticle} />
         </div>
       </div>
       <div className="subheader text-md-regular text-grayscale-400 flex flex-col gap-2">
@@ -33,7 +47,7 @@ const Board = ({ article, isLogin }: BoardProps) => {
             <span>{article.writer.name}</span>
             <span>{formatDate}</span>
           </div>
-          <LikeButton likeCount={article.likeCount} isLogin={isLogin} />
+          <LikeButton articleId={articleId} />
         </div>
         <Divider className="lg:hidden" />
       </div>

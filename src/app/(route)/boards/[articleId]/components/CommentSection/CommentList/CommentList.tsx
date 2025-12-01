@@ -10,9 +10,10 @@ const VIEW_COUNT = 10;
 interface CommentListProps {
   comments: CommentType[];
   currentUserId: number | null;
+  refetch: () => void;
 }
 
-const CommentList = ({ comments, currentUserId }: CommentListProps) => {
+const CommentList = ({ comments, currentUserId, refetch }: CommentListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // 댓글 리스트 잘라오기
@@ -25,7 +26,7 @@ const CommentList = ({ comments, currentUserId }: CommentListProps) => {
       <ul className="flex flex-col gap-6">
         {currentComments.map((comment) => (
           <li key={comment.id}>
-            <Comment comment={comment} currentUserId={currentUserId} />
+            <Comment comment={comment} currentUserId={currentUserId} refetch={refetch} />
           </li>
         ))}
       </ul>

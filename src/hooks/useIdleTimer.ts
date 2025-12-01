@@ -45,7 +45,6 @@ export const useIdleTimer = (timeoutMs: number, onTimeout: () => void) => {
         setRemainingTime(remaining);
 
         if (remaining === 0) {
-          // Only clear interval here; onTimeout clears both timers
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;

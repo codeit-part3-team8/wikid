@@ -45,7 +45,6 @@ export default function AlertModal({
       aria-labelledby="alert-modal-title"
     >
       <div className="flex h-full flex-col pt-4 pl-2">
-        {/* 모달 제목 */}
         <h3
           id="alert-modal-title"
           className="responsive-text text-2lg-to-lg text-weight-semibold text-grayscale-500 mb-2.5 pt-5"
@@ -53,10 +52,8 @@ export default function AlertModal({
           {title}
         </h3>
 
-        {/* 모달 메시지 */}
         <p className="responsive-text text-lg-to-md text-grayscale-400 flex-1">{message}</p>
 
-        {/* 버튼 영역 */}
         <div className="mt-4 flex justify-end pt-5">
           <button
             type="button"
