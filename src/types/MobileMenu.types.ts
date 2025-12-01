@@ -1,4 +1,4 @@
-/**
+/*
  * MobileMenu 컴포넌트 Props
  */
 export interface MobileMenuProps {
