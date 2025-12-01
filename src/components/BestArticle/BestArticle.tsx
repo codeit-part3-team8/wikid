@@ -3,7 +3,7 @@ import noImage from '@/assets/noImage/noImage.avif';
 import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
 interface BestArticleProps {
-  id?: number;
+  _id?: number;
   title: string;
   writer: string;
   createdAt: string;
@@ -20,7 +20,7 @@ const bestTextStyle = tv({
 });
 
 export default function BestArticle({
-  id,
+  _id,
   title,
   writer,
   createdAt,

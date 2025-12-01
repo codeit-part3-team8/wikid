@@ -1,8 +1,8 @@
 'use client';
-import { useArticle } from '../../hooks/useArticle';
-import { useDeleteArticle } from '../../hooks/useDeleteArticle';
+
+import { useArticle } from '../../hooks/articles/useArticle';
+import { useDeleteArticle } from '../../hooks/articles/useDeleteArticle';
 import { getFormatDate } from '@/utils/getFormatDate';
-import { Article as ArticleType } from '@/types/Article';
 import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';

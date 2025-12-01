@@ -1,14 +1,14 @@
 import BoardDetailContent from './BoardDetailContent';
 
 interface Props {
-  params: { articleId: string; commentId: string };
+  params: { articleId: string };
 }
 
 export default async function BoardDetailPage({ params }: Props) {
-  const { articleId, commentId } = await params;
+  const { articleId } = params;
   return (
     <div>
-      <BoardDetailContent articleId={articleId} commentId={commentId} />
+      <BoardDetailContent articleId={articleId} />
     </div>
   );
 }
