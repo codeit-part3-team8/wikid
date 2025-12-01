@@ -1,7 +1,7 @@
 'use client';
 
 import Input from '@/components/Input/Input';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const MAX_LENGTH = 30;
 
