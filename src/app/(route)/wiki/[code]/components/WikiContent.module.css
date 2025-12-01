@@ -106,26 +106,9 @@
   background-color: white !important;
 }
 
-.wikiContent .selectedCell {
-  background-color: #e0f2fe !important;
-}
-
 .wikiContent img {
   max-width: 100% !important;
-  width: auto !important;
   height: auto !important;
   margin: 16px 0 !important;
   display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-.wikiContent img[data-drag-handle] {
-  cursor: grab !important;
-}
-
-.wikiContent img:hover {
-  opacity: 0.9 !important;
 }

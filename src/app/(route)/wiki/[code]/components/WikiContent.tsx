@@ -14,7 +14,7 @@ const wikiContentStyle = tv({
   variants: {
     editMode: {
       true: 'bg-white',
-      false: 'bg-grayscale-100 py-10',
+      false: 'bg-white py-10',
     },
   },
 });
@@ -93,21 +93,10 @@ export default function WikiContent({
         'pre',
         'code',
       ],
-      ALLOWED_ATTR: [
-        'href',
-        'target',
-        'src',
-        'alt',
-        'title',
-        'width',
-        'height',
-        'style',
-        'class',
-        'id',
-        'data-type',
-      ],
-      ALLOW_DATA_ATTR: true,
-      FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input'],
+      ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'title', 'width', 'height'],
+      FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
+      ALLOW_DATA_ATTR: false,
+      FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'iframe', 'meta', 'link'],
     });
 
     return (
