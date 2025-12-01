@@ -3,6 +3,32 @@
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
 import { NotificationItemProps } from '@/types/Notification';
 
+const getTimeAgo = (createdAt: string): string => {
+  const now = new Date();
+  const created = new Date(createdAt);
+
+  if (isNaN(created.getTime())) {
+    return '';
+  }
+
+  const diffInMs = now.getTime() - created.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInMinutes < 1) {
+    return '방금 전';
+  } else if (diffInMinutes < 60) {
+    return `${diffInMinutes}분 전`;
+  } else if (diffInHours < 24) {
+    return `${diffInHours}시간 전`;
+  } else if (diffInDays < 7) {
+    return `${diffInDays}일 전`;
+  } else {
+    return created.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+  }
+};
+
 const NotificationItem = ({ notification, onDelete, onMarkAsRead }: NotificationItemProps) => {
   const handleDelete = () => {
     onDelete(notification.id);
@@ -15,6 +41,10 @@ const NotificationItem = ({ notification, onDelete, onMarkAsRead }: Notification
     }
   };
 
+  const timeDisplay = notification.createdAt
+    ? getTimeAgo(notification.createdAt)
+    : notification.timestamp || '';
+
   return (
     <div
       className={`cursor-pointer rounded-lg border p-4 transition-colors ${
@@ -26,7 +56,7 @@ const NotificationItem = ({ notification, onDelete, onMarkAsRead }: Notification
       <div className="mb-2.5 flex items-start justify-between">
         {/* 상태 표시 점 */}
         <div
-          className={`h-[5px] w-[5px] shrink-0 rounded-full ${
+          className={`h-[7px] w-[7px] shrink-0 rounded-full ${
             notification.isRead ? 'bg-primary-200' : 'bg-gray-400'
           }`}
           aria-hidden="true"
@@ -38,7 +68,7 @@ const NotificationItem = ({ notification, onDelete, onMarkAsRead }: Notification
             e.stopPropagation(); // 부모의 onClick 이벤트 방지
             handleDelete();
           }}
-          className="rounded transition-colors hover:bg-black/10"
+          className="cursor-pointer rounded transition-colors hover:bg-black/10"
           aria-label={`${notification.content} 알림 삭제`}
           type="button"
         >
@@ -49,7 +79,7 @@ const NotificationItem = ({ notification, onDelete, onMarkAsRead }: Notification
       {/* 알림 내용 */}
       <div>
         <p className="text-md-regular mb-1 text-black">{notification.content}</p>
-        <p className="text-xs-regular text-grayscale-300">{notification.timestamp}</p>
+        <p className="text-xs-regular text-grayscale-300">{timeDisplay}</p>
       </div>
     </div>
   );
