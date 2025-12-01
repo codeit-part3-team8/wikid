@@ -14,6 +14,146 @@ body {
 
 /* Typography Utility Classes */
 
+/* --------넥슨폰트---------- */
+.responsive-text-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: var(--responsive-desktop-size);
+  line-height: var(--responsive-desktop-line);
+  font-weight: var(--responsive-weight);
+}
+
+/* 1024px 이하 → 태블릿 값 사용 */
+@media (max-width: 1024px) {
+  .responsive-text-nx {
+    font-size: var(--responsive-tablet-size, var(--responsive-desktop-size));
+    line-height: var(--responsive-tablet-line, var(--responsive-desktop-line));
+  }
+}
+
+/* 640px 이하 → 모바일 값 사용 */
+@media (max-width: 640px) {
+  .responsive-text-nx {
+    font-size: var(
+      --responsive-mobile-size,
+      var(--responsive-tablet-size, var(--responsive-desktop-size))
+    );
+    line-height: var(
+      --responsive-mobile-line,
+      var(--responsive-tablet-line, var(--responsive-desktop-line))
+    );
+  }
+}
+
+.text-8xl-bold-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 90px;
+  line-height: 100%;
+  font-weight: 700;
+}
+
+.text-7xl-regular-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 60px;
+  line-height: 100%;
+  font-weight: 400;
+}
+
+.text-7xl-light-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 60px;
+  line-height: 100%;
+  font-weight: 300;
+}
+
+.text-6xl-semibold-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 50px;
+  line-height: 100%;
+  font-weight: 600;
+}
+
+.text-6xl-regular-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 50px;
+  line-height: 100%;
+  font-weight: 400;
+}
+
+.text-3xl-semibold-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 30px;
+  line-height: 46px;
+  font-weight: 600;
+}
+
+.text-3xl-bold-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 30px;
+  line-height: 46px;
+  font-weight: 700;
+}
+
+.text-4xl-light-nx {
+  font-family: 'NEXON Lv1 Gothic';
+  font-size: 40px;
+  line-height: 100%;
+  font-weight: 300;
+}
+
+.nx-60-to-40-light {
+  --responsive-desktop-size: 60px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 40px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 300;
+}
+
+.nx-90-to-60-bold {
+  --responsive-desktop-size: 90px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 60px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 700;
+}
+
+.nx-60-to-30-bold {
+  --responsive-desktop-size: 60px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 30px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 700;
+}
+
+.nx-24-to-20-bold {
+  --responsive-desktop-size: 24px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 20px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 700;
+}
+
+.nx-30-20-10-bold {
+  --responsive-desktop-size: 30px;
+  --responsive-desktop-line: 100%;
+  --responsive-tablet-size: 20px;
+  --responsive-tablet-line: 100%;
+  --responsive-mobile-size: 10px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 700;
+}
+
+.nx-50-32-16-regular {
+  --responsive-desktop-size: 50px;
+  --responsive-desktop-line: 100%;
+  --responsive-tablet-size: 32px;
+  --responsive-tablet-line: 100%;
+  --responsive-mobile-size: 16px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 400;
+}
+
+/* --------넥슨폰트---------- */
+
 .text-5xl-semibold {
   font-family: var(--font-pretendard);
   font-size: 48px;
@@ -352,6 +492,31 @@ body {
   --responsive-mobile-line: 18px;
   --responsive-weight: 400;
 }
+
+.text-lg-to-xxs {
+  --responsive-desktop-size: 16px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 10px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 700;
+}
+
+.text-md-to-xxss {
+  --responsive-desktop-size: 14px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 8px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 400;
+}
+
+.text-md-to-xxss-semibold {
+  --responsive-desktop-size: 14px;
+  --responsive-desktop-line: 100%;
+  --responsive-mobile-size: 8px;
+  --responsive-mobile-line: 100%;
+  --responsive-weight: 500;
+}
+
 .text-weight-regular {
   --responsive-weight: 400;
 }

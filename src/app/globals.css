@@ -3,6 +3,30 @@
 @import '../styles/color-variables.css';
 @import '../components/TextEditor/textEditorStyle.css';
 
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  src: url('/fonts/NEXON_Lv1_Gothic/TTF/NEXONLv1GothicRegular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  src: url('/fonts/NEXON_Lv1_Gothic/TTF/NEXONLv1GothicBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  src: url('/fonts/NEXON_Lv1_Gothic/TTF/NEXONLv1GothicLight.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: var(--grayscale-50);
 }

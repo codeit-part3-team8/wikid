@@ -3,8 +3,6 @@ import { tv } from 'tailwind-variants';
 import clsx from 'clsx';
 import SVGIcon from '../SVGIcon/SVGIcon';
 
-const BASE_URL = 'https://www.wikied.kr'; //수정 예정
-
 interface LinkCopyProps {
   code: string;
   onCopySuccess?: () => void;
@@ -19,7 +17,7 @@ const SvgStyle = tv({
 });
 
 export default function LinkCopy({ code, onCopySuccess }: LinkCopyProps) {
-  const profileUrl = `${BASE_URL}/profiles/${code}`;
+  const profileUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/profiles/${code}`;
 
   const handleCopy = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
