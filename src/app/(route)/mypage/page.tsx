@@ -1,10 +1,8 @@
-'use client';
-import { useRouter } from 'next/navigation';
 import Button from '@/components/Button/Button';
+import { useRouter } from 'next/navigation';
 
 export default function MyPage() {
   const router = useRouter();
-
   return (
     <div className="min-h-screen bg-white">
       <main className="flex items-center justify-center px-4 py-16">
