@@ -1,12 +1,9 @@
 'use client';
 
-import IconButton from '@/components/IconButton/IconButton';
 import TextEditor from '@/components/TextEditor/TextEditor';
 import Toolbar from '@/components/TextEditor/Toolbar';
 import { useCommonEditor } from '@/components/TextEditor/editorConfig';
 import { useEffect } from 'react';
-import { useModal } from '@/hooks/useModal';
-import AddImageModal from './AddImageModal';
 
 interface BoardTextEditorProps {
   beforeValue: string;
@@ -14,9 +11,8 @@ interface BoardTextEditorProps {
   onImageChange: (v: string) => void;
 }
 
-const BoardTextEditor = ({ beforeValue, onContentChange, onImageChange }: BoardTextEditorProps) => {
+const BoardTextEditor = ({ beforeValue, onContentChange }: BoardTextEditorProps) => {
   const editor = useCommonEditor(beforeValue);
-  const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
     if (!editor) return;
@@ -33,12 +29,10 @@ const BoardTextEditor = ({ beforeValue, onContentChange, onImageChange }: BoardT
     <>
       <div className="flex h-full w-full flex-col justify-between">
         <TextEditor editor={editor} className="board custom-scrollbar overflow-auto" />
-        <div className="border-grayscale-200 flex justify-between rounded-full border px-4 py-2 shadow-[0px_1px_2px_0px_#0000000D]">
+        <div className="border-grayscale-200 flex rounded-full border px-4 py-2 shadow-[0px_1px_2px_0px_#0000000D]">
           <Toolbar editor={editor} />
-          <IconButton icon="IC_Image" onClick={openModal} />
         </div>
       </div>
-      <AddImageModal isOpen={isOpen} onClose={closeModal} onChange={onImageChange} />
     </>
   );
 };

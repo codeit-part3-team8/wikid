@@ -36,12 +36,16 @@
 /* ========== CUSTOM SCROLL BAR ========== */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--grayscale-300);
   border-radius: 8px;
   cursor: pointer;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--grayscale-400);
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
