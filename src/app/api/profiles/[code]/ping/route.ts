@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { CONFIG } from '@/constants/config';
+import { API_BASE_URL } from '@/constants/api';
 import { BaseParams, PingResponse, PingRequest } from '@/types/Api';
 import { APIError } from '@/types/Error';
 import {
@@ -10,11 +10,11 @@ import {
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
-    validateEnvironmentVariables({ name: 'API_BASE_URL', value: CONFIG.API_BASE_URL });
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
 
     const { code } = await params;
 
-    const apiUrl = `${CONFIG.API_BASE_URL}/profiles/${code}/ping`;
+    const apiUrl = `${API_BASE_URL}/profiles/${code}/ping`;
     console.log('API 요청 URL:', apiUrl);
 
     const response = await fetch(apiUrl, {
@@ -74,21 +74,24 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<B
 
 export async function POST(request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
-    validateEnvironmentVariables(
-      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
-      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
-    );
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(new Error('인증 토큰이 필요합니다'), '인증이 필요한 요청입니다');
+    }
+
     const { code } = await params;
     const body = (await request.json()) as PingRequest;
 
-    const apiUrl = `${CONFIG.API_BASE_URL}/profiles/${code}/ping`;
+    const apiUrl = `${API_BASE_URL}/profiles/${code}/ping`;
     console.log('POST 어피 요청 URL:', apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
+        Authorization: authToken,
       },
       body: JSON.stringify(body),
     });

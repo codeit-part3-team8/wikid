@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { signUp } from '@/api/auth';
-import { setAccessToken, setRefreshToken } from '@/utils/auth';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   validateName,
   validateEmail,
@@ -14,8 +13,33 @@ import {
   validatePasswordConfirm,
 } from '@/utils/validation';
 
+// 회원가입 API 함수
+async function signUp(data: {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}) {
+  const response = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || '회원가입에 실패했습니다.');
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+
 export default function SignupPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -102,15 +126,14 @@ export default function SignupPage() {
         passwordConfirmation: formData.passwordConfirm,
       });
 
-      // 토큰 저장
-      setAccessToken(response.accessToken);
-      setRefreshToken(response.refreshToken);
+      // 자동 로그인 처리 (토큰 저장 및 사용자 정보 저장)
+      login(response.accessToken, response.refreshToken, response);
 
       // 성공 알림
       alert('가입이 완료되었습니다');
 
-      // 로그인 페이지로 이동
-      router.push('/login');
+      // 메인 페이지로 이동
+      router.push('/');
     } catch (error) {
       console.error('회원가입 실패:', error);
       alert(error instanceof Error ? error.message : '회원가입에 실패했습니다');

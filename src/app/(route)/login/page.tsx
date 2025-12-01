@@ -5,12 +5,31 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { signIn } from '@/api/auth';
-import { setAccessToken, setRefreshToken } from '@/utils/auth';
+import { useAuth } from '@/contexts/AuthContext';
 import { validateEmail, validatePassword } from '@/utils/validation';
+
+// 로그인 API 함수
+async function signIn(data: { email: string; password: string }) {
+  const response = await fetch('/api/auth/signin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || '로그인에 실패했습니다.');
+  }
+
+  const result = await response.json();
+  return result.data;
+}
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -78,9 +97,8 @@ export default function LoginPage() {
         password: formData.password,
       });
 
-      // 토큰 저장
-      setAccessToken(response.accessToken);
-      setRefreshToken(response.refreshToken);
+      // 로그인 처리 (토큰 저장 및 사용자 정보 저장)
+      login(response.accessToken, response.refreshToken, response);
 
       // 메인 페이지로 이동
       router.push('/');

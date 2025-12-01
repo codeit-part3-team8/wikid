@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { LIMITS } from '@/constants/validation';
-import { CONFIG } from '@/constants/config';
+import { API_BASE_URL } from '@/constants/api';
 import { APIError } from '@/types/Error';
 
 import {
@@ -12,10 +12,12 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
-    validateEnvironmentVariables(
-      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
-      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
-    );
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(new Error('인증 토큰이 필요합니다'), '인증이 필요한 요청입니다');
+    }
 
     const formData = await request.formData();
     const imageFile = validateFileUpload(
@@ -28,12 +30,12 @@ export async function POST(request: NextRequest) {
     const uploadFormData = new FormData();
     uploadFormData.append('image', imageFile);
 
-    const apiUrl = `${CONFIG.API_BASE_URL}/images/upload`;
+    const apiUrl = `${API_BASE_URL}/images/upload`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
+        Authorization: authToken,
       },
       body: uploadFormData,
     });

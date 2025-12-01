@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
-import { API } from '@/constants/api';
+import { API_BASE_URL } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
-import { CONFIG } from '@/constants/config';
 import { BaseParams, APIProfileData } from '@/types/Api';
 import { APIError } from '@/types/Error';
 import {
@@ -12,11 +11,11 @@ import {
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
-    validateEnvironmentVariables({ name: 'API_BASE_URL', value: CONFIG.API_BASE_URL });
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
 
     const { code } = await params;
 
-    const profile = await safeFetch(`${API.PROFILE}${code}`, {
+    const profile = await safeFetch(`${API_BASE_URL}/profiles/${code}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -31,12 +30,16 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<B
 }
 export async function PATCH(request: NextRequest, { params }: { params: Promise<BaseParams> }) {
   try {
-    validateEnvironmentVariables(
-      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
-      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
-    );
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { code } = await params;
     const body = await request.json();
+    const authToken = request.headers.get('authorization');
+
+    if (!authToken) {
+      return createErrorResponse(new Error('인증 토큰이 필요합니다'), '인증이 필요한 요청입니다');
+    }
+
     if (!body.securityAnswer || !body.securityQuestion) {
       return createErrorResponse(
         new Error('보안 질문과 답변이 필요합니다'),
@@ -44,14 +47,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       );
     }
 
-    const apiUrl = `${CONFIG.API_BASE_URL}/profiles/${code}`;
+    const apiUrl = `${API_BASE_URL}/profiles/${code}`;
     console.log('PATCH API 요청 URL:', apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
+        Authorization: authToken,
       },
       body: JSON.stringify(body),
     });
