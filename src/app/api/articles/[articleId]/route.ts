@@ -16,14 +16,19 @@ export function parseArticleId(articleId: string) {
   return id;
 }
 
-export async function GET(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function GET(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
-    const id = parseArticleId(articleId);
-    const article = await safeFetch(`${API.ARTICLES}${id}`);
+
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const article = await safeFetch(`${API.ARTICLES}${articleId}`, {
+      headers: { Authorization: authHeader },
+    });
 
     return NextResponse.json({
-      message: `ArticleID: ${id}`,
+      message: `ArticleID: ${articleId}`,
       data: article,
     });
   } catch (err) {
@@ -34,19 +39,25 @@ export async function GET(_request: NextRequest, context: { params: Params | Pro
 export async function PATCH(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
-    const id = parseArticleId(articleId);
+
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const { image, title, content } = body;
     const payload = { image, title, content };
 
-    const data = await safeFetch(`${API.ARTICLES}${id}`, {
+    const data = await safeFetch(`${API.ARTICLES}${articleId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authHeader,
+      },
       body: JSON.stringify(payload),
     });
+
     return NextResponse.json({
-      message: `ArticleID: ${id} updated`,
+      message: `ArticleID: ${articleId} updated`,
       data: data,
     });
   } catch (err: unknown) {
@@ -54,15 +65,20 @@ export async function PATCH(request: NextRequest, context: { params: Params | Pr
   }
 }
 
-export async function DELETE(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function DELETE(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
-    const id = parseArticleId(articleId);
 
-    const data = await safeFetch(`${API.ARTICLES}${id}`, { method: 'DELETE' });
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const data = await safeFetch(`${API.ARTICLES}${articleId}`, {
+      method: 'DELETE',
+      headers: { Authorization: authHeader },
+    });
 
     return NextResponse.json({
-      message: `ArticleID: ${id} deleted`,
+      message: `ArticleID: ${articleId} deleted`,
       data: data,
     });
   } catch (err) {

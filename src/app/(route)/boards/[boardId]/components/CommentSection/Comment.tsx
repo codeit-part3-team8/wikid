@@ -1,28 +1,30 @@
 'use client';
 
 import Avatar from '@/components/Avatar/Avatar';
-// import useAuthStore
 import { useState } from 'react';
 import { Comment as CommentType } from '@/types/Comment';
 import { getFormatDate } from '@/utils/getFormatDate';
-import { useUpdateComment } from '../../../hooks/comment/useUpdateComment';
-import { useDeleteComment } from '../../../hooks/comment/useDeleteComment';
+import { useUpdateComment } from '../../hooks/comment/useUpdateComment';
+import { useDeleteComment } from '../../hooks/comment/useDeleteComment';
 import IconButton from '@/components/IconButton/IconButton';
-import TextArea from '../../TextArea/TextArea';
+import TextArea from '../TextArea/TextArea';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CommentProps {
   comment: CommentType;
-  currentUserId?: number | null;
   refetch: () => void;
 }
 
-const Comment = ({ comment, currentUserId, refetch }: CommentProps) => {
+const Comment = ({ comment, refetch }: CommentProps) => {
+  const { user } = useAuth();
+  const currentUserId = user?.id?.toString() ?? null;
+
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(comment.content);
 
   const formattedCreated = getFormatDate(comment.createdAt);
   const formattedUpdated = getFormatDate(comment.updatedAt);
-  const isWriter = currentUserId && comment.writer.id === currentUserId;
+  const isWriter = currentUserId !== null && comment.writer.id.toString() === currentUserId;
 
   const { updateComment } = useUpdateComment({ commentId: comment.id, onSuccess: refetch });
   const { deleteComment } = useDeleteComment({ commentId: comment.id, onSuccess: refetch });

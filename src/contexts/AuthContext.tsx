@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { getAccessToken, clearTokens, setAccessToken, setRefreshToken } from '@/utils/auth';
-
+import { API } from '@/constants/api';
 interface User {
   id: string;
   email: string;
@@ -42,7 +42,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const token = getAccessToken();
       setIsLoggedIn(!!token);
-      // (추가 필요시: setUser(await fetchUser(token));)
+
+      if (token) {
+        // 서버에서 유저 정보 가져오기
+        const response = await fetch(`${API.USERS}me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const userData: User = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
     } finally {
       setIsLoading(false);
     }
