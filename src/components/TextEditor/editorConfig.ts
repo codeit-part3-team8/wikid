@@ -19,6 +19,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Strike from '@tiptap/extension-strike';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
+import { API } from '@/constants/api';
 
 export const useCommonEditor = (
   content?: string,
@@ -32,16 +33,30 @@ export const useCommonEditor = (
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('/api/images/upload', {
+      const response = await fetch(`${API.IMAGE}`, {
         method: 'POST',
         body: formData,
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('이미지 업로드에 실패했습니다.');
+        throw new Error(`이미지 업로드에 실패했습니다: ${response.status} ${response.statusText}`);
       }
 
-      const result = await response.json();
+      const text = await response.text();
+      if (!text.trim()) {
+        throw new Error('이미지 업로드 응답이 비어있습니다.');
+      }
+
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch {
+        throw new Error(`이미지 업로드 응답이 JSON 형식이 아님: ${text.substring(0, 100)}...`);
+      }
+
       return result.data?.url || result.url;
     } catch (error) {
       console.error('이미지 업로드 오류:', error);

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { APIProfileData } from '@/types/Api';
 import { useIdleTimer } from '@/hooks/useIdleTimer';
+import { API } from '@/constants/api';
 
 interface UseWikiEditorReturn {
   // Editor states
@@ -33,7 +34,8 @@ interface UseWikiEditorReturn {
     profileData: APIProfileData | null,
     code: string,
     setProfileData: (data: APIProfileData) => void,
-    setHasEditPermission: (permission: boolean) => void
+    setHasEditPermission: (permission: boolean) => void,
+    fetchWikiData?: () => Promise<void>
   ) => Promise<void>;
 
   // Cancel logic
@@ -76,7 +78,8 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
       profileData: APIProfileData | null,
       code: string,
       setProfileData: (data: APIProfileData) => void,
-      setHasEditPermission: (permission: boolean) => void
+      setHasEditPermission: (permission: boolean) => void,
+      fetchWikiData?: () => Promise<void>
     ) => {
       if (!profileData || !securityData) {
         return;
@@ -117,12 +120,33 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
                 const imageFormData = new FormData();
                 imageFormData.append('image', file);
 
-                const imageResponse = await fetch('/api/images/upload', {
+                const imageResponse = await fetch(`${API.IMAGE}`, {
                   method: 'POST',
                   body: imageFormData,
+                  headers: {
+                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+                  },
                 });
 
-                const imageResult = await imageResponse.json();
+                if (!imageResponse.ok) {
+                  throw new Error(
+                    `이미지 업로드 실패: ${imageResponse.status} ${imageResponse.statusText}`
+                  );
+                }
+
+                const text = await imageResponse.text();
+                if (!text.trim()) {
+                  throw new Error('이미지 업로드 응답이 비어있음');
+                }
+
+                let imageResult;
+                try {
+                  imageResult = JSON.parse(text);
+                } catch {
+                  throw new Error(
+                    `이미지 업로드 응답이 JSON 형식이 아님: ${text.substring(0, 100)}...`
+                  );
+                }
 
                 if (imageResponse.ok) {
                   const newUrl = imageResult.data?.url || imageResult.url;
@@ -177,22 +201,46 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
             const imageFormData = new FormData();
             imageFormData.append('image', changedAvatar);
 
-            const imageResponse = await fetch('/api/images/upload', {
+            const imageResponse = await fetch(`${API.IMAGE}`, {
               method: 'POST',
               body: imageFormData,
+              headers: {
+                Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+              },
             });
 
-            const imageResult = await imageResponse.json();
+            if (!imageResponse.ok) {
+              alert(`이미지 업로드 실패: ${imageResponse.status} ${imageResponse.statusText}`);
+              return;
+            }
 
-            if (imageResponse.ok && imageResult.data?.url) {
-              imageUrl = imageResult.data.url;
+            const text = await imageResponse.text();
+            if (!text.trim()) {
+              //console.error('아바타 이미지 업로드 응답이 비어있음');
+              alert('이미지 업로드 응답이 비어있습니다.');
+              return;
+            }
+
+            let imageResult;
+            try {
+              imageResult = JSON.parse(text);
+              //console.log('아바타 이미지 업로드 응답 파싱됨:', imageResult);
+            } catch {
+              //console.error('아바타 이미지 업로드 응답이 JSON 형식이 아님:', text);
+              alert('이미지 업로드 응답이 올바르지 않습니다.');
+              return;
+            }
+
+            // 응답 구조에 따라 URL 추출 (data.url 또는 직접 url)
+            const uploadedUrl = imageResult.data?.url || imageResult.url;
+
+            if (imageResponse.ok && uploadedUrl) {
+              imageUrl = uploadedUrl;
             } else {
-              console.error('아바타 이미지 업로드 실패:', imageResult);
               alert(`이미지 업로드 실패: ${imageResult.error || '알 수 없는 오류'}`);
               return;
             }
           } catch (error) {
-            console.error('아바타 이미지 업로드 오류:', error);
             alert('이미지 업로드 중 오류가 발생했습니다.');
             return;
           }
@@ -201,7 +249,6 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           typeof changedAvatar === 'string' &&
           changedAvatar.startsWith('http')
         ) {
-          // 이미 HTTP URL인 경우
           imageUrl = changedAvatar;
         }
 
@@ -211,15 +258,32 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           image: imageUrl,
         };
 
-        const response = await fetch(`/api/profiles/${code}`, {
+        const response = await fetch(`${API.PROFILE}${code}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
           },
           body: JSON.stringify(finalSaveData),
         });
 
-        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            `프로필 저장에 실패했습니다. (상태: ${response.status} ${response.statusText})`
+          );
+        }
+
+        const text = await response.text();
+        if (!text.trim()) {
+          throw new Error('프로필 저장 응답이 비어있습니다.');
+        }
+
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch {
+          throw new Error(`프로필 저장 응답이 JSON 형식이 아님: ${text.substring(0, 100)}...`);
+        }
 
         if (!response.ok) {
           let errorMessage = `프로필 저장에 실패했습니다. (상태: ${response.status})`;
@@ -233,11 +297,20 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           throw new Error(errorMessage);
         }
 
-        setProfileData(result.data);
+        // 저장된 데이터로 상태 업데이트
+        if (result.data) {
+          setProfileData(result.data);
+        }
+
         setEditedProfileData(null);
         setChangedAvatar(null);
         setHasEditPermission(false);
         stopTimer();
+
+        // 최신 데이터 동기화
+        if (fetchWikiData) {
+          await fetchWikiData();
+        }
       } catch (error) {
         alert(error instanceof Error ? error.message : '프로필 저장 중 오류가 발생했습니다.');
       } finally {

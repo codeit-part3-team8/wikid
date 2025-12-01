@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 interface UseWikiModalsReturn {
   // Modal states
@@ -39,16 +39,49 @@ export const useWikiModals = (): UseWikiModalsReturn => {
   const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
 
+  // 로그인 필요 스낵바 중복 표시 방지
+  const loginRequiredShownRef = useRef(false);
+  // 편집 중 스낵바 중복 표시 방지
+  const editingErrorShownRef = useRef(false);
+
+  // 래핑된 setShowLoginRequiredSnackBar (ref 초기화 포함)
+  const handleSetShowLoginRequiredSnackBar = useCallback((show: boolean) => {
+    if (!show) {
+      loginRequiredShownRef.current = false;
+    }
+    setShowLoginRequiredSnackBar(show);
+  }, []);
+
+  // 래핑된 setShowErrorSnackBar (ref 초기화 포함)
+  const handleSetShowErrorSnackBar = useCallback((show: boolean) => {
+    if (!show) {
+      editingErrorShownRef.current = false;
+    }
+    setShowErrorSnackBar(show);
+  }, []);
+
   // Convenience methods
   const handleCopySuccess = useCallback(() => {
     setShowSnackBar(true);
   }, []);
 
   const handleDisabledButtonClick = useCallback(() => {
+    // 이미 표시되었으면 다시 표시하지 않음
+    if (editingErrorShownRef.current) {
+      return;
+    }
+
+    editingErrorShownRef.current = true;
     setShowErrorSnackBar(true);
   }, []);
 
   const handleLoginRequired = useCallback(() => {
+    // 이미 표시되었으면 다시 표시하지 않음
+    if (loginRequiredShownRef.current) {
+      return;
+    }
+
+    loginRequiredShownRef.current = true;
     setShowLoginRequiredSnackBar(true);
   }, []);
 
@@ -72,8 +105,11 @@ export const useWikiModals = (): UseWikiModalsReturn => {
     setShowTimeoutModal(false);
     setShowSaveConfirmModal(false);
     setShowCancelConfirmModal(false);
-  }, []);
 
+    // 스낵바 표시 상태 초기화
+    loginRequiredShownRef.current = false;
+    editingErrorShownRef.current = false;
+  }, []);
   return {
     // Modal states
     showSnackBar,
@@ -86,8 +122,8 @@ export const useWikiModals = (): UseWikiModalsReturn => {
 
     // Modal actions
     setShowSnackBar,
-    setShowErrorSnackBar,
-    setShowLoginRequiredSnackBar,
+    setShowErrorSnackBar: handleSetShowErrorSnackBar,
+    setShowLoginRequiredSnackBar: handleSetShowLoginRequiredSnackBar,
     setShowQuizModal,
     setShowTimeoutModal,
     setShowSaveConfirmModal,

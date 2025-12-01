@@ -62,10 +62,6 @@ export default function WikiPage() {
 
   // 편집 관련 커스텀 훅
   const {
-    securityData,
-    editedProfileData,
-    editedContent,
-    changedAvatar,
     isSaving,
     formattedTime,
     isActive,
@@ -80,19 +76,19 @@ export default function WikiPage() {
     performCancel,
   } = useWikiEditor(handleModalTimeout);
 
-  // 편집 중일 때 에러 스낵바 표시 로직
+  // 편집 중일 때 에러 스낵바 표시 로직 (페이지 로드 시 한 번만)
   useEffect(() => {
-    if (isBeingEdited && !showErrorSnackBar) {
-      setShowErrorSnackBar(true);
+    if (!isLoading && profileData && isBeingEdited) {
+      handleDisabledButtonClick();
     }
-  }, [isBeingEdited, showErrorSnackBar, setShowErrorSnackBar]);
+  }, [isLoading, profileData, isBeingEdited, handleDisabledButtonClick]);
 
-  // 초기 로그인 상태 확인
+  // 페이지 로드 완료 후 한 번만 로그인 상태 확인
   useEffect(() => {
-    if (!isLoggedIn && !showLoginRequiredSnackBar) {
-      setShowLoginRequiredSnackBar(true);
+    if (!isLoading && profileData && !isLoggedIn) {
+      handleLoginRequired();
     }
-  }, [isLoggedIn, showLoginRequiredSnackBar, setShowLoginRequiredSnackBar]);
+  }, [isLoading, profileData, isLoggedIn, handleLoginRequired]);
 
   // 타임아웃 모달 닫기 핸들러 - 편집 상태 정리하고 데이터 새로고침
   const handleTimeoutModalClose = useCallback(async () => {
@@ -126,16 +122,12 @@ export default function WikiPage() {
 
   const handleAvatarChange = useCallback(
     (imageUrl?: string, file?: File) => {
-      if (imageUrl) {
-        // File 객체가 있으면 우선적으로 사용
+      if (imageUrl && profileData) {
         setChangedAvatar(file || imageUrl);
-        // 미리보기를 위해 profileData도 업데이트 (Data URL 사용)
-        if (profileData) {
-          setProfileData({
-            ...profileData,
-            image: imageUrl,
-          });
-        }
+        setProfileData({
+          ...profileData,
+          image: imageUrl,
+        });
       }
     },
     [profileData, setProfileData, setChangedAvatar]
@@ -161,11 +153,12 @@ export default function WikiPage() {
   // 저장 확인 후 저장
   const handleConfirmSave = useCallback(async () => {
     setShowSaveConfirmModal(false);
-    await performSave(profileData, code, setProfileData, setHasEditPermission);
+    await performSave(profileData, code, setProfileData, setHasEditPermission, fetchWikiData);
   }, [
     performSave,
     profileData,
     code,
+    fetchWikiData,
     setProfileData,
     setHasEditPermission,
     setShowSaveConfirmModal,
@@ -206,8 +199,8 @@ export default function WikiPage() {
     ]
   );
 
-  if (isLoading) {
-    return <LoadingState message="위키 데이터를 로드하고 있습니다..." />;
+  if (isLoading && !profileData) {
+    return <LoadingState message="위키 데이터를 불러오는 중..." />;
   }
 
   if (error) {
