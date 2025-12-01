@@ -210,7 +210,7 @@ const PAGE_SIZE = 3;
 
 function WikiListContent() {
   const [search, setSearch] = useState('');
-  const [profiles, setProfiles] = useState<Profile[]>(dummyProfiles);
+  const [profiles] = useState<Profile[]>(dummyProfiles);
   const [page, setPage] = useState(1);
 
   const router = useRouter();
