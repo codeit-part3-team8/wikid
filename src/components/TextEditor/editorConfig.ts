@@ -22,7 +22,9 @@ import { Node, CommandProps, mergeAttributes } from '@tiptap/core';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    setYoutube: (url: string) => ReturnType;
+    youtube: {
+      setYoutube: (url: string) => ReturnType;
+    };
   }
 }
 
@@ -41,10 +43,7 @@ function convertToEmbedURL(url: string) {
   }
 }
 
-export const useCommonEditor = (
-  content?: string,
-  onChange?: (html: string) => void // HTML 변경 시 콜백 함수
-) => {
+export const useCommonEditor = (content?: string, onChange?: (html: string) => void) => {
   const prevRef = useRef('');
 
   // 이미지 업로드 함수 (외부 API 호출)
@@ -70,7 +69,14 @@ export const useCommonEditor = (
     }
   };
 
-  // ========== Table 익스텐션 ==========
+  const NoNestedTableCell = TableCell.extend({
+    content: '(paragraph | heading | bulletList | orderedList)+',
+  });
+
+  const NoNestedTableHeader = TableHeader.extend({
+    content: '(paragraph | heading | bulletList | orderedList)+',
+  });
+
   const CustomTable = Table.extend({
     addKeyboardShortcuts() {
       return {
@@ -78,7 +84,7 @@ export const useCommonEditor = (
           const { selection } = editor.state;
           const { $from } = selection;
 
-          // 1. 커서가 테이블 셀 내부에 있는지 확인 (내부에서는 텍스트만 삭제)
+          // 커서가 테이블 셀 내부에 있는지 확인 (내부에서는 텍스트만 삭제)
           let isInCell = false;
           for (let d = $from.depth; d > 0; d--) {
             const nodeName = $from.node(d).type.name;
@@ -89,7 +95,27 @@ export const useCommonEditor = (
           }
 
           if (isInCell) {
-            return false; // 기본 텍스트 삭제 동작 허용
+            return false;
+          }
+
+          if ($from.parentOffset === 0 && $from.before() > 0) {
+            const posBefore = $from.before();
+            const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);
+
+            if (nodeBefore && nodeBefore.type.name === 'table') {
+              const deleteFrom = posBefore - nodeBefore.nodeSize;
+
+              editor
+                .chain()
+                .focus()
+                .deleteRange({
+                  from: deleteFrom,
+                  to: $from.pos,
+                })
+                .run();
+
+              return true;
+            }
           }
 
           return false;
@@ -98,14 +124,6 @@ export const useCommonEditor = (
     },
   });
 
-  const NoNestedTableCell = TableCell.extend({
-    content: 'block+ -table',
-  });
-  const NoNestedTableHeader = TableHeader.extend({
-    content: 'block+ -table',
-  });
-
-  // Image 익스텐션
   const CustomImage = Image.extend({
     addAttributes() {
       return {
@@ -239,8 +257,8 @@ export const useCommonEditor = (
             }
 
             if ($from.parentOffset === 0) {
-              const posBefore = $from.before(); // 현재 블록 바로 앞의 위치
-              const nodeBefore = editor.state.doc.nodeAt(posBefore - 1); // 해당 위치의 노드 확인 후,
+              const posBefore = $from.before();
+              const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);
 
               if (nodeBefore && nodeBefore.type.name === 'youtube') {
                 // 유튜브 노드면 삭제
@@ -255,7 +273,7 @@ export const useCommonEditor = (
                   })
                   .run();
 
-                return true; // 기본 Backspace 동작 중단
+                return true;
               }
             }
           }
@@ -278,7 +296,7 @@ export const useCommonEditor = (
 
             return true;
           },
-      } as any;
+      };
     },
   });
 
@@ -300,8 +318,6 @@ export const useCommonEditor = (
       CustomTable,
       NoNestedTableCell,
       NoNestedTableHeader,
-      TableCell,
-      TableHeader,
       TableRow,
       TextAlign.configure({ types: ['paragraph', 'heading', 'listItem'] }),
       Underline.extend({
@@ -316,12 +332,12 @@ export const useCommonEditor = (
     immediatelyRender: false,
 
     onUpdate: ({ editor }) => {
-      const { selection, doc } = editor.state;
+      const { selection } = editor.state;
       const youtubeRegex =
-        /^(https?:\/\/(?:www\.)?(youtube\.com\/watch\?v=[\w-]+|youtu\.be\/[\w-]+))\s*$/; // 정확히 URL 하나만 있는지 확인
+        /^(https?:\/\/(?:www\.)?(youtube\.com\/watch\?v=[\w-]+|youtu\.be\/[\w-]+))\s*$/;
 
       if (selection.empty) {
-        const { $from } = selection; // tiptap의 커서를 가져오는 from
+        const { $from } = selection;
 
         // $from이 존재하고, 깊이가 1보다 크거나 같을 때 (문서 루트가 아닐 때)
         if ($from.depth >= 1) {
@@ -336,11 +352,11 @@ export const useCommonEditor = (
             if (urlMatch) {
               const url = urlMatch[1];
 
-              const tr = editor.state.tr; // 문단 전체를 유튜브 노드로 대체
+              const tr = editor.state.tr;
               const node = editor.schema.nodes.youtube.create({ src: convertToEmbedURL(url) });
 
-              const start = $from.start($from.depth); // 문단의 시작 위치
-              const end = $from.end($from.depth); // 문단의 끝 위치
+              const start = $from.start($from.depth);
+              const end = $from.end($from.depth);
 
               tr.replaceRangeWith(start, end, node);
               editor.view.dispatch(tr);

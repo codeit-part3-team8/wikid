@@ -1,11 +1,9 @@
 'use client';
 
-import IconButton from '@/components/IconButton/IconButton';
 import TextEditor from '@/components/TextEditor/TextEditor';
 import Toolbar from '@/components/TextEditor/Toolbar';
 import { useCommonEditor } from '@/components/TextEditor/editorConfig';
 import { useEffect } from 'react';
-import { useModal } from '@/hooks/useModal';
 
 interface BoardTextEditorProps {
   beforeValue: string;
@@ -13,9 +11,8 @@ interface BoardTextEditorProps {
   onImageChange: (v: string) => void;
 }
 
-const BoardTextEditor = ({ beforeValue, onContentChange, onImageChange }: BoardTextEditorProps) => {
+const BoardTextEditor = ({ beforeValue, onContentChange }: BoardTextEditorProps) => {
   const editor = useCommonEditor(beforeValue);
-  const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
     if (!editor) return;

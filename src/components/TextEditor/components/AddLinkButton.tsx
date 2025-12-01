@@ -14,7 +14,7 @@ interface AddLinkButtonProps {
 const AddLinkButton = ({ editor }: AddLinkButtonProps) => {
   const { openModal, closeModal, isOpen } = useModal();
   const [url, setUrl] = useState('');
-  const [text, setText] = useState(''); // 대체 텍스트 추가
+  const [text, setText] = useState('');
   const isYoutube = (url: string) => /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url);
 
   const handleOpenModal = () => {
@@ -32,38 +32,47 @@ const AddLinkButton = ({ editor }: AddLinkButtonProps) => {
       alert('유효한 URL을 입력해주세요');
       return;
     }
-    const contentText = text.trim() === '' ? url : text;
-    const { from } = editor.state.selection; // 현재 커서 위치 가져오기 (대체 텍스트에 링크 걸기 위함)
 
-    // 텍스트 삽입 및 링크 적용
-    editor
-      .chain()
-      .focus()
-      .insertContent(contentText) // 텍스트 삽입
-      .setTextSelection({ from, to: from + contentText.length }) // 텍스트 범위 선택
-      .setLink({ href: url }) // 선택된 범위에 링크 생성
-      .run();
     if (isYoutube(url)) {
-      // 유튜브일 경우 iframe 삽입
-      const videoId = url.replace(/.*v=/, '').replace('https://youtu.be/', '').split('&')[0];
+      // 유튜브일 경우
+      const contentText = text.trim() === '' ? url : text;
+      const { from } = editor.state.selection;
+
+      // 1. 대체 텍스트 삽입 및 링크 적용
+      editor
+        .chain()
+        .focus()
+        .insertContent(contentText)
+        .setTextSelection({ from, to: from + contentText.length })
+        .setLink({ href: url })
+        .run();
+
+      // 2. 링크 다음 위치로 이동 후 새 줄 추가
+      const newPos = from + contentText.length;
 
       editor
         .chain()
         .focus()
-        .insertContent(
-          `${contentText}<iframe 
-            width="560" 
-            height="315" 
-            src="https://www.youtube.com/embed/${videoId}"
-            frameborder="0" 
-            allowfullscreen
-         ></iframe>`
-        )
+        .setTextSelection(newPos) // 링크 끝으로 이동
+        .insertContent('<p></p>') // 새 줄 추가
+        .setYoutube(url) // CustomYoutube 노드 사용
         .run();
 
       closeModal();
       return;
     }
+
+    // 일반 링크인 경우
+    const contentText = text.trim() === '' ? url : text;
+    const { from } = editor.state.selection;
+
+    editor
+      .chain()
+      .focus()
+      .insertContent(contentText)
+      .setTextSelection({ from, to: from + contentText.length })
+      .setLink({ href: url })
+      .run();
 
     closeModal();
   };

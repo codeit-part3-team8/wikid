@@ -14,12 +14,7 @@ export default function MyPage() {
 
             <div className="mx-auto max-w-md space-y-6">
               {/* 비밀번호 변경 버튼 */}
-              <Button
-                variant="text"
-                size="lg"
-                fullWidth
-                onClick={() => router.push('/passwordchange')}
-              >
+              <Button size="lg" fullWidth onClick={() => router.push('/passwordchange')}>
                 비밀번호 변경
               </Button>
 
@@ -27,12 +22,7 @@ export default function MyPage() {
               <div className="border-grayscale-600 border-t"></div>
 
               {/* 위키 생성하기 버튼 */}
-              <Button
-                variant="text"
-                size="lg"
-                fullWidth
-                onClick={() => router.push('/wiki/create')}
-              >
+              <Button size="lg" fullWidth onClick={() => router.push('/wiki/create')}>
                 위키 생성하기
               </Button>
             </div>

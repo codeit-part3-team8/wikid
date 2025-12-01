@@ -1,6 +1,5 @@
 'use client';
 
-import { EditorDropdown, EditorDropdownMenu } from './base/EditorDropdown';
 import { Editor } from '@tiptap/react';
 import { useRef } from 'react';
 import ToolbarButton from './base/ToolbarButton';
@@ -11,8 +10,6 @@ interface ImageUploadButtonProps {
 
 const ImageUploadButton = ({ editor }: ImageUploadButtonProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileInsert = (file: File) => {
     const reader = new FileReader();
