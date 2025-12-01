@@ -1,5 +1,6 @@
 'use client';
 
+import { useLogin } from './hooks/useLogin';
 import { useState } from 'react';
 import Link from 'next/link';
 import Input from '../../../components/Input/Input';
@@ -8,17 +9,11 @@ import Button from '../../../components/Button/Button';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, loginHandler } = useLogin();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // 로그인 로직
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log('로그인:', { email, password });
-    }, 2000);
+    loginHandler(email, password);
   };
 
   return (

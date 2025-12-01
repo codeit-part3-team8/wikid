@@ -1,21 +1,12 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { LIMITS } from '@/constants/validation';
-import { CONFIG } from '@/constants/config';
+// import { APIError } from '@/types/Error';
 
-import {
-  createErrorResponse,
-  createSuccessResponse,
-  validateEnvironmentVariables,
-  validateFileUpload,
-} from '@/utils/apiHelpers';
+import { createErrorResponse, createSuccessResponse, validateFileUpload } from '@/utils/apiHelpers';
+import { API } from '@/constants/api';
 
 export async function POST(request: NextRequest) {
   try {
-    validateEnvironmentVariables(
-      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
-      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
-    );
-
     const formData = await request.formData();
     const imageFile = validateFileUpload(
       formData.get('image') as File | null,
@@ -23,16 +14,17 @@ export async function POST(request: NextRequest) {
       LIMITS.IMAGE_SIZE
     );
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     // 외부 API로 이미지 업로드
     const uploadFormData = new FormData();
     uploadFormData.append('image', imageFile);
 
-    const apiUrl = `${CONFIG.API_BASE_URL}images/upload`;
-
-    const response = await fetch(apiUrl, {
+    const response = await fetch(API.IMAGE, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
+        Authorization: authHeader,
       },
       body: uploadFormData,
     });

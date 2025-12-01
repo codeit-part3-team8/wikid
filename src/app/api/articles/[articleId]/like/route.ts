@@ -4,12 +4,21 @@ import { safeFetch } from '@/utils/safeFetch';
 import { handlerServerError } from '@/utils/handlerServerError';
 import { Params, parseArticleId } from '../route';
 
-export async function POST(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function POST(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
-    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, { method: 'POST' });
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authHeader,
+      },
+    });
     return NextResponse.json({
       message: `${id}/like posted`,
       data: data,
@@ -19,12 +28,20 @@ export async function POST(_request: NextRequest, context: { params: Params | Pr
   }
 }
 
-export async function DELETE(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function DELETE(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
-    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, { method: 'DELETE' });
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: authHeader,
+      },
+    });
     return NextResponse.json({
       message: `${id}/like deleted`,
       data: data,

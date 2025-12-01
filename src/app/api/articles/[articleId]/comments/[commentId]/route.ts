@@ -12,10 +12,16 @@ export async function PATCH(
   try {
     const { commentId } = await context.params;
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const body = await request.json();
     const data = await safeFetch(`${API.COMMENT}${commentId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authHeader,
+      },
       body: JSON.stringify(body),
     });
 
@@ -26,14 +32,21 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: CommentIdParams | Promise<CommentIdParams> }
 ) {
   try {
     const { commentId } = await context.params;
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const data = await safeFetch(`${API.COMMENT}${commentId}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authHeader,
+      },
     });
 
     return NextResponse.json(data);

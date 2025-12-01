@@ -16,11 +16,17 @@ export function parseArticleId(articleId: string) {
   return id;
 }
 
-export async function GET(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function GET(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
-    const article = await safeFetch(`${API.ARTICLES}${id}`);
+
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const article = await safeFetch(`${API.ARTICLES}${id}`, {
+      headers: { Authorization: authHeader },
+    });
 
     return NextResponse.json({
       message: `ArticleID: ${id}`,
@@ -40,9 +46,12 @@ export async function PATCH(request: NextRequest, context: { params: Params | Pr
     const { image, title, content } = body;
     const payload = { image, title, content };
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const data = await safeFetch(`${API.ARTICLES}${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: authHeader },
       body: JSON.stringify(payload),
     });
     return NextResponse.json({
@@ -54,12 +63,18 @@ export async function PATCH(request: NextRequest, context: { params: Params | Pr
   }
 }
 
-export async function DELETE(_request: NextRequest, context: { params: Params | Promise<Params> }) {
+export async function DELETE(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
-    const data = await safeFetch(`${API.ARTICLES}${id}`, { method: 'DELETE' });
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const data = await safeFetch(`${API.ARTICLES}${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: authHeader },
+    });
 
     return NextResponse.json({
       message: `ArticleID: ${id} deleted`,

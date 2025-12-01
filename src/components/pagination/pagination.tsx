@@ -79,7 +79,7 @@ export default function Pagination({
   return (
     <div className={paginationStyle()}>
       <button className={paginationBtnStyle()} disabled={currentPage === 1} onClick={handlePrev}>
-        <SVGIcon icon="IC_Expand" className="rotate-270" />
+        <SVGIcon icon="IC_Expand" className="rotate-90" />
       </button>
       {pageBtn.map((_, num) => {
         const pageNum = startPage + num;
@@ -99,7 +99,7 @@ export default function Pagination({
         disabled={currentPage === totalPage}
         onClick={handleNext}
       >
-        <SVGIcon icon="IC_Expand" className="rotate-90" />
+        <SVGIcon icon="IC_Expand" className="rotate-270" />
       </button>
     </div>
   );

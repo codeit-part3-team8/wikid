@@ -1,9 +1,14 @@
+// usePostArticle.ts
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
+import { getAccessToken } from '@/utils/auth';
+import { API } from '@/constants/api';
 
 interface ArticlePayload {
-  image?: string;
   title: string;
   content: string;
+  image?: string;
 }
 
 interface PostResponse {
@@ -19,7 +24,6 @@ export const usePostArticle = () => {
 
   useEffect(() => {
     return () => {
-      // 컴포넌트 언마운트 시 진행 중인 요청 취소
       abortControllerRef.current?.abort();
     };
   }, []);
@@ -31,18 +35,31 @@ export const usePostArticle = () => {
     setError(null);
 
     try {
-      const res = await fetch('/api/articles', {
+      const token = getAccessToken();
+
+      const bodyPayload: ArticlePayload = {
+        title: payload.title,
+        content: payload.content,
+        ...(payload.image ? { image: payload.image } : {}),
+      };
+
+      const res = await fetch(`${API.ARTICLES}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // 헤더에 추가
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(bodyPayload),
         signal: abortController.signal,
       });
 
       if (!res.ok) {
-        const errorBody = await res.json();
-        throw new Error(errorBody.message || `HTTP error! status: ${res.status}`);
+        let errorMessage = `HTTP error! status: ${res.status}`;
+        try {
+          const errorBody = await res.json();
+          errorMessage = errorBody.message || errorMessage;
+        } catch {}
+        throw new Error(errorMessage);
       }
 
       const resData: PostResponse = await res.json();
@@ -52,14 +69,9 @@ export const usePostArticle = () => {
         onSuccess(resData);
       }
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        return; // 취소된 요청은 에러로 처리하지 않음
-      }
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred during posting.');
-      }
+      if (err instanceof Error && err.name === 'AbortError') return;
+      if (err instanceof Error) setError(err.message);
+      else setError('An unknown error occurred during posting.');
     } finally {
       setLoading(false);
       abortControllerRef.current = null;

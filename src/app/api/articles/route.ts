@@ -13,10 +13,14 @@ export async function POST(request: NextRequest) {
       content,
     };
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const data = await safeFetch(`${API.ARTICLES}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: authHeader,
       },
       body: JSON.stringify(payload),
     });
@@ -46,7 +50,15 @@ export async function GET(request: NextRequest) {
     });
     if (keyword) query.append('keyword', keyword);
 
-    const data = await safeFetch(`${API.ARTICLES}?${query.toString()}`);
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    const data = await safeFetch(`${API.ARTICLES}?${query.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authHeader,
+      },
+    });
 
     return NextResponse.json({
       message: 'get article',

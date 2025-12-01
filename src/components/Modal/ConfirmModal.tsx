@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { tv } from 'tailwind-variants';
 import BaseModal from './BaseModal';
 import { BaseModalProps, ModalContentProps, ButtonVariant } from '@/types/Modal';
-
 // Confirm 버튼 스타일 정의
 const confirmButtonStyle = tv({
   base: 'rounded-md px-4 py-2 transition-colors',
