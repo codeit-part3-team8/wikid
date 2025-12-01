@@ -72,7 +72,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'loremflickr.com',
-        pathname: '/**', // 이 줄까지 넣어주면 더 안전
+        pathname: '/**',
       },
     ],
   },
