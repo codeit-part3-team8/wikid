@@ -69,11 +69,12 @@ export default function QuizModal({
     setHasError(false);
 
     try {
+      const accessToken = localStorage.getItem('accessToken');
       const response = await fetch(`${API.PROFILE}${code}/ping`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
         body: JSON.stringify({
           securityAnswer: inputValue.trim(),

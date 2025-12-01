@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { HeaderProps } from '@/types/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserInfo } from '@/hooks/useUserInfo';
@@ -9,6 +10,7 @@ import NotificationContainer from '@/components/Notification/NotificationContain
 import NotificationDropdown from '@/components/Notification/NotificationDropdown';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 import { Notification } from '@/types/Notification';
+import { API } from '@/constants/api';
 import WikiedLogo from '@/assets/logo/wikied-logo.svg';
 import ProfileIcon from '@/assets/icons/profile-icon.svg';
 import MenuIcon from '@/assets/icons/menu-icon.svg';
@@ -20,10 +22,59 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
   const [isMobileNotificationOpen, setIsMobileNotificationOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   // AuthContext의 값을 우선적으로 사용
   const actualIsLoggedIn = isLoggedIn || propIsLoggedIn;
+
+  // 프로필 이미지 가져오기
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchProfileImage = async () => {
+      if (!actualIsLoggedIn || !code) {
+        if (isMounted) setProfileImage(null);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API.PROFILE}${code}`);
+
+        if (response.ok) {
+          const data = await response.json();
+          const imageUrl = data.data?.image || data.image;
+
+          // 이미지가 있고, 유효한 URL인 경우에만 설정
+          if (isMounted) {
+            if (imageUrl && imageUrl.startsWith('http')) {
+              setProfileImage(imageUrl);
+            } else {
+              setProfileImage(null);
+            }
+          }
+        } else {
+          if (isMounted) setProfileImage(null);
+        }
+      } catch (error) {
+        console.error('프로필 이미지 로드 실패:', error);
+        if (isMounted) setProfileImage(null);
+      }
+    };
+
+    // wiki 프로필 업데이트 이벤트 리스너
+    const handleProfileUpdate = () => {
+      fetchProfileImage();
+    };
+
+    fetchProfileImage();
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [actualIsLoggedIn, code]);
 
   // 프로필 드롭다운 외부 클릭 시 닫기
   useEffect(() => {
@@ -42,30 +93,56 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
     }
   }, [isProfileDropdownOpen]);
 
-  // 임시 알림 데이터 (실제로는 API에서 가져올 데이터)
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      content: '내 위키가 수정되었습니다',
-      timestamp: '1분 전',
-      isRead: false,
-    },
-    {
-      id: '2',
-      content: '내 위키가 수정되었습니다..',
-      timestamp: '25분 전',
-      isRead: false,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // 알림 삭제 처리 함수 (실제로는 API 호출)
+  // 알림 목록 가져오기
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!actualIsLoggedIn) {
+        setNotifications([]);
+        return;
+      }
+
+      try {
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await fetch(`${API.NOTIFICATION}?page=1&pageSize=20`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const notificationList = data.list || [];
+          setNotifications(notificationList);
+        } else {
+          setNotifications([]);
+        }
+      } catch (error) {
+        console.error('알림 목록 로드 실패:', error);
+        setNotifications([]);
+      }
+    };
+
+    fetchNotifications();
+  }, [actualIsLoggedIn]);
+
+  // 알림 삭제 처리 함수
   const handleDeleteNotification = async (id: string) => {
     try {
-      // TODO: 실제 API 호출
-      // await deleteNotificationAPI(id);
+      const accessToken = localStorage.getItem('accessToken');
+      const response = await fetch(`${API.NOTIFICATION}${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        },
+      });
 
-      // 임시로 로컬 상태에서 제거
-      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      if (response.ok) {
+        setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      }
     } catch (error) {
       console.error('알림 삭제 실패:', error);
     }
@@ -74,15 +151,22 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
   // 알림 읽음 처리 함수
   const handleMarkAsRead = async (id: string) => {
     try {
-      // TODO: 실제 API 호출
-      // await markNotificationAsReadAPI(id);
-
-      // 임시로 로컬 상태에서 읽음 처리
+      // 로컬 상태 먼저 업데이트
       setNotifications((prev) =>
         prev.map((notification) =>
           notification.id === id ? { ...notification, isRead: true } : notification
         )
       );
+
+      // TODO: API 엔드포인트가 제공되면 추가
+      // const accessToken = localStorage.getItem('accessToken');
+      // await fetch(`${API.NOTIFICATION}${id}/read`, {
+      //   method: 'PATCH',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      //   },
+      // });
     } catch (error) {
       console.error('알림 읽음 처리 실패:', error);
     }
@@ -91,11 +175,18 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
   // 모든 알림 읽음 처리 함수
   const handleMarkAllAsRead = async () => {
     try {
-      // TODO: 실제 API 호출
-      // await markAllNotificationsAsReadAPI();
-
-      // 임시로 로컬 상태에서 모든 알림 읽음 처리
+      // 로컬 상태 먼저 업데이트
       setNotifications((prev) => prev.map((notification) => ({ ...notification, isRead: true })));
+
+      // TODO: API 엔드포인트가 제공되면 추가
+      // const accessToken = localStorage.getItem('accessToken');
+      // await fetch(`${API.NOTIFICATION}read-all`, {
+      //   method: 'PATCH',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      //   },
+      // });
     } catch (error) {
       console.error('모든 알림 읽음 처리 실패:', error);
     }
@@ -152,15 +243,27 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
                       aria-label="프로필"
                       onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     >
-                      <ProfileIcon className="text-grayscale-400 h-6 w-6" />
+                      {profileImage ? (
+                        <div className="relative h-6 w-6 overflow-hidden rounded-full">
+                          <Image
+                            src={profileImage}
+                            alt="프로필"
+                            fill
+                            className="object-cover"
+                            sizes="24px"
+                          />
+                        </div>
+                      ) : (
+                        <ProfileIcon className="text-grayscale-400 h-6 w-6" />
+                      )}
                     </button>
 
                     {/* 프로필 드롭다운 메뉴 */}
                     {isProfileDropdownOpen && (
                       <div className="border-grayscale-200 absolute right-0 z-50 mt-2 w-32 rounded-lg border bg-white py-2 shadow-lg">
                         <Link
-                          href="/account"
-                          className="text-grayscale-700 hover:bg-grayscale-100 block px-4 py-2 text-sm"
+                          href="/mypage"
+                          className="text-grayscale-700 hover:bg-grayscale-100 block cursor-pointer px-4 py-2 text-sm"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
                           계정설정
@@ -179,7 +282,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
                           내 위키
                         </div>
                         <button
-                          className="text-grayscale-700 hover:bg-grayscale-100 w-full px-4 py-2 text-left text-sm"
+                          className="text-grayscale-700 hover:bg-grayscale-100 w-full cursor-pointer px-4 py-2 text-left text-sm"
                           onClick={() => {
                             setIsProfileDropdownOpen(false);
                             setIsLogoutModalOpen(true);
@@ -194,7 +297,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
               ) : (
                 <Link
                   href="/login"
-                  className="text-md-regular text-grayscale-400 hover:text-primary-200 transition-colors"
+                  className="text-md-regular text-grayscale-400 hover:text-primary-200 cursor-pointer transition-colors"
                 >
                   로그인
                 </Link>
@@ -207,7 +310,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
             {actualIsLoggedIn ? (
               /* 로그인 상태 - 햄버거 메뉴만 */
               <button
-                className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
+                className="hover:bg-grayscale-100 cursor-pointer rounded-lg p-2 transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(!isMobileMenuOpen);
                   setIsMobileNotificationOpen(false); // 알림이 열려있으면 닫기
@@ -220,7 +323,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
               /* 비로그인 상태 - 로그인 버튼만 */
               <Link
                 href="/login"
-                className="text-md-regular text-grayscale-400 hover:text-primary-200 transition-colors"
+                className="text-md-regular text-grayscale-400 hover:text-primary-200 cursor-pointer transition-colors"
               >
                 로그인
               </Link>
@@ -234,20 +337,20 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
             <nav className="flex flex-col">
               <Link
                 href="/wikilist"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 cursor-pointer rounded-lg px-4 py-3 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 위키목록
               </Link>
               <Link
                 href="/boards"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 cursor-pointer rounded-lg px-4 py-3 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 자유게시판
               </Link>
               <button
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 text-left transition-colors"
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 cursor-pointer rounded-lg px-4 py-3 text-left transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setIsMobileNotificationOpen(true);
@@ -259,8 +362,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
                 )}
               </button>
               <Link
-                href="/account"
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
+                href="/mypage"
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 cursor-pointer rounded-lg px-4 py-3 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 계정설정
@@ -279,7 +382,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) =
                 내 위키
               </div>
               <button
-                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 w-full rounded-lg px-4 py-3 text-left transition-colors"
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 w-full cursor-pointer rounded-lg px-4 py-3 text-left transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setIsLogoutModalOpen(true);

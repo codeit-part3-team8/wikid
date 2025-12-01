@@ -49,11 +49,15 @@ export const useCommonEditor = (content?: string, onChange?: (html: string) => v
   // 이미지 업로드 함수 (외부 API 호출)
   const uploadImage = async (file: File): Promise<string> => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
       const formData = new FormData();
       formData.append('image', file);
 
       const response = await fetch('/api/images/upload', {
         method: 'POST',
+        headers: {
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        },
         body: formData,
       });
 
