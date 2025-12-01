@@ -1,12 +1,46 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
+import { useAuth } from '@/contexts/AuthContext';
+
+// 회원가입 API 함수
+async function signUp(data: {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}) {
+  const response = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || '회원가입에 실패했습니다.');
+  }
+
+  const result = await response.json();
+  return result.data;
+}
 
 export default function SignupPage() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+  });
+  const [errors, setErrors] = useState({
     name: '',
     email: '',
     password: '',
@@ -20,24 +54,96 @@ export default function SignupPage() {
       ...prev,
       [name]: value,
     }));
+
+    // 입력 시 에러 제거
+    if (errors[name as keyof typeof errors]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: '',
+      }));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleBlur = (field: keyof typeof formData) => {
+    let error = '';
+
+    switch (field) {
+      case 'name':
+        if (!formData.name) error = '이름을 입력해주세요.';
+        break;
+      case 'email':
+        if (!formData.email) error = '이메일을 입력해주세요.';
+        break;
+      case 'password':
+        if (!formData.password) error = '비밀번호를 입력해주세요.';
+        else if (formData.password.length < 8) error = '비밀번호는 8자 이상이어야 합니다.';
+        break;
+      case 'passwordConfirm':
+        if (formData.password !== formData.passwordConfirm) error = '비밀번호가 일치하지 않습니다.';
+        break;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: error,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 전체 유효성 검사
+    const nameError = !formData.name ? '이름을 입력해주세요.' : '';
+    const emailError = !formData.email ? '이메일을 입력해주세요.' : '';
+    const passwordError = !formData.password
+      ? '비밀번호를 입력해주세요.'
+      : formData.password.length < 8
+        ? '비밀번호는 8자 이상이어야 합니다.'
+        : '';
+    const passwordConfirmError =
+      formData.password !== formData.passwordConfirm ? '비밀번호가 일치하지 않습니다.' : '';
+
+    if (nameError || emailError || passwordError || passwordConfirmError) {
+      setErrors({
+        name: nameError,
+        email: emailError,
+        password: passwordError,
+        passwordConfirm: passwordConfirmError,
+      });
+      return;
+    }
+
     setIsLoading(true);
 
-    // 회원가입 로직
-    setTimeout(() => {
+    try {
+      const response = await signUp({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        passwordConfirmation: formData.passwordConfirm,
+      });
+
+      // 자동 로그인 처리 (토큰 저장 및 사용자 정보 저장)
+      login(response.accessToken, response.refreshToken, response);
+
+      // 성공 알림
+      alert('가입이 완료되었습니다');
+
+      // 메인 페이지로 이동
+      router.push('/');
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      alert(error instanceof Error ? error.message : '회원가입에 실패했습니다');
+    } finally {
       setIsLoading(false);
-      console.log('회원가입:', formData);
-    }, 2000);
+    }
   };
 
   return (
     <div className="min-h-screen bg-white">
       <main className="flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
-          <h1 className="text-2xl-semibold text-grayscale-500 mb-8 text-center">회원가입</h1>
+          <h1 className="text-2xl-semibold text-grayscale-600 mb-8 text-center">회원가입</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* 이름 */}
@@ -48,6 +154,8 @@ export default function SignupPage() {
               placeholder="이름을 입력해 주세요"
               value={formData.name}
               onChange={handleChange}
+              onBlur={() => handleBlur('name')}
+              error={errors.name}
               required
               fullWidth
             />
@@ -60,6 +168,8 @@ export default function SignupPage() {
               placeholder="이메일을 입력해 주세요"
               value={formData.email}
               onChange={handleChange}
+              onBlur={() => handleBlur('email')}
+              error={errors.email}
               required
               fullWidth
             />
@@ -72,6 +182,8 @@ export default function SignupPage() {
               placeholder="비밀번호를 입력해 주세요"
               value={formData.password}
               onChange={handleChange}
+              onBlur={() => handleBlur('password')}
+              error={errors.password}
               required
               fullWidth
             />
@@ -84,6 +196,8 @@ export default function SignupPage() {
               placeholder="비밀번호를 입력해 주세요"
               value={formData.passwordConfirm}
               onChange={handleChange}
+              onBlur={() => handleBlur('passwordConfirm')}
+              error={errors.passwordConfirm}
               required
               fullWidth
             />

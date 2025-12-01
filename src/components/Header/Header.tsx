@@ -1,18 +1,46 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { HeaderProps } from '@/types/Header';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserInfo } from '@/hooks/useUserInfo';
 import NotificationContainer from '@/components/Notification/NotificationContainer';
 import NotificationDropdown from '@/components/Notification/NotificationDropdown';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 import { Notification } from '@/types/Notification';
 import WikiedLogo from '@/assets/logo/wikied-logo.svg';
 import ProfileIcon from '@/assets/icons/profile-icon.svg';
 import MenuIcon from '@/assets/icons/menu-icon.svg';
 
-const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
+const Header: React.FC<HeaderProps> = ({ isLoggedIn: propIsLoggedIn = false }) => {
+  const { isLoggedIn, logout } = useAuth();
+  const { code } = useUserInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileNotificationOpen, setIsMobileNotificationOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // AuthContext의 값을 우선적으로 사용
+  const actualIsLoggedIn = isLoggedIn || propIsLoggedIn;
+
+  // 프로필 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    if (isProfileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isProfileDropdownOpen]);
 
   // 임시 알림 데이터 (실제로는 API에서 가져올 데이터)
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -77,9 +105,9 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
   const hasUnreadNotifications = notifications.some((notification) => !notification.isRead);
 
   return (
-    <header className="border-grayscale-200 sticky top-0 z-50 border-b bg-white">
-      <div className="mx-auto max-w-7xl px-5 lg:mx-20">
-        <div className="flex h-16 items-center justify-between">
+    <header className="border-grayscale-200 sticky top-0 z-50 w-full border-b bg-white">
+      <div className="px-5 lg:px-20">
+        <div className="flex h-16 items-center">
           <div className="flex items-center gap-10">
             {/* 로고 */}
             <Link href="/" className="flex items-center">
@@ -104,39 +132,79 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
           </div>
 
           {/* 데스크톱 우측 영역 */}
-          <div className="relative hidden items-center gap-4 md:flex">
-            {isLoggedIn ? (
-              <>
-                {/* 알림 컴포넌트 */}
-                <NotificationContainer
-                  notifications={notifications}
-                  onDeleteNotification={handleDeleteNotification}
-                  onMarkAsRead={handleMarkAsRead}
-                  onMarkAllAsRead={handleMarkAllAsRead}
-                  hasUnread={hasUnreadNotifications}
-                />
+          <div className="flex flex-1 justify-end">
+            <div className="relative hidden items-center gap-4 md:flex">
+              {actualIsLoggedIn ? (
+                <>
+                  {/* 알림 컴포넌트 */}
+                  <NotificationContainer
+                    notifications={notifications}
+                    onDeleteNotification={handleDeleteNotification}
+                    onMarkAsRead={handleMarkAsRead}
+                    onMarkAllAsRead={handleMarkAllAsRead}
+                    hasUnread={hasUnreadNotifications}
+                  />
 
-                {/* 프로필 아이콘 */}
-                <button
-                  className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
-                  aria-label="프로필"
+                  {/* 프로필 아이콘 */}
+                  <div className="relative" ref={profileDropdownRef}>
+                    <button
+                      className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
+                      aria-label="프로필"
+                      onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                    >
+                      <ProfileIcon className="text-grayscale-400 h-6 w-6" />
+                    </button>
+
+                    {/* 프로필 드롭다운 메뉴 */}
+                    {isProfileDropdownOpen && (
+                      <div className="border-grayscale-200 absolute right-0 z-50 mt-2 w-32 rounded-lg border bg-white py-2 shadow-lg">
+                        <Link
+                          href="/account"
+                          className="text-grayscale-700 hover:bg-grayscale-100 block px-4 py-2 text-sm"
+                          onClick={() => setIsProfileDropdownOpen(false)}
+                        >
+                          계정설정
+                        </Link>
+                        <div
+                          className="text-grayscale-700 hover:bg-grayscale-100 block cursor-pointer px-4 py-2 text-sm"
+                          onClick={(e) => {
+                            if (code) {
+                              window.location.href = `/wiki/${code}`;
+                            } else {
+                              e.preventDefault();
+                            }
+                            setIsProfileDropdownOpen(false);
+                          }}
+                        >
+                          내 위키
+                        </div>
+                        <button
+                          className="text-grayscale-700 hover:bg-grayscale-100 w-full px-4 py-2 text-left text-sm"
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            setIsLogoutModalOpen(true);
+                          }}
+                        >
+                          로그아웃
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="text-md-regular text-grayscale-400 hover:text-primary-200 transition-colors"
                 >
-                  <ProfileIcon className="text-grayscale-400 h-6 w-6" />
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="text-md-regular text-grayscale-400 hover:text-primary-200 transition-colors"
-              >
-                로그인
-              </Link>
-            )}
+                  로그인
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* 모바일 우측 영역 */}
           <div className="flex items-center gap-2 md:hidden">
-            {isLoggedIn ? (
+            {actualIsLoggedIn ? (
               /* 로그인 상태 - 햄버거 메뉴만 */
               <button
                 className="hover:bg-grayscale-100 rounded-lg p-2 transition-colors"
@@ -161,8 +229,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
         </div>
 
         {/* 모바일 메뉴 (로그인 상태일 때만) */}
-        {isMobileMenuOpen && isLoggedIn && (
-          <div className="border-grayscale-200 absolute top-16 right-4 z-50 w-[120px] rounded-2xl border bg-white px-2 py-4 shadow-lg md:hidden">
+        {isMobileMenuOpen && actualIsLoggedIn && (
+          <div className="border-grayscale-200 absolute top-12 right-4 z-50 w-[140px] rounded-2xl border bg-white px-2 py-4 shadow-lg md:hidden">
             <nav className="flex flex-col">
               <Link
                 href="/wikilist"
@@ -191,18 +259,40 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
                 )}
               </button>
               <Link
-                href="/profile"
+                href="/account"
                 className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                마이페이지
+                계정설정
               </Link>
+              <div
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 cursor-pointer rounded-lg px-4 py-3 transition-colors"
+                onClick={(e) => {
+                  if (code) {
+                    window.location.href = `/wiki/${code}`;
+                  } else {
+                    e.preventDefault();
+                  }
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                내 위키
+              </div>
+              <button
+                className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 w-full rounded-lg px-4 py-3 text-left transition-colors"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsLogoutModalOpen(true);
+                }}
+              >
+                로그아웃
+              </button>
             </nav>
           </div>
         )}
 
         {/* 모바일 알림 드롭다운 - 외부 클릭 시 닫기 */}
-        {isMobileNotificationOpen && isLoggedIn && (
+        {isMobileNotificationOpen && actualIsLoggedIn && (
           <>
             <div
               className="fixed inset-0 z-40 md:hidden"
@@ -220,6 +310,20 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
             </div>
           </>
         )}
+
+        {/* 로그아웃 확인 모달 */}
+        <ConfirmModal
+          isOpen={isLogoutModalOpen}
+          onClose={() => setIsLogoutModalOpen(false)}
+          title="로그아웃"
+          message="정말 로그아웃 하시겠습니까?"
+          confirmText="로그아웃"
+          cancelText="취소"
+          onConfirm={() => {
+            setIsLogoutModalOpen(false);
+            logout();
+          }}
+        />
       </div>
     </header>
   );

@@ -5,7 +5,7 @@ import type React from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import { apiClient } from '@/utils/apiClient';
 import ListCard from '@/components/ListCard/ListCard';
 import Pagination from '@/components/Pagination/Pagination';
 import { tv } from 'tailwind-variants';
@@ -63,11 +63,12 @@ function WikiListContent() {
     async function fetchProfileData() {
       try {
         setIsLoading(true);
-        const res = await axios.get(API.PROFILE);
-        console.log(res.data.list);
-        setProfiles(res.data.list);
+        // APIClient의 publicJson 메소드 사용 (프로필 목록은 인증 불필요)
+        const res = await apiClient.publicJson(API.PROFILE);
+        console.log(res.list);
+        setProfiles(res.list);
       } catch (error) {
-        console.log(error);
+        console.error('프로필 목록 조회 실패:', error);
       } finally {
         setIsLoading(false);
       }
