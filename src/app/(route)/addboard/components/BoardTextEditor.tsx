@@ -6,7 +6,6 @@ import Toolbar from '@/components/TextEditor/Toolbar';
 import { useCommonEditor } from '@/components/TextEditor/editorConfig';
 import { useEffect } from 'react';
 import { useModal } from '@/hooks/useModal';
-import AddImageModal from './AddImageModal';
 
 interface BoardTextEditorProps {
   beforeValue: string;
@@ -33,12 +32,10 @@ const BoardTextEditor = ({ beforeValue, onContentChange, onImageChange }: BoardT
     <>
       <div className="flex h-full w-full flex-col justify-between">
         <TextEditor editor={editor} className="board custom-scrollbar overflow-auto" />
-        <div className="border-grayscale-200 flex justify-between rounded-full border px-4 py-2 shadow-[0px_1px_2px_0px_#0000000D]">
+        <div className="border-grayscale-200 flex rounded-full border px-4 py-2 shadow-[0px_1px_2px_0px_#0000000D]">
           <Toolbar editor={editor} />
-          <IconButton icon="IC_Image" onClick={openModal} />
         </div>
       </div>
-      <AddImageModal isOpen={isOpen} onClose={closeModal} onChange={onImageChange} />
     </>
   );
 };

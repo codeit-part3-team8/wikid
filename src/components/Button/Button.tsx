@@ -20,7 +20,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'rounded-xl transition-all duration-200 ease-in-out disabled:cursor-not-allowed';
+      'rounded-xl transition-all duration-200 ease-in-out disabled:cursor-not-allowed cursor-pointer';
 
     const variantStyles = {
       primary:

@@ -5,7 +5,7 @@ import { tv } from 'tailwind-variants';
 import HeaderDropdown from './components/HeaderDropdown';
 import AlignmentDropdown from './components/AlignmentDropdown';
 import ListDropdown from './components/ListDropdown';
-import FileUploadDropdown from './components/FileUploadDropdown';
+import ImageUploadButton from './components/ImageUploadButton';
 import BoldButton from './components/BoldButton';
 import DividerButton from './components/DividerButton';
 import ItalicButton from './components/ItalicButton';
@@ -13,9 +13,10 @@ import UnderlineButton from './components/UnderLineButton';
 import TextColorButton from './components/TextColorButton';
 import TableDropdown from './components/TableDropdown';
 import AddLinkButton from './components/AddLinkButton';
+import Divider from '../Divider/Divider';
 
 const barStyle = tv({
-  base: 'flex gap-3 w-fit items-center',
+  base: 'flex flex-wrap gap-3 w-fit items-center',
 });
 
 interface ToolbarProps {
@@ -33,18 +34,18 @@ const Toolbar = ({ editor }: ToolbarProps) => {
         <BoldButton editor={editor} />
         <ItalicButton editor={editor} />
         <UnderlineButton editor={editor} />
-      </div>
-      <div className="flex gap-1">
         <TextColorButton editor={editor} />
       </div>
+      <Divider orientation="vertical" className="hidden md:block" />
       <div className="flex gap-1">
         <AlignmentDropdown editor={editor} />
         <ListDropdown editor={editor} />
         <DividerButton editor={editor} />
-        <TableDropdown editor={editor} />
       </div>
+      <Divider orientation="vertical" className="hidden md:block" />
       <div className="flex gap-1">
-        <FileUploadDropdown editor={editor} />
+        <TableDropdown editor={editor} />
+        <ImageUploadButton editor={editor} />
         <AddLinkButton editor={editor} />
       </div>
     </div>

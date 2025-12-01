@@ -35,12 +35,21 @@ export const EditorDropdown = ({ icon, ariaLabel, children }: EditorDropdownProp
 
   return (
     <div ref={ref} className="relative inline-block">
-      <div className="text-grayscale-400 hover:text-grayscale-500 flex items-center hover:cursor-pointer">
-        <ToolbarButton icon={selectedIcon} onClick={toggleDropdown} ariaLabel={ariaLabel} />
-        <SVGIcon icon="TTIC_ArrowDown" onClick={toggleDropdown} className="mb-1 h-2 w-2" />
+      <div className="group text-grayscale-400 flex items-center hover:cursor-pointer">
+        <ToolbarButton
+          icon={selectedIcon}
+          onClick={toggleDropdown}
+          ariaLabel={ariaLabel}
+          className="group-hover:text-grayscale-500"
+        />
+        <SVGIcon
+          icon="TTIC_ArrowDown"
+          onClick={toggleDropdown}
+          className={`group-hover:text-grayscale-500 mb-1 h-2 w-2 ${open ? 'mt-1 mb-0 rotate-180' : 'rotate-0'}`}
+        />
       </div>
       {open && (
-        <div className="border-grayscale-400 absolute top-full left-0 z-10 mt-1 w-fit rounded bg-white shadow-md">
+        <div className="border-grayscale-400 absolute top-full left-0 z-50 mt-1 w-fit rounded bg-white shadow-md">
           {React.Children.map(children, (child) => {
             if (React.isValidElement<EditorDropdownMenuProps>(child)) {
               return React.cloneElement(child, {
