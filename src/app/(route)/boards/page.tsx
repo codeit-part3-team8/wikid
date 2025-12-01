@@ -141,20 +141,18 @@ export default function BoardsPage() {
             </Button>
           </Link>
         </div>
-
-        <div
-          ref={bestRef}
-          id="dragBox"
-          className="no-scrollbar mb-[40px] grid auto-cols-[250px] grid-flow-col gap-[16px] overflow-x-auto min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4"
-        >
-          {' '}
-          {[...articleData]
-            .sort((a, b) => b.likeCount - a.likeCount)
-            .slice(0, 4)
-            .map((article) => (
-              <BestArticle key={article.id} {...article} />
-            ))}{' '}
+        <div ref={bestRef} id="dragBox" className="no-scrollbar overflow-x-auto">
+          <div className="mb-[40px] grid max-w-[1048px] auto-cols-[250px] grid-flow-col gap-[16px] min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4">
+            {' '}
+            {[...articleData]
+              .sort((a, b) => b.likeCount - a.likeCount)
+              .slice(0, 4)
+              .map((article) => (
+                <BestArticle key={article.id} {...article} />
+              ))}{' '}
+          </div>
         </div>
+
         <div className="flex flex-col gap-[20px] sm:flex-row">
           <div className="flex flex-1 gap-[20px]">
             <SearchInput value={search} onChange={handleChange} onSubmit={handleSearchSubmit} />
