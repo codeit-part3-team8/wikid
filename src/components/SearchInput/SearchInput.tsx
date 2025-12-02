@@ -12,7 +12,7 @@ const inputStyle = tv({
 interface SearchInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  // onSubmit: (e: React.FormEvent) => void;
+
   onSubmit: () => void;
 }
 
