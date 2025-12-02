@@ -1,0 +1,16 @@
+{
+  "name": "WIKID",
+  "short_name": "WIKID",
+  "description": "나만의 위키를 만들고 공유하세요",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10B981",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

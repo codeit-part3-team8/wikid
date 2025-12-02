@@ -19,8 +19,8 @@ interface BoardProps {
 
 const Board = ({ boardId }: BoardProps) => {
   const router = useRouter();
-  const { user } = useAuth();
-  const currentUserId = user?.id?.toString() ?? null;
+  const { userProfile } = useAuth();
+  const currentUserId = userProfile?.userId?.toString() ?? null;
 
   const { article, loading, error } = useArticle({ boardId });
   const { deleteArticle } = useDeleteArticle({
@@ -31,8 +31,8 @@ const Board = ({ boardId }: BoardProps) => {
   const isWriter = currentUserId !== null && article?.writer.id.toString() === currentUserId;
 
   if (loading) return <LoadingDots />;
-  if (error) return <p>에러: {error}</p>;
-  if (!article) return <p>엥</p>;
+  if (error) return <p>에러가 발생했습니다: {error}</p>;
+  if (!article) return <p>게시글이 존재하지 않습니다.</p>;
 
   const formatDate = getFormatDate(article.createdAt);
 

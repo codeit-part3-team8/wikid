@@ -47,6 +47,7 @@ interface AuthContextType {
   logout: () => void;
   checkAuth: () => Promise<void>;
   authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response>;
+  updateUserProfile: (profile: Partial<UserProfile>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -110,7 +111,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = useCallback(
     (accessToken: string, refreshToken: string, userData?: LoginUserData) => {
       setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
+      // 리프레시 토큰은 서버에서 HttpOnly 쿠키로 설정되므로 여기서는 처리하지 않음
+      // setRefreshToken(refreshToken);
       setIsLoggedIn(true);
 
       if (userData && userData.user) {
@@ -147,6 +149,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  // userProfile 업데이트 처리
+  const updateUserProfile = useCallback((profile: Partial<UserProfile>) => {
+    setUserProfile((prev) => {
+      if (!prev) return null;
+      const updatedProfile = { ...prev, ...profile };
+      saveUserProfile(updatedProfile);
+      return updatedProfile;
+    });
+  }, []);
+
   const contextValue = {
     isLoggedIn,
     user,
@@ -156,6 +168,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     checkAuth,
     authenticatedFetch,
+    updateUserProfile,
   };
 
   if (isLoading) return null;

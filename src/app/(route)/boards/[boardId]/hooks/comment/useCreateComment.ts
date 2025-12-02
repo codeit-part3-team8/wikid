@@ -1,20 +1,14 @@
 'use client';
 
 import { API } from '@/constants/api';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 import { useState } from 'react';
 
 export function useCreateComment(boardId: string) {
-  const accessToken = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const createComment = async (content: string) => {
-    if (!accessToken) {
-      setError('로그인 후 다시 시도해주세요.');
-      return null;
-    }
-
     if (!content) {
       setError('댓글 내용을 입력해주세요.');
       return null;
@@ -24,11 +18,10 @@ export function useCreateComment(boardId: string) {
     setError(null);
 
     try {
-      const res = await fetch(`${API.ARTICLES}${boardId}/comments`, {
+      const res = await fetchWithAuth(`${API.ARTICLES}${boardId}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ content }),
       });

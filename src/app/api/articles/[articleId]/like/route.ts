@@ -1,43 +1,55 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { API } from '@/constants/api';
+import { NextRequest } from 'next/server';
+import { API_BASE_URL } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
-import { handlerServerError } from '@/utils/handlerServerError';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
+import { APIError } from '@/types/Error';
 import { Params, parseArticleId } from '../route';
 
 export async function POST(_request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
-    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, { method: 'POST' });
-    return NextResponse.json({
-      message: `${id}/like posted`,
-      data: data,
-    });
-  } catch (err) {
-    return handlerServerError(err, 'Failed to post articleId/like');
+    const data = await safeFetch(`${API_BASE_URL}/articles/${id}/like`, { method: 'POST' });
+    return createSuccessResponse(data, `게시글 ${id} 좋아요 성공`, 201);
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '좋아요 등록에 실패했습니다'
+    );
   }
 }
 
 export async function DELETE(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json({ message: '권한이 없습니다' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
     }
 
-    const data = await safeFetch(`${API.ARTICLES}${id}/like/`, {
+    const data = await safeFetch(`${API_BASE_URL}/articles/${id}/like`, {
       method: 'DELETE',
-      headers: { Authorization: authHeader },
+      headers: { Authorization: authToken },
     });
-    return NextResponse.json({
-      message: `${id}/like deleted`,
-      data: data,
-    });
-  } catch (err) {
-    return handlerServerError(err, 'Failed to delete articleId/like');
+    return createSuccessResponse(data, `게시글 ${id} 좋아요 취소 성공`);
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '좋아요 취소에 실패했습니다'
+    );
   }
 }

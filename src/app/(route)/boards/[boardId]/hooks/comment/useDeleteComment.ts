@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 import { API } from '@/constants/api';
 
 interface UseDeleteCommentParams {
@@ -10,16 +10,10 @@ interface UseDeleteCommentParams {
 }
 
 export function useDeleteComment({ commentId, onSuccess }: UseDeleteCommentParams) {
-  const accessToken = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const deleteComment = async () => {
-    if (!accessToken) {
-      setError('로그인 후 다시 시도해주세요.');
-      return null;
-    }
-
     if (!commentId) {
       setError('삭제할 댓글 정보가 올바르지 않습니다.');
       return null;
@@ -29,11 +23,8 @@ export function useDeleteComment({ commentId, onSuccess }: UseDeleteCommentParam
     setError(null);
 
     try {
-      const res = await fetch(`${API.COMMENT}${commentId}`, {
+      const res = await fetchWithAuth(`${API.COMMENT}${commentId}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
       });
 
       let serverMessage: string | undefined;

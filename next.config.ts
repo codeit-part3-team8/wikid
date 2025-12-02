@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  compress: true,
+  generateEtags: true,
+  poweredByHeader: false,
   turbopack: {
     rules: {
       '*.svg': {

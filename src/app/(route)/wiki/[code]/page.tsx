@@ -30,6 +30,7 @@ export default function WikiPage() {
     hasEditPermission,
     isLoggedIn,
     isMyWiki,
+    isNotFound,
     fetchWikiData,
     checkEditingStatus,
     setProfileData,
@@ -122,15 +123,18 @@ export default function WikiPage() {
 
   const handleAvatarChange = useCallback(
     (imageUrl?: string, file?: File) => {
-      if (imageUrl && profileData) {
+      if (imageUrl) {
         setChangedAvatar(file || imageUrl);
-        setProfileData({
-          ...profileData,
-          image: imageUrl,
+        setProfileData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            image: imageUrl,
+          };
         });
       }
     },
-    [profileData, setProfileData, setChangedAvatar]
+    [setProfileData, setChangedAvatar]
   );
 
   const handleContentChange = (content: string) => {
@@ -212,7 +216,7 @@ export default function WikiPage() {
     );
   }
 
-  if (!profileData) {
+  if (isNotFound || !profileData) {
     return <NotFoundState onRetry={() => window.location.reload()} />;
   }
 
