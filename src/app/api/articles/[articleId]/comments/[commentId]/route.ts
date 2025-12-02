@@ -1,7 +1,12 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { handlerServerError } from '@/utils/handlerServerError';
-import { API } from '@/constants/api';
+import { NextRequest } from 'next/server';
+import { API_BASE_URL } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
+import { APIError } from '@/types/Error';
 import { parseArticleId } from '../../route';
 
 type CommentIdParams = { commentId: string };
@@ -11,22 +16,32 @@ export async function PATCH(
   context: { params: CommentIdParams | Promise<CommentIdParams> }
 ) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { commentId } = await context.params;
     const id = parseArticleId(commentId);
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
     const body = await request.json();
-    const data = await safeFetch(`${API.COMMENT}${id}`, {
+    const data = await safeFetch(`${API_BASE_URL}/comments/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: authHeader },
+      headers: { 'Content-Type': 'application/json', Authorization: authToken },
       body: JSON.stringify(body),
     });
 
-    return NextResponse.json(data);
-  } catch (err) {
-    return handlerServerError(err, 'Failed to patch comment');
+    return createSuccessResponse(data, '댓글 수정 성공');
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '댓글 수정에 실패했습니다'
+    );
   }
 }
 
@@ -35,19 +50,29 @@ export async function DELETE(
   context: { params: CommentIdParams | Promise<CommentIdParams> }
 ) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { commentId } = await context.params;
     const id = parseArticleId(commentId);
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
-    const data = await safeFetch(`${API.COMMENT}${id}`, {
+    const data = await safeFetch(`${API_BASE_URL}/comments/${id}`, {
       method: 'DELETE',
-      headers: { Authorization: authHeader },
+      headers: { Authorization: authToken },
     });
 
-    return NextResponse.json(data);
-  } catch (err) {
-    return handlerServerError(err, 'Failed to delete comment');
+    return createSuccessResponse(data, '댓글 삭제 성공');
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '댓글 삭제에 실패했습니다'
+    );
   }
 }

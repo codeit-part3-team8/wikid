@@ -2,18 +2,25 @@
 
 **나만의 위키를 만들고, 다른 사람들의 위키를 수정하는 공간입니다.**
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-green?style=for-the-badge)](https://wikid-19-8.vercel.app)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/codeit-part3-team8/wikid)
+
 ## ✨ 소개
 
 WIKID는 누구나 쉽게 위키를 생성하고 편집할 수 있는 협업 플랫폼입니다. 개인의 지식을 공유하고, 다른 사람들과 함께 정보를 발전시켜 나갈 수 있는 공간을 제공합니다.
 
-### 🎯 주요 기능
+### 주요 기능
 
-- **📝 위키 생성 및 편집** - 텍스트 에디터로 직관적인 위키 작성
-- **🔐 보안 퀴즈** - 위키 편집 권한 보호
+- **📝 위키 생성 및 편집** - TipTap 에디터로 직관적인 위키 작성 (이미지, 링크, 리스트 등 지원)
+- **🔐 보안 퀴즈** - 위키 편집 권한 보호 시스템
+- **⏱️ 편집 타이머** - 5분 타이머로 동시 편집 충돌 방지
 - **🔔 실시간 알림** - 위키 수정 알림 시스템
-- **👥 사용자 프로필** - 프로필 이미지 및 정보 관리
-- **📋 자유게시판** - 커뮤니티 소통 공간
-- **🔍 검색 및 필터** - 위키 및 게시글 검색
+- **👥 사용자 프로필** - 아바타 및 프로필 정보 관리
+- **📋 자유게시판** - 커뮤니티 소통 공간 (댓글, 좋아요, 베스트 게시글)
+- **🔍 검색 및 필터** - 위키 및 게시글 실시간 검색
+- **🔒 자동 토큰 갱신** - 끊김 없는 사용자 경험 (토큰 만료 시 자동 갱신)
+- **🌐 SEO 최적화** - Open Graph, JSON-LD, sitemap, robots.txt
+- **📱 반응형 디자인** - 모바일, 태블릿, 데스크톱 완벽 지원
 
 ## 🛠️ 기술 스택
 
@@ -23,13 +30,12 @@ WIKID는 누구나 쉽게 위키를 생성하고 편집할 수 있는 협업 플
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-- **Next.js 16.0.3** - React 기반 풀스택 프레임워크 (App Router)
-- **React 19.2.0** - 사용자 인터페이스 구축
+- **Next.js 16.0.3** - React 기반 풀스택 프레임워크 (App Router, Server Actions)
+- **React 19.2.0** - 사용자 인터페이스 구축 (React Compiler 적용)
 - **TypeScript 5** - 정적 타입 검사
-- **TipTap** - 리치 텍스트 에디터 (위키/게시글 작성)
-- **Axios** - HTTP 클라이언트
-- **Framer Motion** - 애니메이션 라이브러리
+- **TipTap** - 리치 텍스트 에디터 (ProseMirror 기반, 위키/게시글 작성)
 - **DOMPurify** - XSS 보안 처리
+- **Vercel Analytics** - 웹 분석 도구
 
 ### 스타일링
 
@@ -53,7 +59,19 @@ WIKID는 누구나 쉽게 위키를 생성하고 편집할 수 있는 협업 플
 
 ![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)
 
-- **Vercel** - 배포 환경 (v1.0.0부터 시작)
+- **Vercel** - 자동 배포 환경
+- **배포 URL**: [https://wikid-19-8.vercel.app](https://wikid-19-8.vercel.app)
+- **자동 CI/CD** - main 브랜치 푸시 시 자동 배포
+- **프리뷰 배포** - PR 생성 시 미리보기 환경 자동 생성
+
+### SEO 및 성능 최적화
+
+- **Open Graph** - SNS 링크 공유 시 리치 프리뷰
+- **JSON-LD** - 구조화된 데이터 (Article, WebSite 스키마)
+- **Dynamic Sitemap** - 자동 생성되는 사이트맵
+- **robots.txt** - 검색엔진 크롤링 최적화
+- **Image Optimization** - Next.js 이미지 최적화
+- **Gzip Compression** - 응답 압축
 
 ## 👥 Team
 
@@ -87,9 +105,12 @@ wikid/
 │   │   │   ├── profiles/  # 프로필 API
 │   │   │   └── proxy/     # 프록시 API
 │   │   ├── globals.css    # 전역 스타일
-│   │   ├── layout.tsx     # 루트 레이아웃
-│   │   ├── page.tsx       # 메인 페이지
+│   │   ├── layout.tsx     # 루트 레이아웃 (SEO 메타데이터)
+│   │   ├── page.tsx       # 메인 페이지 (JSON-LD)
 │   │   ├── not-found.tsx  # 404 페이지
+│   │   ├── robots.ts      # robots.txt 생성
+│   │   ├── sitemap.ts     # 동적 sitemap.xml 생성
+│   │   ├── og-image.png   # Open Graph 이미지
 │   │   └── typo-color/    # 디자인 시스템 showcase
 │   ├── components/        # 재사용 컴포넌트
 │   │   ├── ArticleList/   # 게시글 목록
@@ -113,7 +134,8 @@ wikid/
 │   │   └── useUserInfo.ts    # 사용자 정보
 │   ├── utils/             # 유틸리티 함수
 │   │   ├── apiClient.ts       # API 클라이언트
-│   │   ├── auth.ts           # 인증 헬퍼
+│   │   ├── auth.ts           # 인증 헬퍼 (토큰 관리)
+│   │   ├── fetchWithAuth.ts  # 자동 토큰 갱신 fetch wrapper
 │   │   └── safeFetch.ts      # Safe Fetch
 │   ├── types/             # TypeScript 타입
 │   ├── constants/         # 상수 (API, 스타일, 검증)
@@ -192,43 +214,105 @@ npm run type-check   # TypeScript 타입 검사
 
 ### API 엔드포인트
 
-| 경로                        | 메서드 | 설명             |
-| --------------------------- | ------ | ---------------- |
-| `/api/articles`             | GET    | 게시글 목록 조회 |
-| `/api/articles`             | POST   | 게시글 작성      |
-| `/api/articles/[id]`        | GET    | 게시글 상세 조회 |
-| `/api/articles/[id]`        | PATCH  | 게시글 수정      |
-| `/api/articles/[id]`        | DELETE | 게시글 삭제      |
-| `/api/auth/*`               | \*     | 인증 관련        |
-| `/api/images/upload`        | POST   | 이미지 업로드    |
-| `/api/notifications`        | GET    | 알림 목록 조회   |
-| `/api/notifications/[id]`   | DELETE | 알림 삭제        |
-| `/api/profiles/[code]`      | GET    | 프로필 조회      |
-| `/api/profiles/[code]`      | PATCH  | 프로필 수정      |
-| `/api/profiles/[code]/ping` | GET    | 편집 상태 확인   |
-| `/api/profiles/[code]/ping` | POST   | 보안 퀴즈 검증   |
+#### 게시글 (Articles)
 
-### API 구현 패턴
+| 경로                                             | 메서드 | 설명             |
+| ------------------------------------------------ | ------ | ---------------- |
+| `/api/articles`                                  | GET    | 게시글 목록 조회 |
+| `/api/articles`                                  | POST   | 게시글 작성      |
+| `/api/articles/[articleId]`                      | GET    | 게시글 상세 조회 |
+| `/api/articles/[articleId]`                      | PATCH  | 게시글 수정      |
+| `/api/articles/[articleId]`                      | DELETE | 게시글 삭제      |
+| `/api/articles/[articleId]/like`                 | POST   | 좋아요 등록      |
+| `/api/articles/[articleId]/like`                 | DELETE | 좋아요 취소      |
+| `/api/articles/[articleId]/comments`             | GET    | 댓글 목록 조회   |
+| `/api/articles/[articleId]/comments`             | POST   | 댓글 작성        |
+| `/api/articles/[articleId]/comments/[commentId]` | PATCH  | 댓글 수정        |
+| `/api/articles/[articleId]/comments/[commentId]` | DELETE | 댓글 삭제        |
+
+#### 인증 (Auth)
+
+| 경로                | 메서드 | 설명                                 |
+| ------------------- | ------ | ------------------------------------ |
+| `/api/auth/signin`  | POST   | 로그인 (Refresh Token을 쿠키로 설정) |
+| `/api/auth/signup`  | POST   | 회원가입                             |
+| `/api/auth/logout`  | POST   | 로그아웃 (쿠키 삭제)                 |
+| `/api/auth/refresh` | POST   | 토큰 자동 갱신 (쿠키 기반)           |
+
+#### 프로필 & 위키 (Profiles)
+
+| 경로                  | 메서드 | 설명           |
+| --------------------- | ------ | -------------- |
+| `/api/profiles`       | POST   | 위키 생성      |
+| `/api/profiles`       | GET    | 내 프로필 조회 |
+| `/api/profiles`       | PATCH  | 내 프로필 수정 |
+| `/api/passwordchange` | PATCH  | 비밀번호 변경  |
+
+#### 기타
+
+| 경로                      | 메서드 | 설명           |
+| ------------------------- | ------ | -------------- |
+| `/api/images/upload`      | POST   | 이미지 업로드  |
+| `/api/notifications`      | GET    | 알림 목록 조회 |
+| `/api/notifications/[id]` | DELETE | 알림 삭제      |
+| `/api/proxy`              | GET    | 프록시 요청    |
+
+### API 표준화 패턴
+
+모든 API 라우트는 통일된 패턴을 따릅니다:
 
 ```typescript
-// safeFetch: 에러 핸들링이 포함된 fetch wrapper
+import { NextRequest } from 'next/server';
+import { API_BASE_URL } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
-import { handlerServerError } from '@/utils/handlerServerError';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
+import { APIError } from '@/types/Error';
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    const data = await safeFetch(url, { headers: { Authorization: authHeader } });
-    return NextResponse.json({ data });
-  } catch (err) {
-    return handlerServerError(err, 'Error message');
+    // 1. 환경변수 검증
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
+    // 2. 인증 확인
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
+
+    // 3. API 호출
+    const data = await safeFetch(`${API_BASE_URL}/endpoint`, {
+      headers: { Authorization: authToken },
+    });
+
+    // 4. 성공 응답
+    return createSuccessResponse(data, '조회 성공');
+  } catch (error) {
+    // 5. 에러 응답
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '조회에 실패했습니다'
+    );
   }
 }
 ```
 
+### API 헬퍼 함수
+
+- **`safeFetch`** - fetch wrapper with error handling
+- **`createSuccessResponse`** - 통일된 성공 응답 포맷
+- **`createErrorResponse`** - 통일된 에러 응답 포맷
+- **`validateEnvironmentVariables`** - 환경변수 검증
+
 ## 📋 개발 규칙
 
-상세한 개발 규칙은 **[docs/CODE_CONVENTION.md](./docs/CODE_CONVENTION.md)**를 참고하세요.
+상세한 개발 규칙은 [docs/CODE_CONVENTION.md](./docs/CODE_CONVENTION.md) 를 참고하세요.
 
 ### 핵심 규칙
 
@@ -269,7 +353,7 @@ main (프로덕션)
 
 ### 커밋 컨벤션
 
-상세한 커밋 규칙은 **[docs/COMMIT_CONVENTION.md](./docs/COMMIT_CONVENTION.md)**를 참고하세요.
+상세한 커밋 규칙은 [docs/COMMIT_CONVENTION.md](./docs/COMMIT_CONVENTION.md) 를 참고하세요.
 
 **기본 형식**: `<type>: <subject> (#이슈번호)`
 
@@ -332,5 +416,85 @@ http://localhost:3000/typo-color
 
 ## 🔗 링크
 
-- **Figma 디자인**: [figma.com/design/7aLjzZy50LPISym2AMxuQW/-BBB-위키드](https://figma.com/design/7aLjzZy50LPISym2AMxuQW/-BBB-위키드)
-- **GitHub 프로젝트**: [https://github.com/codeit-part3-team8/wikid](https://github.com/codeit-part3-team8/wikid)
+- **🌐 Live Demo**: [https://wikid-19-8.vercel.app](https://wikid-19-8.vercel.app)
+- **🎨 Figma 디자인**: [figma.com/design/7aLjzZy50LPISym2AMxuQW/-BBB-위키드](https://figma.com/design/7aLjzZy50LPISym2AMxuQW/-BBB-위키드)
+- **📦 GitHub**: [https://github.com/codeit-part3-team8/wikid](https://github.com/codeit-part3-team8/wikid)
+
+### 메인 페이지
+
+![Main Page](https://wikid-19-8.vercel.app/og-image.png)
+
+### 주요 기능
+
+- ✅ 위키 생성 및 편집 (보안 퀴즈, 5분 타이머)
+- ✅ 게시판 (댓글, 좋아요, 베스트 게시글)
+- ✅ 실시간 알림
+- ✅ 검색 및 필터링
+- ✅ 반응형 디자인
+
+## 🚀 성능 최적화
+
+- **React Compiler** - 자동 메모이제이션으로 리렌더링 최적화
+- **Next.js Image** - 자동 이미지 최적화 (webp, avif)
+- **Code Splitting** - 동적 임포트로 초기 로딩 속도 개선
+- **Server Components** - 서버 사이드 렌더링으로 SEO 및 성능 향상
+- **Gzip Compression** - 응답 데이터 압축
+- **Font Optimization** - Pretendard 폰트 최적화 로딩
+
+## 🔒 보안 및 인증
+
+### Dual Token 아키텍처
+
+프로젝트는 보안과 사용자 경험을 모두 만족시키는 **이중 토큰 시스템**을 구현합니다:
+
+#### 🔑 Access Token (액세스 토큰)
+
+- **저장 위치**: `localStorage`
+- **용도**: API 요청 시 사용
+- **특징**: 짧은 유효기간 (탈취 시 피해 최소화)
+
+#### 🍪 Refresh Token (리프레시 토큰)
+
+- **저장 위치**: `HttpOnly Cookie`
+- **용도**: Access Token 갱신
+- **특징**:
+  - JavaScript 접근 불가 → XSS 공격 방어
+  - 7일 유효기간
+  - `httpOnly: true, secure: production, sameSite: 'lax'`
+
+### 🔄 자동 토큰 갱신 (`fetchWithAuth`)
+
+**핵심 기능**:
+
+1. 모든 API 요청에 Access Token 자동 추가
+2. 401 에러 감지 시 자동으로 토큰 갱신
+3. 갱신 후 원래 요청 재시도
+4. **중복 갱신 방지** - 여러 API가 동시에 401을 받아도 1번만 갱신
+
+```typescript
+// 사용 예시
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+
+// 토큰 만료 시 자동으로 갱신하고 재시도
+const response = await fetchWithAuth('/api/endpoint', {
+  method: 'POST',
+  body: JSON.stringify(data),
+});
+```
+
+**적용 범위**: 12개 Hook (좋아요, 댓글, 게시글, 위키 편집 등)
+
+### 보안 기능
+
+- **XSS 방어**: DOMPurify로 사용자 입력 sanitization
+- **CSRF 방어**: SameSite 쿠키 정책
+- **환경변수 검증**: API 키 및 민감 정보 보호
+- **보안 퀴즈**: 위키 편집 권한 보호
+
+## 📝 라이센스
+
+이 프로젝트는 팀 프로젝트로, 교육 목적으로 제작되었습니다.
+
+---
+
+**Made with ❤️ by Team 8** (권현성, 윤시현, 양정훈, 방다연)

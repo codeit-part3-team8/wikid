@@ -1,6 +1,7 @@
 'use client';
 
 import Button from '@/components/Button/Button';
+import Divider from '@/components/Divider/Divider';
 import { useRouter } from 'next/navigation';
 
 export default function MyPage() {
@@ -12,14 +13,12 @@ export default function MyPage() {
           <div className="p-12">
             <h1 className="text-2xl-semibold text-grayscale-600 mb-12 text-center">계정 설정</h1>
 
-            <div className="mx-auto max-w-md space-y-6">
+            <div className="mx-auto flex max-w-md flex-col gap-10">
+              <Divider />
               {/* 비밀번호 변경 버튼 */}
-              <Button size="lg" fullWidth onClick={() => router.push('/passwordChange')}>
+              <Button size="lg" fullWidth onClick={() => router.push('/passwordchange')}>
                 비밀번호 변경
               </Button>
-
-              {/* 구분선 */}
-              <div className="border-grayscale-600 border-t"></div>
 
               {/* 위키 생성하기 버튼 */}
               <Button size="lg" fullWidth onClick={() => router.push('/wikicreate')}>

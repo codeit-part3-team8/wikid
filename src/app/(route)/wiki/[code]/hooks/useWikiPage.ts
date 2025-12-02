@@ -1,7 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Dispatch, SetStateAction } from 'react';
 import { APIProfileData } from '@/types/Api';
 import { API } from '@/constants/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+import { getAccessToken } from '@/utils/auth';
 
 interface UseWikiPageReturn {
   // States
@@ -10,6 +12,7 @@ interface UseWikiPageReturn {
   error: string | null;
   isBeingEdited: boolean;
   hasEditPermission: boolean;
+  isNotFound: boolean;
 
   // Computed values
   isLoggedIn: boolean;
@@ -20,7 +23,7 @@ interface UseWikiPageReturn {
   // Actions
   fetchWikiData: () => Promise<void>;
   checkEditingStatus: () => Promise<boolean>;
-  setProfileData: (data: APIProfileData | null) => void;
+  setProfileData: Dispatch<SetStateAction<APIProfileData | null>>;
   setHasEditPermission: (permission: boolean) => void;
   setIsBeingEdited: (editing: boolean) => void;
 }
@@ -32,6 +35,7 @@ export const useWikiPage = (code: string): UseWikiPageReturn => {
   const [error, setError] = useState<string | null>(null);
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   // 현재 로그인한 사용자 정보
   const { isLoggedIn, userProfile } = useAuth();
@@ -50,13 +54,12 @@ export const useWikiPage = (code: string): UseWikiPageReturn => {
     }
 
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const response = await fetch(`${API.PROFILE}${code}/ping`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
+      const accessToken = getAccessToken();
+      const response = accessToken
+        ? await fetchWithAuth(`${API.PROFILE}${code}/ping`)
+        : await fetch(`${API.PROFILE}${code}/ping`, {
+            headers: { 'Content-Type': 'application/json' },
+          });
 
       if (response.status === 204) {
         // 204: 편집권한이 아무에게도 없음 (편집 가능)
@@ -113,12 +116,20 @@ export const useWikiPage = (code: string): UseWikiPageReturn => {
     try {
       setIsLoading(true);
       setError(null);
+      setIsNotFound(false);
 
       const response = await fetch(`${API.PROFILE}${code}`, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
+
+      if (response.status === 404) {
+        setIsNotFound(true);
+        setProfileData(null);
+        setIsLoading(false);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -161,6 +172,7 @@ export const useWikiPage = (code: string): UseWikiPageReturn => {
     error,
     isBeingEdited,
     hasEditPermission,
+    isNotFound,
 
     // Computed values
     isLoggedIn,

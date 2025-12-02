@@ -3,7 +3,10 @@ import { tv } from 'tailwind-variants';
 import clsx from 'clsx';
 import SVGIcon from '../SVGIcon/SVGIcon';
 
-const BASE_URL = 'https://wikied-api.vercel.app/19-8';
+const BASE_URL =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 interface LinkCopyProps {
   code: string;
@@ -19,7 +22,7 @@ const SvgStyle = tv({
 });
 
 export default function LinkCopy({ code, onCopySuccess }: LinkCopyProps) {
-  const profileUrl = `${BASE_URL}/profiles/${code}`;
+  const profileUrl = `${BASE_URL}/wiki/${code}`;
 
   const handleCopy = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -38,7 +41,7 @@ export default function LinkCopy({ code, onCopySuccess }: LinkCopyProps) {
   return (
     <button className={clsx(classes)} onClick={handleCopy}>
       <SVGIcon icon="IC_Link" className={SvgStyle()} />
-      <span className="w-full max-w-[240px] truncate text-[14px] max-[640px]:text-xs max-[480px]:max-w-[200px] max-[430px]:max-w-[150px] lg:max-w-[240px]">
+      <span className="w-full max-w-60 truncate text-sm max-[640px]:text-xs max-[480px]:max-w-[200px] max-[430px]:max-w-[150px] lg:max-w-60">
         {profileUrl}
       </span>
     </button>

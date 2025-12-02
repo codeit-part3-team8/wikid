@@ -16,6 +16,7 @@ const AddLinkButton = ({ editor }: AddLinkButtonProps) => {
   const [url, setUrl] = useState('');
   const [text, setText] = useState('');
   const isYoutube = (url: string) => /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url);
+  // 유튜브 링크일 경우, 임베드 영상 불러오도록 함
 
   const handleOpenModal = () => {
     setUrl('');
@@ -64,7 +65,7 @@ const AddLinkButton = ({ editor }: AddLinkButtonProps) => {
 
     // 일반 링크인 경우
     const contentText = text.trim() === '' ? url : text;
-    const { from } = editor.state.selection;
+    const { from } = editor.state.selection; // 대체 텍스트에 링크를 걸기 위해 위치 탐색
 
     editor
       .chain()

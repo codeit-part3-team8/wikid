@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { APIProfileData } from '@/types/Api';
 import { useIdleTimer } from '@/hooks/useIdleTimer';
 import { API } from '@/constants/api';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface UseWikiEditorReturn {
   // Editor states
@@ -117,16 +118,12 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
                 });
 
                 // 이미지 업로드 API 호출
-                const accessToken = localStorage.getItem('accessToken');
                 const imageFormData = new FormData();
                 imageFormData.append('image', file);
 
-                const imageResponse = await fetch(`${API.IMAGE}`, {
+                const imageResponse = await fetchWithAuth(`${API.IMAGE}`, {
                   method: 'POST',
                   body: imageFormData,
-                  headers: {
-                    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-                  },
                 });
 
                 if (!imageResponse.ok) {
@@ -185,7 +182,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           job: editedProfileData?.job || profileData.job || '',
           mbti: editedProfileData?.mbti || profileData.mbti || '',
           city: editedProfileData?.city || profileData.city || '',
-          image: (profileData.image?.startsWith('data:') ? '' : profileData.image) || '',
+          image: profileData.image?.startsWith('data:') ? null : profileData.image || null,
           content: contentToSave,
         };
 
@@ -194,16 +191,12 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
 
         if (changedAvatar && changedAvatar instanceof File) {
           try {
-            const accessToken = localStorage.getItem('accessToken');
             const imageFormData = new FormData();
             imageFormData.append('image', changedAvatar);
 
-            const imageResponse = await fetch(`${API.IMAGE}`, {
+            const imageResponse = await fetchWithAuth(`${API.IMAGE}`, {
               method: 'POST',
               body: imageFormData,
-              headers: {
-                ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-              },
             });
 
             if (!imageResponse.ok) {
@@ -250,23 +243,39 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           imageUrl = changedAvatar;
         }
 
+        // 이미지 URL 인코딩 처리 (한글 등 특수문자 포함 시)
+        let encodedImageUrl = imageUrl;
+        if (imageUrl) {
+          try {
+            const url = new URL(imageUrl);
+            // pathname의 각 부분을 인코딩
+            const pathParts = url.pathname
+              .split('/')
+              .map((part) => encodeURIComponent(decodeURIComponent(part)));
+            url.pathname = pathParts.join('/');
+            encodedImageUrl = url.toString();
+          } catch (e) {
+            console.warn('이미지 URL 인코딩 실패, 원본 사용:', e);
+          }
+        }
+
         // 프로필 업데이트용 데이터
         const finalSaveData = {
           ...saveData,
-          image: imageUrl,
+          image: encodedImageUrl || null,
         };
 
-        const accessToken = localStorage.getItem('accessToken');
-        const response = await fetch(`${API.PROFILE}${code}`, {
+        const response = await fetchWithAuth(`${API.PROFILE}${code}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
           },
           body: JSON.stringify(finalSaveData),
         });
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('서버 응답 에러:', errorText);
           throw new Error(
             `프로필 저장에 실패했습니다. (상태: ${response.status} ${response.statusText})`
           );

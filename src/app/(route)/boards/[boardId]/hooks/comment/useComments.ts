@@ -3,6 +3,7 @@
 import { API } from '@/constants/api';
 import { Comment as CommentType } from '@/types/Comment';
 import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 import { useCallback, useEffect, useState, useRef } from 'react';
 
 interface UseCommentParams {
@@ -10,7 +11,6 @@ interface UseCommentParams {
 }
 
 export function useComments({ boardId }: UseCommentParams) {
-  const accessToken = getAccessToken();
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,22 +22,18 @@ export function useComments({ boardId }: UseCommentParams) {
       if (loadingRef.current) return;
       loadingRef.current = true;
 
-      if (!accessToken) {
-        setError('로그인 후 다시 시도해주세요.');
-        return;
-      }
       if (!boardId) return;
 
       setLoading(true);
       setError(null);
 
       try {
-        const res = await fetch(`${API.ARTICLES}${boardId}/comments?limit=999&cursor=${cursor}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const accessToken = getAccessToken();
+        const res = accessToken
+          ? await fetchWithAuth(`${API.ARTICLES}${boardId}/comments?limit=999&cursor=${cursor}`)
+          : await fetch(`${API.ARTICLES}${boardId}/comments?limit=999&cursor=${cursor}`, {
+              headers: { 'Content-Type': 'application/json' },
+            });
 
         let serverMessage: string | undefined;
         if (!res.ok) {
@@ -83,7 +79,7 @@ export function useComments({ boardId }: UseCommentParams) {
         loadingRef.current = false;
       }
     },
-    [boardId, accessToken]
+    [boardId]
   );
 
   useEffect(() => {

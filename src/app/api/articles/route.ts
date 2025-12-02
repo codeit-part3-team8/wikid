@@ -1,15 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { API } from '@/constants/api';
-import { handlerServerError } from '@/utils/handlerServerError';
+import { NextRequest } from 'next/server';
+import { API_BASE_URL } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
+import { APIError } from '@/types/Error';
 
 export async function POST(request: NextRequest) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const body = await request.json();
     const { image, title, content } = body;
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
     const payload = {
       image,
@@ -17,35 +29,42 @@ export async function POST(request: NextRequest) {
       content,
     };
 
-    const data = await safeFetch(`${API.ARTICLES}`, {
+    const data = await safeFetch(`${API_BASE_URL}/articles`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authHeader,
+        Authorization: authToken,
       },
       body: JSON.stringify(payload),
     });
 
-    return NextResponse.json({
-      message: 'post article',
-      data: data,
-    });
-  } catch (err: unknown) {
-    return handlerServerError(err, 'Failed to post articles');
+    return createSuccessResponse(data, '게시글 작성 성공', 201);
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '게시글 작성에 실패했습니다'
+    );
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { searchParams } = new URL(request.url);
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
-    const page = searchParams.get('page') ?? '1'; // 페이지 번호
-    const pageSize = searchParams.get('pageSize') ?? '10'; // 페이지 당 게시글 수
-    const orderBy = searchParams.get('orderBy') ?? 'recent'; // 정렬 기준
-    const keyword = searchParams.get('keyword') ?? ''; // 검색 키워드
+    const page = searchParams.get('page') ?? '1';
+    const pageSize = searchParams.get('pageSize') ?? '10';
+    const orderBy = searchParams.get('orderBy') ?? 'recent';
+    const keyword = searchParams.get('keyword') ?? '';
 
     const query = new URLSearchParams({
       page,
@@ -54,15 +73,15 @@ export async function GET(request: NextRequest) {
     });
     if (keyword) query.append('keyword', keyword);
 
-    const data = await safeFetch(`${API.ARTICLES}?${query.toString()}`, {
-      headers: { Authorization: authHeader },
+    const data = await safeFetch(`${API_BASE_URL}/articles?${query.toString()}`, {
+      headers: { Authorization: authToken },
     });
 
-    return NextResponse.json({
-      message: 'get article',
-      data: data,
-    });
-  } catch (err: unknown) {
-    return handlerServerError(err, 'Failed to get articles');
+    return createSuccessResponse(data, '게시글 목록 조회 성공');
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '게시글 목록 조회에 실패했습니다'
+    );
   }
 }

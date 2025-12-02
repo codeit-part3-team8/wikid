@@ -1,30 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || '';
+import { NextRequest } from 'next/server';
+import { API_BASE_URL } from '@/constants/api';
+import { safeFetch } from '@/utils/safeFetch';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
 
 export async function PATCH(request: NextRequest) {
   try {
-    const body = await request.json();
-    const authHeader = request.headers.get('authorization');
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
 
-    const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/users/me/password`, {
+    const body = await request.json();
+    const authToken = request.headers.get('authorization');
+
+    if (!authToken) {
+      return createErrorResponse(new Error('인증 토큰이 필요합니다'), '인증이 필요한 요청입니다');
+    }
+
+    await safeFetch(`${API_BASE_URL}/users/me/password`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authHeader || '',
+        Authorization: authToken,
       },
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(error, { status: response.status });
-    }
-
-    return NextResponse.json({ success: true });
+    return createSuccessResponse({ success: true }, '비밀번호 변경 성공');
   } catch (error) {
-    if (error instanceof Error)
-      return NextResponse.json({ message: '비밀번호 변경에 실패했습니다.' }, { status: 500 });
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '비밀번호 변경에 실패했습니다'
+    );
   }
 }

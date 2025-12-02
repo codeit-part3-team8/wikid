@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { safeFetch } from '@/utils/safeFetch';
 import { API_BASE_URL } from '@/constants/api';
 import { APIError } from '@/types/Error';
@@ -48,7 +48,26 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    return createSuccessResponse<AuthResponse>(authData, '로그인이 완료되었습니다.');
+    // 리프레시 토큰을 HttpOnly 쿠키로 설정
+    const response = NextResponse.json({
+      success: true,
+      message: '로그인이 완료되었습니다.',
+      data: {
+        accessToken: authData.accessToken,
+        user: authData.user,
+      },
+    });
+
+    // HttpOnly, Secure 쿠키로 리프레시 토큰 설정
+    response.cookies.set('refreshToken', authData.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7일
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('로그인 API 오류:', error);
     return createErrorResponse(

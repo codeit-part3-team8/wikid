@@ -124,7 +124,7 @@ export default function PasswordChangePage() {
         <div className="w-full max-w-2xl">
           <div className="p-12">
             <h1 className="text-grayscale-600 mb-12 text-center text-2xl font-semibold">
-              계정 설정
+              비밀번호 변경하기
             </h1>
 
             <form onSubmit={handleSubmit} className="mx-auto max-w-md space-y-6">

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { useAuth } from '@/contexts/AuthContext';
+import SnackBar from '@/components/SnackBar/SnackBar';
 
 // 회원가입 API 함수
 async function signUp(data: {
@@ -33,7 +34,7 @@ async function signUp(data: {
 
 export default function SignupPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -47,6 +48,14 @@ export default function SignupPage() {
     passwordConfirm: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showErrorSnackBar, setShowErrorSnackBar] = useState(false);
+
+  // 이미 로그인된 경우 랜딩 페이지로 리다이렉트
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/');
+    }
+  }, [isLoggedIn, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -116,24 +125,21 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const response = await signUp({
+      await signUp({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         passwordConfirmation: formData.passwordConfirm,
       });
 
-      // 자동 로그인 처리 (토큰 저장 및 사용자 정보 저장)
-      login(response.accessToken, response.refreshToken, response);
-
       // 성공 알림
       alert('가입이 완료되었습니다');
 
-      // 메인 페이지로 이동
-      router.push('/');
+      // 로그인 페이지로 이동
+      router.push('/login');
     } catch (error) {
       console.error('회원가입 실패:', error);
-      alert(error instanceof Error ? error.message : '회원가입에 실패했습니다');
+      setShowErrorSnackBar(true);
     } finally {
       setIsLoading(false);
     }
@@ -220,6 +226,14 @@ export default function SignupPage() {
           </form>
         </div>
       </main>
+
+      <SnackBar
+        type="error"
+        message="회원가입에 실패하였습니다."
+        isOpen={showErrorSnackBar}
+        onClose={() => setShowErrorSnackBar(false)}
+        duration={3000}
+      />
     </div>
   );
 }
