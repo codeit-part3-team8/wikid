@@ -7,4 +7,5 @@ export const API = {
   PROFILE: `${API_BASE_URL}/profiles/`,
   IMAGE: `${API_BASE_URL}/images/upload/`,
   ARTICLES: `${API_BASE_URL}/articles/`,
+  NOTIFICATION: `${API_BASE_URL}/notifications/`,
 };

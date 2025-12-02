@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { APIProfileData } from '@/types/Api';
 import { API } from '@/constants/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UseWikiPageReturn {
   // States
@@ -32,12 +33,12 @@ export const useWikiPage = (code: string): UseWikiPageReturn => {
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
 
-  // 현재 사용자 정보
-  const currentUserCode = process.env.NEXT_PUBLIC_WIKID_CURRENT_USER_CODE || '';
-  const currentUserID = parseInt(process.env.NEXT_PUBLIC_WIKID_CURRENT_USER_ID || '0');
+  // 현재 로그인한 사용자 정보
+  const { isLoggedIn, userProfile } = useAuth();
+  const currentUserCode = userProfile?.code || '';
+  const currentUserID = userProfile?.userId || 0;
 
   // Computed values
-  const isLoggedIn = Boolean(currentUserCode);
   const isMyWiki = code === currentUserCode;
 
   // 편집 상태 확인 함수
@@ -49,10 +50,11 @@ export const useWikiPage = (code: string): UseWikiPageReturn => {
     }
 
     try {
+      const accessToken = localStorage.getItem('accessToken');
       const response = await fetch(`${API.PROFILE}${code}/ping`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
       });
 

@@ -117,6 +117,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
                 });
 
                 // 이미지 업로드 API 호출
+                const accessToken = localStorage.getItem('accessToken');
                 const imageFormData = new FormData();
                 imageFormData.append('image', file);
 
@@ -124,7 +125,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
                   method: 'POST',
                   body: imageFormData,
                   headers: {
-                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+                    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
                   },
                 });
 
@@ -193,6 +194,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
 
         if (changedAvatar && changedAvatar instanceof File) {
           try {
+            const accessToken = localStorage.getItem('accessToken');
             const imageFormData = new FormData();
             imageFormData.append('image', changedAvatar);
 
@@ -200,7 +202,7 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
               method: 'POST',
               body: imageFormData,
               headers: {
-                Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+                ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
               },
             });
 
@@ -254,11 +256,12 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           image: imageUrl,
         };
 
+        const accessToken = localStorage.getItem('accessToken');
         const response = await fetch(`${API.PROFILE}${code}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_WIKID_ACCESS_TOKEN || ''}`,
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
           },
           body: JSON.stringify(finalSaveData),
         });
@@ -294,6 +297,11 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
         // 최신 데이터 동기화
         if (fetchWikiData) {
           await fetchWikiData();
+        }
+
+        // Header의 프로필 이미지 업데이트를 위한 이벤트 발생
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('profileUpdated'));
         }
       } catch (error) {
         console.error('프로필 저장 오류:', error);
