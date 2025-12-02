@@ -313,7 +313,7 @@ export default function Profile({
       {!isEditMode && (
         <button
           onClick={handleToggle}
-          className="absolute bottom-px left-1/2 hidden -translate-x-1/2 transform transition-transform duration-200 max-[1024px]:block"
+          className="absolute bottom-px left-1/2 hidden -translate-x-1/2 transform cursor-pointer transition-transform duration-200 max-[1024px]:block"
           style={{
             transform: `translateX(-50%) ${isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}`,
           }}
