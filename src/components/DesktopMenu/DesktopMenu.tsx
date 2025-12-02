@@ -26,7 +26,6 @@ const DesktopMenu: React.FC<DesktopMenuProps> = ({ onClose }) => {
           className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 w-full rounded-lg px-4 py-3 text-center transition-colors"
           onClick={() => {
             // 로그아웃 로직
-            console.log('로그아웃');
             onClose();
           }}
         >
