@@ -1,6 +1,5 @@
 // API 기본 설정
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || '';
 
 // 회원가입 요청 타입
 export interface SignUpRequest {
@@ -44,7 +43,7 @@ export interface ErrorResponse {
  * 회원가입 API
  */
 export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/auth/signUp`, {
+  const response = await fetch(`${API_BASE_URL}/auth/signUp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -64,7 +63,7 @@ export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
  * 로그인 API
  */
 export const signIn = async (data: SignInRequest): Promise<AuthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/auth/signIn`, {
+  const response = await fetch(`${API_BASE_URL}/auth/signIn`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -84,7 +83,7 @@ export const signIn = async (data: SignInRequest): Promise<AuthResponse> => {
  * 토큰 새로고침 API
  */
 export const refreshToken = async (refreshToken: string): Promise<AuthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/auth/refresh-token`, {
+  const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -153,7 +152,7 @@ export interface CreateProfileResponse {
 export const createProfile = async (data: CreateProfileRequest): Promise<CreateProfileResponse> => {
   const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/profiles`, {
+  const response = await fetch(`${API_BASE_URL}/profiles`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

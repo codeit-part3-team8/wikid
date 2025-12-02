@@ -1,18 +1,18 @@
 'use client';
 
-import { Editor } from '@tiptap/react';
-import { useRef, useState, useEffect } from 'react';
-import ToolbarButton from './base/ToolbarButton';
 import { API } from '@/constants/api';
+import { Editor } from '@tiptap/react';
 import { getAccessToken } from '@/utils/auth';
-import LoadingDots from '@/components/LoadingDots/LoadingDots';
-import SnackBar from '@/components/SnackBar/SnackBar';
-import BaseModal from '@/components/Modal/BaseModal';
 import { useModal } from '@/hooks/useModal';
+import { useRef, useState, useEffect } from 'react';
+import BaseModal from '@/components/Modal/BaseModal';
 import Button from '@/components/Button/Button';
 import IconButton from '@/components/IconButton/IconButton';
-import SVGIcon from '@/components/SVGIcon/SVGIcon';
 import Image from 'next/image';
+import LoadingDots from '@/components/LoadingDots/LoadingDots';
+import SnackBar from '@/components/SnackBar/SnackBar';
+import SVGIcon from '@/components/SVGIcon/SVGIcon';
+import ToolbarButton from './base/ToolbarButton';
 
 interface ImageUploadButtonProps {
   editor: Editor;
@@ -24,10 +24,10 @@ const ImageUploadButton = ({ editor, onSetThumbnail }: ImageUploadButtonProps) =
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSnackBar, setShowSnackBar] = useState(false);
-  const { isOpen, openModal, closeModal } = useModal();
   const [thumbnailChecked, setThumbnailChecked] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const accessToken = getAccessToken();
 
@@ -47,12 +47,14 @@ const ImageUploadButton = ({ editor, onSetThumbnail }: ImageUploadButtonProps) =
     };
   }, [selectedFile]);
 
+  // 파일명에 한글 및 특수 문자가 들어갈 경우 이미지 업로드가 되지 않아, 업로드 가능한 문자로 변경하는 로직 추가
   const sanitizeFileName = (file: File) => {
     const ext = file.name.split('.').pop();
     const name = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9-_]/g, '_');
     return `${name}-${Date.now()}.${ext}`;
   };
 
+  // 이미지를 서버에 업로드
   const uploadImageToServer = async (file: File): Promise<string> => {
     const newFile = new File([file], sanitizeFileName(file), { type: file.type });
     const formData = new FormData();
@@ -77,6 +79,7 @@ const ImageUploadButton = ({ editor, onSetThumbnail }: ImageUploadButtonProps) =
     return imageUrl;
   };
 
+  // 모달에서 이미지를 선택하면 uploadImageToServer로 서버에 저장한 후, 해당 이미지를 불러옴
   const handleInsertImage = async () => {
     if (!selectedFile) {
       setError('업로드할 이미지를 선택해주세요.');
@@ -96,6 +99,7 @@ const ImageUploadButton = ({ editor, onSetThumbnail }: ImageUploadButtonProps) =
       setThumbnailChecked(false);
       setImageSize(null);
 
+      // 여러개의 이미지를 업로드할 시, 한 개의 썸네일을 사용자가 지정할 수 있도록 함
       if (thumbnailChecked && onSetThumbnail) {
         setTimeout(() => onSetThumbnail(url), 0);
       }
