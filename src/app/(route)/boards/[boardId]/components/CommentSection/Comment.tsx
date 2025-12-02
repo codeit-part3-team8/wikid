@@ -17,13 +17,13 @@ interface CommentProps {
 
 const Comment = ({ comment, refetch }: CommentProps) => {
   const { user } = useAuth();
-  const currentUserId = user?.id?.toString() ?? null;
-
+  const currentUserId = user?.id?.toString();
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(comment.content);
 
   const formattedCreated = getFormatDate(comment.createdAt);
   const formattedUpdated = getFormatDate(comment.updatedAt);
+
   const isWriter = currentUserId !== null && comment.writer.id.toString() === currentUserId;
 
   const { updateComment } = useUpdateComment({ commentId: comment.id, onSuccess: refetch });
