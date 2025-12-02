@@ -31,8 +31,8 @@ const Board = ({ boardId }: BoardProps) => {
   const isWriter = currentUserId !== null && article?.writer.id.toString() === currentUserId;
 
   if (loading) return <LoadingDots />;
-  if (error) return <p>에러: {error}</p>;
-  if (!article) return <p>엥</p>;
+  if (error) return <p>에러가 발생했습니다: {error}</p>;
+  if (!article) return <p>게시글이 존재하지 않습니다.</p>;
 
   const formatDate = getFormatDate(article.createdAt);
 
