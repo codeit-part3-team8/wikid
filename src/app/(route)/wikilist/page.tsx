@@ -23,6 +23,10 @@ interface Profile {
   code: string;
 }
 
+interface ProfileListResponse {
+  list: Profile[];
+}
+
 const PAGE_SIZE = 3;
 
 function WikiListContent() {
@@ -63,9 +67,7 @@ function WikiListContent() {
     async function fetchProfileData() {
       try {
         setIsLoading(true);
-        // APIClient의 publicJson 메소드 사용 (프로필 목록은 인증 불필요)
-        const res = await apiClient.publicJson(API.PROFILE);
-        console.log(res.list);
+        const res = await apiClient.publicJson<ProfileListResponse>(API.PROFILE);
         setProfiles(res.list);
       } catch (error) {
         console.error('프로필 목록 조회 실패:', error);

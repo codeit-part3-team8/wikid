@@ -1,11 +1,11 @@
 import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
-const PAGE_BLOCK = 5; // 보여지는 버튼 개수
+const PAGE_BLOCK = 5;
 
 interface PaginationProps {
   currentPage: number;
   totalCount: number;
-  setPage: (page: number) => void; //함수가 넘버타입의 페이지를 받아 아무것도 리턴하지 않음
+  setPage: (page: number) => void;
   viewCount: number;
 }
 
@@ -34,8 +34,8 @@ export default function Pagination({
   viewCount,
 }: PaginationProps) {
   if (viewCount <= 0) return null;
-  const totalPage = Math.ceil(totalCount / viewCount); //토탈페이지 완료
-  if (totalPage <= 1) return null; // 다음 페이지 까지 넘어갈 데이터가 없으면 페이지네이션 안보임
+  const totalPage = Math.ceil(totalCount / viewCount);
+  if (totalPage <= 1) return null;
 
   const pageBtn = Array.from({ length: PAGE_BLOCK }, (_, i) => i + 1);
 
@@ -43,12 +43,11 @@ export default function Pagination({
   let endPage = currentPage + 2;
 
   if (startPage < 1) {
-    // endPage += 1 - startPage;
     startPage = 1;
   }
 
   if (endPage > totalPage) {
-    startPage -= endPage - totalPage; // 차이 나는만큼 스타트 페이지 더 보이게
+    startPage -= endPage - totalPage;
     endPage = totalPage;
   }
 

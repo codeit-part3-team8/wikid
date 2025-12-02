@@ -34,7 +34,7 @@ const boardStyle = tv({
 export default function BoardsPage() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('최신순');
-  const [articleData, setArticleData] = useState<ArticleProps[]>([]); //이거
+  const [articleData, setArticleData] = useState<ArticleProps[]>([]);
   const [filteredarticleData, setFilteredarticleData] = useState<ArticleProps[]>(articleData);
   const [page, setPage] = useState(1);
 
@@ -77,7 +77,7 @@ export default function BoardsPage() {
   });
 
   const pagedarticleData = sortedarticleData.slice(startIndex, startIndex + PAGE_SIZE);
-  //마우스 드래그
+
   const useHorizontalScroll = () => {
     const bestArticleRef = useRef<HTMLDivElement>(null);
 
@@ -109,8 +109,6 @@ export default function BoardsPage() {
   };
 
   const bestRef = useHorizontalScroll();
-
-  //api불러오기
 
   useEffect(() => {
     async function fetcharticleData() {

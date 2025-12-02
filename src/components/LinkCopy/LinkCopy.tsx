@@ -3,7 +3,7 @@ import { tv } from 'tailwind-variants';
 import clsx from 'clsx';
 import SVGIcon from '../SVGIcon/SVGIcon';
 
-const BASE_URL = 'https://www.wikied.kr'; //수정 예정
+const BASE_URL = 'https://wikied-api.vercel.app/19-8';
 
 interface LinkCopyProps {
   code: string;
