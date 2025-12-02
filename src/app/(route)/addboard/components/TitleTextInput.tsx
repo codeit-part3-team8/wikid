@@ -14,7 +14,12 @@ const TitleTextInput = ({ beforeValue, onChange }: TitleTextInput) => {
   const [value, setValue] = useState(beforeValue);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
+    let newValue = e.target.value;
+
+    // 최대 길이 자르기 (한글 포함)
+    if (Array.from(newValue).length > MAX_LENGTH) {
+      newValue = Array.from(newValue).slice(0, MAX_LENGTH).join('');
+    }
     setValue(newValue);
     onChange(newValue);
   };
