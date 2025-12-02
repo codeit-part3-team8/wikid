@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import LinkCopy from '@/components/LinkCopy/LinkCopy';
 import Profile from './components/Profile';
 import WikiContent from './components/WikiContent';
@@ -30,11 +31,17 @@ export default function WikiPage() {
     hasEditPermission,
     isLoggedIn,
     isMyWiki,
+    isNotFound,
     fetchWikiData,
     checkEditingStatus,
     setProfileData,
     setHasEditPermission,
   } = useWikiPage(code);
+
+  // 404 처리
+  if (isNotFound) {
+    notFound();
+  }
 
   // 모달 관리 커스텀 훅
   const {

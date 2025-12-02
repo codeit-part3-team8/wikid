@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { API } from '@/constants/api';
 import { Article as ArticleType } from '@/types/Article';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 import { getAccessToken } from '@/utils/auth';
 
 interface ArticleOptions {
@@ -10,16 +11,11 @@ interface ArticleOptions {
 }
 
 export function useArticle({ boardId }: ArticleOptions) {
-  const accessToken = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [article, setArticle] = useState<ArticleType>();
 
   const fetchArticle = useCallback(async () => {
-    if (!accessToken) {
-      setError('로그인이 필요합니다.');
-      return;
-    }
     if (!boardId) {
       setError('게시글을 불러오지 못했습니다.');
       return;
@@ -29,10 +25,15 @@ export function useArticle({ boardId }: ArticleOptions) {
     setError(null);
 
     try {
-      const res = await fetch(`${API.ARTICLES}${boardId}`, {
-        cache: 'no-store',
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const accessToken = getAccessToken();
+      const res = accessToken
+        ? await fetchWithAuth(`${API.ARTICLES}${boardId}`, {
+            cache: 'no-store',
+          })
+        : await fetch(`${API.ARTICLES}${boardId}`, {
+            cache: 'no-store',
+            headers: { 'Content-Type': 'application/json' },
+          });
       if (!res.ok) {
         const errorBody = await res.json().catch(() => ({}));
         switch (res.status) {
@@ -58,7 +59,7 @@ export function useArticle({ boardId }: ArticleOptions) {
     } finally {
       setLoading(false);
     }
-  }, [boardId, accessToken]);
+  }, [boardId]);
 
   useEffect(() => {
     fetchArticle();

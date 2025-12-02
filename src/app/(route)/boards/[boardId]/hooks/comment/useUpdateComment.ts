@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Comment } from '@/types/Comment';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 import { API } from '@/constants/api';
 
 interface UseUpdateCommentParams {
@@ -11,16 +11,10 @@ interface UseUpdateCommentParams {
 }
 
 export function useUpdateComment({ commentId, onSuccess }: UseUpdateCommentParams) {
-  const accessToken = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const updateComment = async (content: string): Promise<Comment | null> => {
-    if (!accessToken) {
-      setError('로그인 후 다시 시도해주세요.');
-      return null;
-    }
-
     if (!commentId) {
       setError('수정할 댓글 정보가 올바르지 않습니다.');
       return null;
@@ -35,11 +29,10 @@ export function useUpdateComment({ commentId, onSuccess }: UseUpdateCommentParam
     setError(null);
 
     try {
-      const res = await fetch(`${API.COMMENT}${commentId}`, {
+      const res = await fetchWithAuth(`${API.COMMENT}${commentId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ content }),
       });

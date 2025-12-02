@@ -1,9 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import SVGIcon from '../SVGIcon/SVGIcon';
-import BaseModal from '../Modal/BaseModal';
-import { useModal } from '@/hooks/useModal';
-import Button from '../Button/Button';
 
 interface ArticleListProps {
   id: number;
@@ -11,19 +8,10 @@ interface ArticleListProps {
   writer: string;
   likeCount: number;
   createdAt: string;
-  isLoggedIn: boolean;
 }
 
-export default function ArticleList({
-  id,
-  title,
-  writer,
-  likeCount,
-  createdAt,
-  isLoggedIn,
-}: ArticleListProps) {
+export default function ArticleList({ id, title, writer, likeCount, createdAt }: ArticleListProps) {
   const router = useRouter();
-  const { isOpen, openModal, closeModal } = useModal();
 
   function formatDate(createDate: string) {
     const date = new Date(createDate);
@@ -35,10 +23,6 @@ export default function ArticleList({
   }
 
   function handleClick() {
-    if (!isLoggedIn) {
-      openModal();
-      return;
-    }
     router.push(`/boards/${id}`);
   }
   return (
@@ -81,13 +65,6 @@ export default function ArticleList({
           </div>
         </td>
       </tr>
-
-      <BaseModal size="image" isOpen={isOpen} onClose={closeModal}>
-        <div className="mt-5 flex flex-col justify-center gap-5 p-3">
-          <span className="text-lg">로그인이 필요한 서비스입니다.</span>
-          <Button href="/login">로그인 페이지</Button>
-        </div>
-      </BaseModal>
     </>
   );
 }

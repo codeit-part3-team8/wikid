@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { APIProfileData } from '@/types/Api';
 import { useIdleTimer } from '@/hooks/useIdleTimer';
 import { API } from '@/constants/api';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface UseWikiEditorReturn {
   // Editor states
@@ -117,16 +118,12 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
                 });
 
                 // 이미지 업로드 API 호출
-                const accessToken = localStorage.getItem('accessToken');
                 const imageFormData = new FormData();
                 imageFormData.append('image', file);
 
-                const imageResponse = await fetch(`${API.IMAGE}`, {
+                const imageResponse = await fetchWithAuth(`${API.IMAGE}`, {
                   method: 'POST',
                   body: imageFormData,
-                  headers: {
-                    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-                  },
                 });
 
                 if (!imageResponse.ok) {
@@ -194,16 +191,12 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
 
         if (changedAvatar && changedAvatar instanceof File) {
           try {
-            const accessToken = localStorage.getItem('accessToken');
             const imageFormData = new FormData();
             imageFormData.append('image', changedAvatar);
 
-            const imageResponse = await fetch(`${API.IMAGE}`, {
+            const imageResponse = await fetchWithAuth(`${API.IMAGE}`, {
               method: 'POST',
               body: imageFormData,
-              headers: {
-                ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-              },
             });
 
             if (!imageResponse.ok) {
@@ -272,12 +265,10 @@ export const useWikiEditor = (onTimeout: () => void): UseWikiEditorReturn => {
           image: encodedImageUrl || null,
         };
 
-        const accessToken = localStorage.getItem('accessToken');
-        const response = await fetch(`${API.PROFILE}${code}`, {
+        const response = await fetchWithAuth(`${API.PROFILE}${code}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
           },
           body: JSON.stringify(finalSaveData),
         });

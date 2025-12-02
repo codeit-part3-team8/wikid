@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { safeFetch } from '@/utils/safeFetch';
 import { API_BASE_URL } from '@/constants/api';
 import { APIError } from '@/types/Error';
@@ -7,11 +7,6 @@ import {
   createSuccessResponse,
   validateEnvironmentVariables,
 } from '@/utils/apiHelpers';
-
-// 토큰 새로고침 요청 타입
-interface RefreshTokenRequest {
-  refreshToken: string;
-}
 
 // 인증 응답 타입
 interface AuthResponse {
@@ -28,11 +23,12 @@ export async function POST(request: NextRequest) {
   try {
     validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
 
-    const body: RefreshTokenRequest = await request.json();
+    // 쿠키에서 리프레시 토큰 가져오기
+    const refreshToken = request.cookies.get('refreshToken')?.value;
 
     // 입력 validation
-    if (!body.refreshToken) {
-      throw APIError.badRequest('리프레시 토큰이 필요합니다.');
+    if (!refreshToken) {
+      throw APIError.unauthorized('리프레시 토큰이 없습니다. 다시 로그인해주세요.');
     }
 
     // 외부 API 호출
@@ -42,11 +38,32 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        refreshToken: body.refreshToken,
+        refreshToken: refreshToken,
       }),
     });
 
-    return createSuccessResponse<AuthResponse>(authData, '토큰이 갱신되었습니다.');
+    // 새로운 액세스 토큰 반환 및 리프레시 토큰 쿠키 갱신
+    const response = NextResponse.json({
+      success: true,
+      message: '토큰이 갱신되었습니다.',
+      data: {
+        accessToken: authData.accessToken,
+        user: authData.user,
+      },
+    });
+
+    // 새로운 리프레시 토큰이 있으면 쿠키 갱신
+    if (authData.refreshToken) {
+      response.cookies.set('refreshToken', authData.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7일
+        path: '/',
+      });
+    }
+
+    return response;
   } catch (error) {
     console.error('토큰 갱신 API 오류:', error);
     return createErrorResponse(

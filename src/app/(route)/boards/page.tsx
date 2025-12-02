@@ -219,7 +219,7 @@ export default function BoardsPage() {
               .sort((a, b) => b.likeCount - a.likeCount)
               .slice(0, 4)
               .map((article) => (
-                <BestArticle key={article.id} {...article} isLoggedIn={isLoggedIn} />
+                <BestArticle key={article.id} {...article} />
               ))}
           </div>
         </div>
@@ -258,7 +258,6 @@ export default function BoardsPage() {
                 writer={article.writer.name}
                 likeCount={article.likeCount}
                 createdAt={article.createdAt}
-                isLoggedIn={isLoggedIn}
               />
             ))}
           </tbody>

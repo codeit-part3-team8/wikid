@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { API } from '@/constants/api';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface ArticleOptions {
   boardId: string;
@@ -10,27 +10,20 @@ interface ArticleOptions {
 }
 
 export function useDeleteArticle({ boardId, onSuccess }: ArticleOptions) {
-  const accessToken = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const deleteArticle = useCallback(async () => {
-    if (!accessToken) {
-      setError('로그인 후 다시 시도해주세요.');
-      return;
-    }
-
     if (!boardId) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const res = await fetch(`${API.ARTICLES}${boardId}`, {
+      const res = await fetchWithAuth(`${API.ARTICLES}${boardId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -79,7 +72,7 @@ export function useDeleteArticle({ boardId, onSuccess }: ArticleOptions) {
     } finally {
       setLoading(false);
     }
-  }, [boardId, onSuccess, accessToken]);
+  }, [boardId, onSuccess]);
 
   return { loading, error, deleteArticle };
 }

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 import { API } from '@/constants/api';
 
 interface ArticlePayload {
@@ -35,19 +35,16 @@ export const usePostArticle = () => {
     setError(null);
 
     try {
-      const token = getAccessToken();
-
       const bodyPayload: ArticlePayload = {
         title: payload.title,
         content: payload.content,
         ...(payload.image ? { image: payload.image } : {}),
       };
 
-      const res = await fetch(`${API.ARTICLES}`, {
+      const res = await fetchWithAuth(`${API.ARTICLES}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // 헤더에 추가
         },
         body: JSON.stringify(bodyPayload),
         signal: abortController.signal,
