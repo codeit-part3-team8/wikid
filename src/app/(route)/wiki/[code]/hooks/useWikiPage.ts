@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Dispatch, SetStateAction } from 'react';
 import { APIProfileData } from '@/types/Api';
 import { API } from '@/constants/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,7 +20,7 @@ interface UseWikiPageReturn {
   // Actions
   fetchWikiData: () => Promise<void>;
   checkEditingStatus: () => Promise<boolean>;
-  setProfileData: (data: APIProfileData | null) => void;
+  setProfileData: Dispatch<SetStateAction<APIProfileData | null>>;
   setHasEditPermission: (permission: boolean) => void;
   setIsBeingEdited: (editing: boolean) => void;
 }

@@ -59,8 +59,11 @@ export default function Profile({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setEditData(data);
-  }, [data]);
+    // 편집 모드가 아닐 때만 data 변경 사항을 반영
+    if (!isEditMode) {
+      setEditData(data);
+    }
+  }, [data, isEditMode]);
 
   const profileClass = ProfileStyle();
   const contentsClass = ProfileContentsStyle();

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import noImage from '@/assets/noImage/noImage.avif';
 import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import { useRouter } from 'next/navigation';
@@ -68,13 +67,9 @@ export default function BestArticle({
             className="mb-[19px] h-[131px] w-full object-cover sm:h-[180px] lg:h-[131px]"
           />
         ) : (
-          <Image
-            className="mb-[19px] h-[131px] w-full border-b border-gray-200 object-cover sm:h-[180px] lg:h-[131px]"
-            src={noImage}
-            alt="이미지 없음"
-            width={250}
-            height={131}
-          />
+          <div className="mb-[19px] flex h-[131px] w-full items-center justify-center border-b border-gray-200 bg-gray-100 sm:h-[180px] lg:h-[131px]">
+            <span className="text-sm text-gray-400">이미지 없음</span>
+          </div>
         )}
 
         <div className={bestTextStyle()}>
@@ -82,11 +77,11 @@ export default function BestArticle({
             {title}
           </span>
           <div className="responsive-text text-md-to-xs text-weight-regular text-grayscale-400 flex w-full items-center justify-between">
-            <div className="flex gap-[8px]">
+            <div className="flex gap-2">
               <span>{writer.name}</span>
               <span>{formatDate(createdAt)}</span>
             </div>
-            <div className="flex items-center justify-center gap-[4px]">
+            <div className="flex items-center justify-center gap-1">
               <SVGIcon icon="IC_Heart" className="h-[18px] w-[18px]" />
               <span>{likeCount}</span>
             </div>

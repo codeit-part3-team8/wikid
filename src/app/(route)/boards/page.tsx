@@ -87,6 +87,9 @@ export default function BoardsPage() {
 
   const useHorizontalScroll = () => {
     const bestArticleRef = useRef<HTMLDivElement>(null);
+    const isDragging = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
 
     const handleWheel = useCallback((e: WheelEvent) => {
       const container = bestArticleRef.current;
@@ -101,17 +104,70 @@ export default function BoardsPage() {
         e.preventDefault();
       }
     }, []);
+
+    const handleMouseDown = useCallback((e: MouseEvent) => {
+      const container = bestArticleRef.current;
+      if (!container || window.innerWidth >= 640) return;
+
+      isDragging.current = true;
+      startX.current = e.pageX - container.offsetLeft;
+      scrollLeft.current = container.scrollLeft;
+      container.style.cursor = 'grabbing';
+      container.style.userSelect = 'none';
+    }, []);
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+      const container = bestArticleRef.current;
+      if (!container || !isDragging.current) return;
+
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX.current) * 2;
+      container.scrollLeft = scrollLeft.current - walk;
+    }, []);
+
+    const handleMouseUp = useCallback(() => {
+      const container = bestArticleRef.current;
+      if (!container) return;
+
+      isDragging.current = false;
+      container.style.cursor = 'grab';
+      container.style.userSelect = 'auto';
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+      const container = bestArticleRef.current;
+      if (!container) return;
+
+      isDragging.current = false;
+      container.style.cursor = 'grab';
+      container.style.userSelect = 'auto';
+    }, []);
+
     useEffect(() => {
       const container = bestArticleRef.current;
       if (container) {
         container.addEventListener('wheel', handleWheel, { passive: false });
+        container.addEventListener('mousedown', handleMouseDown);
+        container.addEventListener('mousemove', handleMouseMove);
+        container.addEventListener('mouseup', handleMouseUp);
+        container.addEventListener('mouseleave', handleMouseLeave);
+
+        // 초기 커서 스타일 설정
+        if (window.innerWidth < 640) {
+          container.style.cursor = 'grab';
+        }
 
         return () => {
           container.removeEventListener('wheel', handleWheel);
+          container.removeEventListener('mousedown', handleMouseDown);
+          container.removeEventListener('mousemove', handleMouseMove);
+          container.removeEventListener('mouseup', handleMouseUp);
+          container.removeEventListener('mouseleave', handleMouseLeave);
         };
       }
       return () => {};
-    }, [handleWheel]);
+    }, [handleWheel, handleMouseDown, handleMouseMove, handleMouseUp, handleMouseLeave]);
     return bestArticleRef;
   };
 
@@ -144,7 +200,7 @@ export default function BoardsPage() {
   return (
     <>
       <div className={boardStyle()}>
-        <div className="mt-[40px] mb-[40px] flex items-center justify-between sm:mt-[60px] sm:mb-[60px]">
+        <div className="mt-10 mb-10 flex items-center justify-between sm:mt-[60px] sm:mb-[60px]">
           <h1 className="responsive-text text-3xl-to-2xl text-grayscale-500">베스트 게시글</h1>
 
           <Button
@@ -152,37 +208,37 @@ export default function BoardsPage() {
             size="md"
             className="text-md-semibold flex h-[45px] items-center justify-center"
             onClick={handleClickAddBoard}
+            disabled={!isLoggedIn}
           >
             게시물 등록하기
           </Button>
         </div>
         <div ref={bestRef} id="dragBox" className="no-scrollbar overflow-x-auto">
-          <div className="mb-[40px] grid max-w-[1048px] auto-cols-[250px] grid-flow-col gap-[16px] min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4">
-            {' '}
+          <div className="mb-10 grid max-w-[1048px] auto-cols-[250px] grid-flow-col gap-4 min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4">
             {[...articleData]
               .sort((a, b) => b.likeCount - a.likeCount)
               .slice(0, 4)
               .map((article) => (
                 <BestArticle key={article.id} {...article} isLoggedIn={isLoggedIn} />
-              ))}{' '}
+              ))}
           </div>
         </div>
 
-        <div className="flex flex-col gap-[20px] sm:flex-row">
-          <div className="flex flex-1 gap-[20px]">
+        <div className="flex flex-col gap-5 sm:flex-row">
+          <div className="flex flex-1 gap-5">
             <div className="min-w-0 flex-1">
               <SearchInput value={search} onChange={handleChange} onSubmit={handleSearchSubmit} />
             </div>
             <button
               onClick={handleSearchSubmit}
-              className="hover:bg-primary-300 active:bg-primary-300 bg-primary-200 text-grayscale-50 text-md-semibold h-[45px] w-[80px] shrink-0 rounded-[10px]"
+              className="hover:bg-primary-300 active:bg-primary-300 bg-primary-200 text-grayscale-50 text-md-semibold h-[45px] w-20 shrink-0 rounded-[10px]"
             >
               검색
             </button>
           </div>
           <DropDown onSelect={handleSelect} />
         </div>
-        <table className="text-grayscale-400 m-auto mt-[30px] mb-[32px] w-full sm:mt-[20px] sm:mb-[60px] md:px-[60px] lg:w-[1060px]">
+        <table className="text-grayscale-400 m-auto mt-[30px] mb-8 w-full sm:mt-5 sm:mb-[60px] md:px-[60px] lg:w-[1060px]">
           <thead className="text-lg-regular max-[640px]:hidden">
             <tr className="border-b">
               <th className="text-lg-regular px-4 py-2">번호</th>
@@ -207,7 +263,7 @@ export default function BoardsPage() {
             ))}
           </tbody>
         </table>
-        <div className="mb-[57px] flex justify-center md:mb-[80px] lg:mb-[120px]">
+        <div className="mb-[57px] flex justify-center md:mb-20 lg:mb-[120px]">
           <Pagination
             currentPage={page}
             totalCount={filteredarticleData.length}

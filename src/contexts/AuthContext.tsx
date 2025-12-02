@@ -47,6 +47,7 @@ interface AuthContextType {
   logout: () => void;
   checkAuth: () => Promise<void>;
   authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response>;
+  updateUserProfile: (profile: Partial<UserProfile>) => void;
 }
 
 // 초기값을 null로 설정
@@ -147,6 +148,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  // userProfile 업데이트 처리
+  const updateUserProfile = useCallback((profile: Partial<UserProfile>) => {
+    setUserProfile((prev) => {
+      if (!prev) return null;
+      const updatedProfile = { ...prev, ...profile };
+      saveUserProfile(updatedProfile);
+      return updatedProfile;
+    });
+  }, []);
+
   const contextValue = {
     isLoggedIn,
     user,
@@ -156,6 +167,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     checkAuth,
     authenticatedFetch,
+    updateUserProfile,
   };
 
   if (isLoading) return null;

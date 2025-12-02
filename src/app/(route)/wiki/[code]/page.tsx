@@ -122,15 +122,18 @@ export default function WikiPage() {
 
   const handleAvatarChange = useCallback(
     (imageUrl?: string, file?: File) => {
-      if (imageUrl && profileData) {
+      if (imageUrl) {
         setChangedAvatar(file || imageUrl);
-        setProfileData({
-          ...profileData,
-          image: imageUrl,
+        setProfileData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            image: imageUrl,
+          };
         });
       }
     },
-    [profileData, setProfileData, setChangedAvatar]
+    [setProfileData, setChangedAvatar]
   );
 
   const handleContentChange = (content: string) => {

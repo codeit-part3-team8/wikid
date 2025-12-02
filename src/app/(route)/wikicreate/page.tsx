@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { createProfile } from '@/app/api/auth';
 import SnackBar from '@/components/SnackBar/SnackBar';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function WikiCreatePage() {
   const router = useRouter();
+  const { updateUserProfile } = useAuth();
   const [formData, setFormData] = useState({
     securityQuestion: '',
     securityAnswer: '',
@@ -69,16 +70,34 @@ export default function WikiCreatePage() {
     setIsLoading(true);
 
     try {
-      const response = await createProfile({
-        securityQuestion: formData.securityQuestion,
-        securityAnswer: formData.securityAnswer,
+      const accessToken =
+        typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+      const response = await fetch('/api/profiles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          securityQuestion: formData.securityQuestion,
+          securityAnswer: formData.securityAnswer,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('위키 생성에 실패했습니다.');
+      }
+
+      const data = await response.json();
 
       setShowSnackbar(true);
 
       // 생성된 위키의 code로 이동
-      if (response.code) {
-        router.push(`/wiki/${response.code}`);
+      if (data.code) {
+        // userProfile에 code 업데이트
+        updateUserProfile({ code: data.code });
+        router.push(`/wiki/${data.code}`);
       } else {
         router.push('/');
       }
@@ -93,7 +112,7 @@ export default function WikiCreatePage() {
   return (
     <>
       <div className="min-h-screen bg-white">
-        <main className="flex min-h-screen items-center justify-center">
+        <main className="flex items-center justify-center px-4 py-28">
           <div className="w-full max-w-md">
             <h1 className="text-2xl-semibold text-grayscale-600 mb-8 text-center">위키 생성하기</h1>
 

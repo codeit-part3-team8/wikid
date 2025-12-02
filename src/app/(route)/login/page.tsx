@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { useAuth } from '@/contexts/AuthContext';
+import SnackBar from '@/components/SnackBar/SnackBar';
 
 // 로그인 API 함수
 async function signIn(data: { email: string; password: string }) {
@@ -28,7 +29,7 @@ async function signIn(data: { email: string; password: string }) {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, isLoggedIn } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -38,6 +39,16 @@ export default function LoginPage() {
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showErrorSnackBar, setShowErrorSnackBar] = useState(false);
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
+
+  // 페이지 마운트 시 이미 로그인된 경우 랜딩 페이지로 리다이렉트
+  useEffect(() => {
+    if (!hasCheckedAuth && isLoggedIn) {
+      router.push('/');
+    }
+    setHasCheckedAuth(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -99,22 +110,20 @@ export default function LoginPage() {
       // 로그인 처리 (토큰 저장 및 사용자 정보 저장)
       login(response.accessToken, response.refreshToken, response);
 
-      // 메인 페이지로 이동
-      router.push('/');
+      // 위키 코드 유무에 따라 페이지 이동
+      const userCode = response.user?.profile?.code;
+      if (userCode) {
+        // 코드가 있으면 내 위키 페이지로 이동
+        router.push(`/wiki/${userCode}`);
+      } else {
+        // 코드가 없으면 위키 생성 페이지로 이동
+        router.push('/wikicreate');
+      }
     } catch (error) {
       console.error('로그인 실패:', error);
 
-      // 비밀번호 에러 표시
-      const errorMessage = error instanceof Error ? error.message : '로그인에 실패했습니다';
-
-      if (errorMessage.includes('비밀번호') || errorMessage.includes('password')) {
-        setErrors((prev) => ({
-          ...prev,
-          password: '비밀번호가 일치하지 않습니다',
-        }));
-      } else {
-        alert(errorMessage);
-      }
+      // SnackBar로 에러 표시
+      setShowErrorSnackBar(true);
     } finally {
       setIsLoading(false);
     }
@@ -173,6 +182,14 @@ export default function LoginPage() {
           </form>
         </div>
       </main>
+
+      <SnackBar
+        type="error"
+        message="잘못된 유저 정보 입니다"
+        isOpen={showErrorSnackBar}
+        onClose={() => setShowErrorSnackBar(false)}
+        duration={3000}
+      />
     </div>
   );
 }
