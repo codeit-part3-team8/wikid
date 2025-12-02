@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { createProfile } from '@/app/api/auth';
+import SnackBar from '@/components/SnackBar/SnackBar';
 
 export default function WikiCreatePage() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function WikiCreatePage() {
     securityAnswer: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,7 +74,7 @@ export default function WikiCreatePage() {
         securityAnswer: formData.securityAnswer,
       });
 
-      alert('위키가 생성되었습니다');
+      setShowSnackbar(true);
 
       // 생성된 위키의 code로 이동
       if (response.code) {
@@ -89,49 +91,58 @@ export default function WikiCreatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <main className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-md">
-          <h1 className="text-2xl-semibold text-grayscale-600 mb-8 text-center">위키 생성하기</h1>
+    <>
+      <div className="min-h-screen bg-white">
+        <main className="flex min-h-screen items-center justify-center">
+          <div className="w-full max-w-md">
+            <h1 className="text-2xl-semibold text-grayscale-600 mb-8 text-center">위키 생성하기</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 질문 입력 */}
-            <Input
-              label=""
-              name="securityQuestion"
-              type="text"
-              placeholder="질문을 입력해 주세요"
-              value={formData.securityQuestion}
-              onChange={handleChange}
-              onBlur={() => handleBlur('securityQuestion')}
-              error={errors.securityQuestion}
-              required
-              fullWidth
-            />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* 질문 입력 */}
+              <Input
+                label=""
+                name="securityQuestion"
+                type="text"
+                placeholder="질문을 입력해 주세요"
+                value={formData.securityQuestion}
+                onChange={handleChange}
+                onBlur={() => handleBlur('securityQuestion')}
+                error={errors.securityQuestion}
+                required
+                fullWidth
+              />
 
-            {/* 답 입력 */}
-            <Input
-              label=""
-              name="securityAnswer"
-              type="text"
-              placeholder="답을 입력해 주세요"
-              value={formData.securityAnswer}
-              onChange={handleChange}
-              onBlur={() => handleBlur('securityAnswer')}
-              error={errors.securityAnswer}
-              required
-              fullWidth
-            />
+              {/* 답 입력 */}
+              <Input
+                label=""
+                name="securityAnswer"
+                type="text"
+                placeholder="답을 입력해 주세요"
+                value={formData.securityAnswer}
+                onChange={handleChange}
+                onBlur={() => handleBlur('securityAnswer')}
+                error={errors.securityAnswer}
+                required
+                fullWidth
+              />
 
-            {/* 생성하기 버튼 */}
-            <div className="flex justify-end">
-              <Button type="submit" variant="primary" size="sm" fullWidth loading={isLoading}>
-                생성하기
-              </Button>
-            </div>
-          </form>
-        </div>
-      </main>
-    </div>
+              {/* 생성하기 버튼 */}
+              <div className="flex justify-end">
+                <Button type="submit" variant="primary" size="sm" fullWidth loading={isLoading}>
+                  생성하기
+                </Button>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+      <SnackBar
+        type="success"
+        message="위키가 생성되었습니다."
+        isOpen={showSnackbar}
+        onClose={() => setShowSnackbar(false)}
+        duration={2000}
+      />
+    </>
   );
 }

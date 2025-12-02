@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || '';
+import { API } from '@/constants/api';
 
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
     const authHeader = request.headers.get('authorization');
 
-    const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/users/me/password`, {
+    const response = await fetch(`${API.BASE}/users/me/password`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
