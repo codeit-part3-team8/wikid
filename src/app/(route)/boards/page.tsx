@@ -158,7 +158,7 @@ export default function BoardsPage() {
             <SearchInput value={search} onChange={handleChange} onSubmit={handleSearchSubmit} />
             <button
               onClick={handleSearchSubmit}
-              className="hover:bg-primary-300 active:bg-primary-300 bg-primary-200 text-grayscale-50 h-[45px] w-[80px] cursor-pointer rounded-[10px]"
+              className="hover:bg-primary-300 active:bg-primary-300 bg-primary-200 text-grayscale-50 h-[45px] w-[80px] rounded-[10px]"
             >
               검색
             </button>

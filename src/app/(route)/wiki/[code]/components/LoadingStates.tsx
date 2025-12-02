@@ -26,7 +26,7 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
         {onRetry && (
           <button
             onClick={onRetry}
-            className="bg-primary-200 hover:bg-primary-300 cursor-pointer rounded px-4 py-2 text-white"
+            className="bg-primary-200 hover:bg-primary-300 rounded px-4 py-2 text-white"
           >
             다시 시도
           </button>
@@ -44,7 +44,7 @@ export function NotFoundState({ onRetry }: { onRetry?: () => void }) {
         {onRetry && (
           <button
             onClick={onRetry}
-            className="bg-primary-200 hover:bg-primary-300 cursor-pointer rounded px-4 py-2 text-white"
+            className="bg-primary-200 hover:bg-primary-300 rounded px-4 py-2 text-white"
           >
             새로고침
           </button>

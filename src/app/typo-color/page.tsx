@@ -481,7 +481,7 @@ export default function TypoColorPage() {
               >
                 <button
                   onClick={() => setCopyType('tailwind')}
-                  className="text-sm-medium cursor-pointer"
+                  className="text-sm-medium"
                   style={{
                     padding: '8px 16px',
                     borderRadius: '6px',
@@ -497,7 +497,7 @@ export default function TypoColorPage() {
                 </button>
                 <button
                   onClick={() => setCopyType('css')}
-                  className="text-sm-medium cursor-pointer"
+                  className="text-sm-medium"
                   style={{
                     padding: '8px 16px',
                     borderRadius: '6px',
