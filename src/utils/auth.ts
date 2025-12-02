@@ -117,8 +117,8 @@ export const clearTokens = (): void => {
     localStorage.removeItem(TOKEN_KEYS.USER_PROFILE);
 
     // 쿠키에 저장된 리프레시 토큰 삭제는 API 라우트를 통해 처리
-    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {
-      // 로그아웃 API 실패해도 클라이언트 토큰은 제거됨
+    fetch('/api/auth/logout', { method: 'POST' }).catch((error) => {
+      console.warn('로그아웃 API 호출 실패 (클라이언트 토큰은 제거됨):', error);
     });
   }
 };

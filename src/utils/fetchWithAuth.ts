@@ -91,10 +91,13 @@ export async function fetchWithAuth(
     return fetch(url, fetchOptions);
   }
 
+  // FormData 감지 (multipart/form-data는 브라우저가 자동 설정)
+  const isFormData = fetchOptions.body instanceof FormData;
+
   // Authorization 헤더 추가
   const headers = {
-    'Content-Type': 'application/json',
-    ...fetchOptions.headers,
+    ...(fetchOptions.headers || {}),
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     Authorization: `Bearer ${accessToken}`,
   };
 
@@ -118,9 +121,12 @@ export async function fetchWithAuth(
       throw new Error('토큰 갱신 후에도 액세스 토큰이 없습니다.');
     }
 
+    // FormData 감지 (재시도 시에도 동일하게 처리)
+    const isFormDataRetry = fetchOptions.body instanceof FormData;
+
     const retryHeaders = {
-      'Content-Type': 'application/json',
-      ...fetchOptions.headers,
+      ...(fetchOptions.headers || {}),
+      ...(isFormDataRetry ? {} : { 'Content-Type': 'application/json' }),
       Authorization: `Bearer ${accessToken}`,
     };
 
@@ -225,5 +231,11 @@ export async function del<T = unknown>(url: string, options?: FetchWithAuthOptio
     throw new Error(`DELETE 요청 실패: ${response.status}`);
   }
 
-  return response.json();
+  // 204 No Content 응답 처리
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : (undefined as T);
 }
