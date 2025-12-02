@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { getAccessToken } from '@/utils/auth';
-
+import { API } from '@/constants/api';
 interface ArticlePayload {
   image?: string;
   title: string;
@@ -15,14 +15,14 @@ interface PostResponse {
 }
 
 export const usePostArticle = () => {
-  const accessToken = getAccessToken();
+  const token = getAccessToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<PostResponse | null>(null);
 
   const postArticle = async (payload: ArticlePayload, onSuccess?: (data: PostResponse) => void) => {
-    if (!accessToken) {
-      setError('로그인이 필요합니다.');
+    if (!token) {
+      setError('로그인 후 다시 시도해주세요.');
       return;
     }
 
@@ -30,33 +30,43 @@ export const usePostArticle = () => {
     setError(null);
 
     try {
-      const res = await fetch('/api/articles', {
+      const res = await fetch(`${API.ARTICLES}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
+      let serverMessage: string | undefined;
       if (!res.ok) {
-        let errorMessage = `HTTP error! status: ${res.status}`;
         try {
           const errorBody = await res.json();
-          errorMessage = errorBody.message || errorMessage;
+          serverMessage = errorBody?.message;
         } catch {
           // 서버가 JSON을 안보냈을 경우 그대로 유지
         }
 
         switch (res.status) {
           case 400:
-            throw new Error(errorMessage || '잘못된 요청입니다.');
+            throw new Error(serverMessage || '입력값을 다시 확인해주세요.');
           case 401:
-            throw new Error(errorMessage || '로그인이 필요합니다.');
+            throw new Error(serverMessage || '로그인이 필요합니다.');
           case 403:
-            throw new Error(errorMessage || '접근 권한이 없습니다.');
+            throw new Error(serverMessage || '접근 권한이 없습니다.');
+          case 404:
+            throw new Error(serverMessage || '요청한 경로를 찾을 수 없습니다.');
+          case 413:
+            throw new Error(serverMessage || '업로드 가능한 파일 크기를 초과했습니다.');
+          case 500:
+            throw new Error(
+              serverMessage || '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+            );
           default:
-            throw new Error(errorMessage || '게시글 등록에 실패했습니다.');
+            throw new Error(
+              serverMessage || `요청 처리 중 문제가 발생했습니다. (code: ${res.status})`
+            );
         }
       }
 
@@ -67,13 +77,18 @@ export const usePostArticle = () => {
         onSuccess(resData);
       }
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        return; // 취소된 요청은 에러로 처리하지 않음
-      }
       if (err instanceof Error) {
+        if (err.name === 'AbortError') return; // 사용자가 요청 취소한 경우
+        // 네트워크 오류 구분
+        if (err.message === 'Failed to fetch') {
+          setError(
+            '서버에 연결할 수 없습니다. 인터넷 연결을 확인하거나 잠시 후 다시 시도해주세요.'
+          );
+          return;
+        }
         setError(err.message);
       } else {
-        setError('알 수 없는 에러가 발생했습니다.');
+        setError('알 수 없는 오류가 발생했습니다.');
       }
     } finally {
       setLoading(false);
