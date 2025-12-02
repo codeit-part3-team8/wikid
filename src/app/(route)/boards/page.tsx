@@ -11,6 +11,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Pagination from '@/components/Pagination/Pagination';
 import Link from 'next/link';
 import axios from 'axios';
+import SnackBar from '@/components/SnackBar/SnackBar';
 
 type ArticleProps = {
   id: number;
@@ -37,7 +38,7 @@ export default function BoardsPage() {
   const [articleData, setArticleData] = useState<ArticleProps[]>([]);
   const [filteredarticleData, setFilteredarticleData] = useState<ArticleProps[]>(articleData);
   const [page, setPage] = useState(1);
-
+  const [errSnackBar, setErrorSnackBar] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -119,6 +120,7 @@ export default function BoardsPage() {
         setFilteredarticleData(res.data.list);
       } catch (error) {
         console.error(error);
+        setErrorSnackBar(true);
       }
     }
 
@@ -196,6 +198,12 @@ export default function BoardsPage() {
           />
         </div>
       </div>
+      <SnackBar
+        isOpen={errSnackBar}
+        message="데이터를 불러오는데 실패했습니다."
+        type="error"
+        onClose={() => setErrorSnackBar(false)}
+      />
     </>
   );
 }
