@@ -9,9 +9,10 @@ import ArticleList from '@/components/ArticleList/ArticleList';
 import { API } from '@/constants/api';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Pagination from '@/components/Pagination/Pagination';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import SnackBar from '@/components/SnackBar/SnackBar';
+import { useAuth } from '@/contexts/AuthContext';
 
 type ArticleProps = {
   id: number;
@@ -39,6 +40,9 @@ export default function BoardsPage() {
   const [filteredarticleData, setFilteredarticleData] = useState<ArticleProps[]>(articleData);
   const [page, setPage] = useState(1);
   const [errSnackBar, setErrorSnackBar] = useState(false);
+  const { isLoggedIn } = useAuth();
+  const [isLogiinModal, setIsLoginModal] = useState(false);
+  const router = useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -126,20 +130,29 @@ export default function BoardsPage() {
 
     fetcharticleData();
   }, []);
+
+  const handleClickAddBoard = () => {
+    if (!isLoggedIn) {
+      setIsLoginModal(true);
+      return;
+    }
+    router.push('/addboard');
+  };
+
   return (
     <>
       <div className={boardStyle()}>
         <div className="mt-[40px] mb-[40px] flex items-center justify-between sm:mt-[60px] sm:mb-[60px]">
           <h1 className="responsive-text text-3xl-to-2xl text-grayscale-500">베스트 게시글</h1>
-          <Link href={'/addboard'}>
-            <Button
-              variant="primary"
-              size="md"
-              className="text-md-semibold flex h-[45px] items-center justify-center"
-            >
-              게시물 등록하기
-            </Button>
-          </Link>
+
+          <Button
+            variant="primary"
+            size="md"
+            className="text-md-semibold flex h-[45px] items-center justify-center"
+            onClick={handleClickAddBoard}
+          >
+            게시물 등록하기
+          </Button>
         </div>
         <div ref={bestRef} id="dragBox" className="no-scrollbar overflow-x-auto">
           <div className="mb-[40px] grid max-w-[1048px] auto-cols-[250px] grid-flow-col gap-[16px] min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4">
@@ -155,10 +168,12 @@ export default function BoardsPage() {
 
         <div className="flex flex-col gap-[20px] sm:flex-row">
           <div className="flex flex-1 gap-[20px]">
-            <SearchInput value={search} onChange={handleChange} onSubmit={handleSearchSubmit} />
+            <div className="min-w-0 flex-1">
+              <SearchInput value={search} onChange={handleChange} onSubmit={handleSearchSubmit} />
+            </div>
             <button
               onClick={handleSearchSubmit}
-              className="hover:bg-primary-300 active:bg-primary-300 bg-primary-200 text-grayscale-50 h-[45px] w-[80px] rounded-[10px]"
+              className="hover:bg-primary-300 active:bg-primary-300 bg-primary-200 text-grayscale-50 text-md-semibold h-[45px] w-[80px] shrink-0 rounded-[10px]"
             >
               검색
             </button>
@@ -203,6 +218,12 @@ export default function BoardsPage() {
         message="데이터를 불러오는데 실패했습니다."
         type="error"
         onClose={() => setErrorSnackBar(false)}
+      />
+      <SnackBar
+        isOpen={isLogiinModal}
+        message="게시물을 등록하기 위해서는 로그인이 필요합니다."
+        type="error"
+        onClose={() => setIsLoginModal(false)}
       />
     </>
   );
