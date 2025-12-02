@@ -18,8 +18,9 @@ export interface SignInRequest {
 
 // 비밀번호 변경 요청 타입
 export interface ChangePasswordRequest {
-  passwordConfirmation: string; // 현재 비밀번호
-  newPassword: string; // 새 비밀번호
+  password: string; // 현재 비밀번호
+  currentPassword: string; // 새 비밀번호
+  passwordConfirmation: string;
 }
 
 // 인증 응답 타입
@@ -104,7 +105,6 @@ export const refreshToken = async (refreshToken: string): Promise<AuthResponse> 
  */
 export const changePassword = async (data: ChangePasswordRequest): Promise<void> => {
   const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-
   const response = await fetch('/api/passwordchange', {
     method: 'PATCH',
     headers: {
@@ -118,4 +118,54 @@ export const changePassword = async (data: ChangePasswordRequest): Promise<void>
     const error: ErrorResponse = await response.json();
     throw new Error(error.message || '비밀번호 변경에 실패했습니다.');
   }
+};
+
+// 위키 생성 요청 타입
+export interface CreateProfileRequest {
+  securityQuestion: string;
+  securityAnswer: string;
+}
+
+// 위키 생성 응답 타입
+export interface CreateProfileResponse {
+  id: number;
+  code: string;
+  name: string;
+  city: string;
+  mbti: string;
+  job: string;
+  sns: string;
+  birthday: string;
+  nickname: string;
+  bloodType: string;
+  family: string;
+  nationality: string;
+  content: string;
+  image: string;
+  securityQuestion: string;
+  updatedAt: string;
+  registeredAt: string;
+}
+
+/**
+ * 위키(프로필) 생성 API
+ */
+export const createProfile = async (data: CreateProfileRequest): Promise<CreateProfileResponse> => {
+  const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+  const response = await fetch(`${API_BASE_URL}/${TEAM_ID}/profiles`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error: ErrorResponse = await response.json();
+    throw new Error(error.message || '위키 생성에 실패했습니다.');
+  }
+
+  return response.json();
 };

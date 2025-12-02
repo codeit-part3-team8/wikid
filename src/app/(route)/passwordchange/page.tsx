@@ -13,23 +13,23 @@ export default function PasswordChangePage() {
   const { logout } = useAuth();
   const [formData, setFormData] = useState({
     currentPassword: '',
-    newPassword: '',
-    newPasswordConfirm: '',
+    password: '',
+    passwordConfirmation: '',
   });
   const [errors, setErrors] = useState({
     currentPassword: '',
-    newPassword: '',
-    newPasswordConfirm: '',
+    password: '',
+    passwordConfirmation: '',
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  // input 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({
         ...prev,
@@ -38,75 +38,74 @@ export default function PasswordChangePage() {
     }
   };
 
+  // blur 시 유효성 검사
   const handleBlur = (field: keyof typeof formData) => {
     let error = '';
-
     switch (field) {
       case 'currentPassword':
         error = validatePassword(formData.currentPassword) || '';
         break;
-      case 'newPassword':
-        error = validatePassword(formData.newPassword) || '';
-        // 현재 비밀번호와 새 비밀번호가 같은지 확인
-        if (!error && formData.currentPassword === formData.newPassword) {
+      case 'password':
+        error = validatePassword(formData.password) || '';
+        // 현재/새 비밀번호 동일 체크
+        if (!error && formData.currentPassword === formData.password) {
           error = '새 비밀번호는 현재 비밀번호와 달라야 합니다';
         }
         break;
-      case 'newPasswordConfirm':
-        error = validatePasswordConfirm(formData.newPassword, formData.newPasswordConfirm) || '';
+      case 'passwordConfirmation':
+        error = validatePasswordConfirm(formData.password, formData.passwordConfirmation) || '';
         break;
     }
-
     setErrors((prev) => ({
       ...prev,
       [field]: error,
     }));
   };
 
+  // submit 이벤트
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 유효성 검사
     const currentPasswordError = validatePassword(formData.currentPassword);
-    const newPasswordError = validatePassword(formData.newPassword);
-    const newPasswordConfirmError = validatePasswordConfirm(
-      formData.newPassword,
-      formData.newPasswordConfirm
+    const passwordError = validatePassword(formData.password);
+    const passwordConfirmationError = validatePasswordConfirm(
+      formData.password,
+      formData.passwordConfirmation
     );
-
-    // 현재 비밀번호와 새 비밀번호가 같은지 확인
     let samePasswordError = '';
-    if (formData.currentPassword === formData.newPassword) {
+    if (formData.currentPassword === formData.password) {
       samePasswordError = '새 비밀번호는 현재 비밀번호와 달라야 합니다';
     }
-
-    if (currentPasswordError || newPasswordError || newPasswordConfirmError || samePasswordError) {
+    if (currentPasswordError || passwordError || passwordConfirmationError || samePasswordError) {
       setErrors({
         currentPassword: currentPasswordError || '',
-        newPassword: newPasswordError || samePasswordError || '',
-        newPasswordConfirm: newPasswordConfirmError || '',
+        password: passwordError || samePasswordError || '',
+        passwordConfirmation: passwordConfirmationError || '',
       });
       return;
     }
 
     setIsLoading(true);
-
     try {
+      // 서버 명세에 맞는 필드명으로 데이터 전달!
       await changePassword({
-        passwordConfirmation: formData.currentPassword,
-        newPassword: formData.newPassword,
+        currentPassword: formData.currentPassword,
+        password: formData.password,
+        passwordConfirmation: formData.passwordConfirmation,
       });
 
       alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.');
 
-      // 비밀번호 변경 후 로그아웃 처리
+      // 변경 성공시 로그아웃 및 로그인페이지로
       logout();
       router.push('/login');
     } catch (error) {
       console.error('비밀번호 변경 실패:', error);
       const errorMessage = error instanceof Error ? error.message : '비밀번호 변경에 실패했습니다';
 
-      // 현재 비밀번호가 틀린 경우
-      if (errorMessage.includes('비밀번호') || errorMessage.includes('password')) {
+      // 서버에서 currentPassword 오류 등 세밀하게 분기 가능
+      if (errorMessage.includes('비밀번호') || errorMessage.toLowerCase().includes('password')) {
         setErrors((prev) => ({
           ...prev,
           currentPassword: '현재 비밀번호가 일치하지 않습니다',
@@ -124,12 +123,14 @@ export default function PasswordChangePage() {
       <main className="flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-2xl">
           <div className="p-12">
-            <h1 className="text-2xl-semibold text-grayscale-600 mb-12 text-center">계정 설정</h1>
+            <h1 className="text-grayscale-600 mb-12 text-center text-2xl font-semibold">
+              계정 설정
+            </h1>
 
             <form onSubmit={handleSubmit} className="mx-auto max-w-md space-y-6">
               {/* 현재 비밀번호 */}
               <Input
-                label="비밀번호 변경"
+                label="현재 비밀번호"
                 name="currentPassword"
                 type="password"
                 placeholder="기존 비밀번호 입력"
@@ -144,13 +145,13 @@ export default function PasswordChangePage() {
               {/* 새 비밀번호 */}
               <Input
                 label="새 비밀번호"
-                name="newPassword"
+                name="password"
                 type="password"
                 placeholder="새 비밀번호"
-                value={formData.newPassword}
+                value={formData.password}
                 onChange={handleChange}
-                onBlur={() => handleBlur('newPassword')}
-                error={errors.newPassword}
+                onBlur={() => handleBlur('password')}
+                error={errors.password}
                 required
                 fullWidth
               />
@@ -158,13 +159,13 @@ export default function PasswordChangePage() {
               {/* 새 비밀번호 확인 */}
               <Input
                 label="새 비밀번호 확인"
-                name="newPasswordConfirm"
+                name="passwordConfirmation"
                 type="password"
                 placeholder="새 비밀번호 확인"
-                value={formData.newPasswordConfirm}
+                value={formData.passwordConfirmation}
                 onChange={handleChange}
-                onBlur={() => handleBlur('newPasswordConfirm')}
-                error={errors.newPasswordConfirm}
+                onBlur={() => handleBlur('passwordConfirmation')}
+                error={errors.passwordConfirmation}
                 required
                 fullWidth
               />
