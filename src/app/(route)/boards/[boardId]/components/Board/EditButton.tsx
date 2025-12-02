@@ -3,7 +3,10 @@
 import Button from '@/components/Button/Button';
 import IconButton from '@/components/IconButton/IconButton';
 
-const EditButton = () => {
+interface EditButtonProps {
+  boardId: string;
+}
+const EditButton = ({ boardId }: EditButtonProps) => {
   return (
     <div>
       <Button
@@ -13,7 +16,7 @@ const EditButton = () => {
       >
         수정하기
       </Button>
-      <IconButton href="/addboard/" icon="IC_Edit" className="md:hidden" />
+      <IconButton href={`/addboard/${boardId}`} icon="IC_Edit" className="md:hidden" />
     </div>
   );
 };

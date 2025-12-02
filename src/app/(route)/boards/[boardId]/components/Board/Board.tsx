@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/contexts/AuthContext';
 import { useArticle } from '../../hooks/articles/useArticle';
 import { useDeleteArticle } from '../../hooks/articles/useDeleteArticle';
 import { getFormatDate } from '@/utils/getFormatDate';
@@ -13,6 +14,7 @@ import DeleteButton from './DeleteButton';
 import LikeButton from './LikeButton';
 import Divider from '@/components/Divider/Divider';
 import LoadingDots from '@/components/LoadingDots/LoadingDots';
+import BoardContent from './BoardContent';
 
 interface BoardProps {
   boardId: string;
@@ -20,12 +22,16 @@ interface BoardProps {
 
 const Board = ({ boardId }: BoardProps) => {
   const router = useRouter();
+  const { user } = useAuth();
+  const currentUserId = user?.id?.toString() ?? null;
 
   const { article, loading, error } = useArticle({ boardId });
   const { deleteArticle } = useDeleteArticle({
     boardId,
     onSuccess: () => router.push('/boards'),
   });
+
+  const isWriter = currentUserId !== null && article?.writer.id.toString() === currentUserId;
 
   if (loading) return <LoadingDots />;
   if (error) return <p>에러: {error}</p>;
@@ -37,10 +43,12 @@ const Board = ({ boardId }: BoardProps) => {
     <div className="text-grayscale-500 flex w-84 flex-col gap-7 rounded-xl px-7 py-10 shadow-[0px_4px_20px_0px_#00000014] md:w-156 lg:w-265">
       <div className="header flex justify-between">
         <span className="responsive-text text-3xl-to-2xl-semibold">{article.title}</span>{' '}
-        <div className="flex gap-3">
-          <EditButton />
-          <DeleteButton onDelete={deleteArticle} />
-        </div>
+        {isWriter && (
+          <div className="flex gap-3">
+            <EditButton boardId={boardId} />
+            <DeleteButton onDelete={deleteArticle} />
+          </div>
+        )}
       </div>
       <div className="subheader text-md-regular text-grayscale-400 flex flex-col gap-2">
         <div className="flex justify-between">
@@ -52,11 +60,18 @@ const Board = ({ boardId }: BoardProps) => {
         </div>
         <Divider className="lg:hidden" />
       </div>
-      <div className="content flex flex-col">
-        <div>
-          <Image src={article.image || defaultImage} alt="게시글 이미지" width={300} height={300} />
-        </div>
-        <span className="text-lg-regular">{article.content}</span> {/* sm:text-md-regular */}
+      <div className="content flex flex-col gap-4">
+        {article.image && (
+          <div>
+            <Image
+              src={article.image || defaultImage}
+              alt="게시글 이미지"
+              width={300}
+              height={300}
+            />
+          </div>
+        )}
+        <BoardContent content={article.content} />
       </div>
     </div>
   );
