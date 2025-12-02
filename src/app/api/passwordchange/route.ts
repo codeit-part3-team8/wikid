@@ -24,6 +24,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ message: '비밀번호 변경에 실패했습니다.' }, { status: 500 });
+    if (error instanceof Error)
+      return NextResponse.json({ message: '비밀번호 변경에 실패했습니다.' }, { status: 500 });
   }
 }
