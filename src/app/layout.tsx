@@ -11,8 +11,6 @@ export const metadata: Metadata = {
   description: '위키드 - 나만의 위키를 만들어보세요',
   icons: {
     icon: '/favicon.ico',
-    // shortcut: '/favicon-16x16.png',
-    // apple: '/apple-touch-icon.png',
   },
 };
 

@@ -22,7 +22,7 @@ export default function MyPage() {
               <div className="border-grayscale-600 border-t"></div>
 
               {/* 위키 생성하기 버튼 */}
-              <Button size="lg" fullWidth onClick={() => router.push('/wiki/create')}>
+              <Button size="lg" fullWidth onClick={() => router.push('/wikicreate')}>
                 위키 생성하기
               </Button>
             </div>
