@@ -4,8 +4,7 @@ import Button from '@/components/Button/Button';
 import { useRouter } from 'next/navigation';
 
 export default function MyPage() {
-  const router = useRouter(); // ⬅ useRouter 훅 호출
-
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-white">
       <main className="flex items-center justify-center px-4 py-16">
@@ -15,7 +14,7 @@ export default function MyPage() {
 
             <div className="mx-auto max-w-md space-y-6">
               {/* 비밀번호 변경 버튼 */}
-              <Button size="lg" fullWidth onClick={() => router.push('/passwordchange')}>
+              <Button size="lg" fullWidth onClick={() => router.push('/passwordChange')}>
                 비밀번호 변경
               </Button>
 

@@ -41,7 +41,7 @@ export default function BestArticle({
     return `${year}.${month}.${day}`;
   }
   function handleClick() {
-    router.push(`/articles/${id}`);
+    router.push(`/boards/${id}`);
   }
 
   return (

@@ -15,11 +15,16 @@ export async function GET(
   const { articleId } = await context.params;
   const id = parseArticleId(articleId);
 
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
   const { searchParams } = new URL(request.url);
   const limit = Number(searchParams.get('limit')) || 10;
   const cursor = Number(searchParams.get('cursor')) || 0;
   try {
-    const data = await safeFetch(`${API.ARTICLES}${id}/comments?limit=${limit}&cursor=${cursor}`);
+    const data = await safeFetch(`${API.ARTICLES}${id}/comments?limit=${limit}&cursor=${cursor}`, {
+      headers: { Authorization: authHeader },
+    });
 
     return NextResponse.json(data);
   } catch (err) {
@@ -35,10 +40,13 @@ export async function POST(
     const { articleId } = await context.params;
     const id = parseArticleId(articleId);
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const body = await request.json();
     const data = await safeFetch(`${API.ARTICLES}${id}/comments`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: authHeader },
       body: JSON.stringify(body),
     });
 

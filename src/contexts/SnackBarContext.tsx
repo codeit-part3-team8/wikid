@@ -55,6 +55,11 @@ export function SnackBarProvider({ children }: SnackBarProviderProps) {
       setSnackBars((prev) =>
         prev.map((sb) => (sb.id === oldestSnackBar.id ? { ...sb, isClosing: true } : sb))
       );
+
+      // isClosing 상태로 변경 후 애니메이션 시간(300ms) 후 실제 제거
+      setTimeout(() => {
+        setSnackBars((prev) => prev.filter((sb) => sb.id !== oldestSnackBar.id));
+      }, 300);
     }, remainingTime);
 
     return () => clearTimeout(timer);

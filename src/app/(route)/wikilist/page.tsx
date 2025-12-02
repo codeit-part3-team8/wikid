@@ -5,13 +5,14 @@ import type React from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import { apiClient } from '@/utils/apiClient';
 import ListCard from '@/components/ListCard/ListCard';
 import Pagination from '@/components/Pagination/Pagination';
 import { tv } from 'tailwind-variants';
 import Image from 'next/image';
 import NoSearch from '@/assets/images/no-search.png';
 import { API } from '@/constants/api';
+import SnackBar from '@/components/SnackBar/SnackBar';
 
 interface Profile {
   id: number;
@@ -23,6 +24,10 @@ interface Profile {
   code: string;
 }
 
+interface ProfileListResponse {
+  list: Profile[];
+}
+
 const PAGE_SIZE = 3;
 
 function WikiListContent() {
@@ -30,6 +35,7 @@ function WikiListContent() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [errSnackBar, setErrorSnackBar] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -63,11 +69,15 @@ function WikiListContent() {
     async function fetchProfileData() {
       try {
         setIsLoading(true);
-        const res = await axios.get(API.PROFILE);
-        console.log(res.data.list);
-        setProfiles(res.data.list);
+        const res = await apiClient.publicJson<ProfileListResponse>(
+          `${API.PROFILE}?page=1&pageSize=100`
+        );
+        console.log('프로필 개수:', res.list.length);
+        console.log(res.list);
+        setProfiles(res.list);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        setErrorSnackBar(true);
       } finally {
         setIsLoading(false);
       }
@@ -98,20 +108,20 @@ function WikiListContent() {
           </span>
         </div>
 
-        <section className="mb-[54px] flex h-[466px] w-full max-w-[860px] flex-col gap-[24px] px-[24px] md:mb-[81px] md:h-[474px] md:px-[24px] lg:mb-[121px]">
+        <section className="mb-[54px] flex h-[466px] w-full max-w-[860px] flex-col gap-6 px-6 md:mb-[81px] md:h-[474px] md:px-6 lg:mb-[121px]">
           {isLoading ? (
-            <div className="text-grayscale-400 flex h-full flex-col items-center justify-center gap-[16px]">
+            <div className="text-grayscale-400 flex h-full flex-col items-center justify-center gap-4">
               <span className="text-md">위키 리스트를 불러오는 중입니다...</span>
             </div>
           ) : filteredProfiles.length <= 0 ? (
-            <div className="text-grayscale-400 flex flex-col items-center justify-center gap-[32px] py-[60px] text-center">
+            <div className="text-grayscale-400 flex flex-col items-center justify-center gap-8 py-[60px] text-center">
               {keywordFromUrl ? (
                 <span className="text-md">"{keywordFromUrl}"과 일치한 검색 결과가 없습니다.</span>
               ) : (
-                <span className="text-md">아직 등록된 위키 프로필이 없습니다.</span>
+                <span className="text-md">데이터를 불러오는데 실패했습니다.</span>
               )}
               <Image
-                className="h-[108px] w-[108px] md:h-[144px] md:w-[144px]"
+                className="h-[108px] w-[108px] md:h-36 md:w-36"
                 src={NoSearch}
                 alt="검색결과 없음 이미지"
               />
@@ -140,6 +150,12 @@ function WikiListContent() {
           />
         </div>
       </div>
+      <SnackBar
+        isOpen={errSnackBar}
+        message="데이터를 불러오는데 실패했습니다."
+        type="error"
+        onClose={() => setErrorSnackBar(false)}
+      />
     </div>
   );
 }

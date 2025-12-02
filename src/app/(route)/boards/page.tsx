@@ -11,6 +11,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Pagination from '@/components/Pagination/Pagination';
 import Link from 'next/link';
 import axios from 'axios';
+import SnackBar from '@/components/SnackBar/SnackBar';
 
 type ArticleProps = {
   id: number;
@@ -34,10 +35,10 @@ const boardStyle = tv({
 export default function BoardsPage() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('최신순');
-  const [articleData, setArticleData] = useState<ArticleProps[]>([]); //이거
+  const [articleData, setArticleData] = useState<ArticleProps[]>([]);
   const [filteredarticleData, setFilteredarticleData] = useState<ArticleProps[]>(articleData);
   const [page, setPage] = useState(1);
-
+  const [errSnackBar, setErrorSnackBar] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -77,7 +78,7 @@ export default function BoardsPage() {
   });
 
   const pagedarticleData = sortedarticleData.slice(startIndex, startIndex + PAGE_SIZE);
-  //마우스 드래그
+
   const useHorizontalScroll = () => {
     const bestArticleRef = useRef<HTMLDivElement>(null);
 
@@ -110,17 +111,16 @@ export default function BoardsPage() {
 
   const bestRef = useHorizontalScroll();
 
-  //api불러오기
-
   useEffect(() => {
     async function fetcharticleData() {
       try {
-        const res = await axios.get(API.ARTICLES);
+        const res = await axios.get(`${API.ARTICLES}?page=1&pageSize=100&orderBy=recent`);
 
         setArticleData(res.data.list);
         setFilteredarticleData(res.data.list);
       } catch (error) {
         console.error(error);
+        setErrorSnackBar(true);
       }
     }
 
@@ -198,6 +198,12 @@ export default function BoardsPage() {
           />
         </div>
       </div>
+      <SnackBar
+        isOpen={errSnackBar}
+        message="데이터를 불러오는데 실패했습니다."
+        type="error"
+        onClose={() => setErrorSnackBar(false)}
+      />
     </>
   );
 }

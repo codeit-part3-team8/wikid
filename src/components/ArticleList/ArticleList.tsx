@@ -22,7 +22,7 @@ export default function ArticleList({ id, title, writer, likeCount, createdAt }:
   }
 
   function handleClick() {
-    router.push(`/articles/${id}`);
+    router.push(`/boards/${id}`);
   }
   return (
     <tr onClick={handleClick} className="cursor-pointer border-b border-[#E4E5F0]">

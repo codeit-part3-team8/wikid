@@ -4,6 +4,7 @@ import '../styles/typography-system.css';
 import '../styles/color-variables.css';
 import { SnackBarProvider } from '@/contexts/SnackBarContext';
 import Header from '@/components/Header/Header';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'WIKID',
@@ -31,8 +32,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Header />
-        <SnackBarProvider>{children}</SnackBarProvider>
+        <AuthProvider>
+          <Header />
+          <SnackBarProvider>{children}</SnackBarProvider>
+        </AuthProvider>
       </body>
     </html>
   );
