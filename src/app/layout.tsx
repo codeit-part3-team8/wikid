@@ -5,7 +5,7 @@ import '../styles/color-variables.css';
 import { SnackBarProvider } from '@/contexts/SnackBarContext';
 import Header from '@/components/Header/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'WIKID',
