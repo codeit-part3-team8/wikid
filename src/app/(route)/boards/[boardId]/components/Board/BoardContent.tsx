@@ -12,7 +12,7 @@ const BoardContent = ({ content }: { content: string }) => {
     };
   }, [editor]);
 
-  return <EditorContent editor={editor} className="editor-style" />;
+  return <EditorContent editor={editor} className="editor-style overflow-hidden break-words" />;
 };
 
 export default BoardContent;
