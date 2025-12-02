@@ -13,6 +13,8 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import SnackBar from '@/components/SnackBar/SnackBar';
 import { useAuth } from '@/contexts/AuthContext';
+import BaseModal from '@/components/Modal/BaseModal';
+import { useModal } from '@/hooks/useModal';
 
 type ArticleProps = {
   id: number;
@@ -41,7 +43,7 @@ export default function BoardsPage() {
   const [page, setPage] = useState(1);
   const [errSnackBar, setErrorSnackBar] = useState(false);
   const { isLoggedIn } = useAuth();
-  const [isLoginModal, setIsLoginModal] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
   const router = useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -133,7 +135,7 @@ export default function BoardsPage() {
 
   const handleClickAddBoard = () => {
     if (!isLoggedIn) {
-      setIsLoginModal(true);
+      openModal();
       return;
     }
     router.push('/addboard');
@@ -161,7 +163,7 @@ export default function BoardsPage() {
               .sort((a, b) => b.likeCount - a.likeCount)
               .slice(0, 4)
               .map((article) => (
-                <BestArticle key={article.id} {...article} />
+                <BestArticle key={article.id} {...article} isLoggedIn={isLoggedIn} />
               ))}{' '}
           </div>
         </div>
@@ -200,6 +202,7 @@ export default function BoardsPage() {
                 writer={article.writer.name}
                 likeCount={article.likeCount}
                 createdAt={article.createdAt}
+                isLoggedIn={isLoggedIn}
               />
             ))}
           </tbody>
@@ -219,12 +222,12 @@ export default function BoardsPage() {
         type="error"
         onClose={() => setErrorSnackBar(false)}
       />
-      <SnackBar
-        isOpen={isLoginModal}
-        message="게시물을 등록하기 위해서는 로그인이 필요합니다."
-        type="error"
-        onClose={() => setIsLoginModal(false)}
-      />
+      <BaseModal size="image" isOpen={isOpen} onClose={closeModal}>
+        <div className="mt-5 flex flex-col justify-center gap-5 p-3">
+          <span className="text-lg">로그인이 필요한 서비스입니다.</span>
+          <Button href="/login">로그인 페이지</Button>
+        </div>
+      </BaseModal>
     </>
   );
 }
