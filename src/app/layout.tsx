@@ -5,6 +5,7 @@ import '../styles/color-variables.css';
 import { SnackBarProvider } from '@/contexts/SnackBarContext';
 import Header from '@/components/Header/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'WIKID',
@@ -36,6 +37,7 @@ export default function RootLayout({
           <Header />
           <SnackBarProvider>{children}</SnackBarProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
