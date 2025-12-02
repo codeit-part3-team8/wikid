@@ -72,8 +72,8 @@ function WikiListContent() {
         const res = await apiClient.publicJson<ProfileListResponse>(
           `${API.PROFILE}?page=1&pageSize=100`
         );
-        console.log('프로필 개수:', res.list.length);
-        console.log(res.list);
+        // console.log('프로필 개수:', res.list.length);
+        // console.log(res.list);
         setProfiles(res.list);
       } catch (error) {
         console.error(error);

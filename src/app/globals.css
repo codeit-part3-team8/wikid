@@ -157,7 +157,9 @@
   font-weight: 600 !important;
   color: inherit !important;
 }
-
+/* NEXON 폰트 파일이 없으므로 Pretendard로 대체 */
+/* 필요시 public/fonts/NEXON_Lv1_Gothic/TTF/ 폴더에 폰트 파일 추가 후 활성화 */
+/*
 @font-face {
   font-family: 'NEXON Lv1 Gothic';
   src: url('/fonts/NEXON_Lv1_Gothic/TTF/NEXONLv1GothicRegular.ttf') format('truetype');
@@ -181,3 +183,4 @@
   font-style: normal;
   font-display: swap;
 }
+*/

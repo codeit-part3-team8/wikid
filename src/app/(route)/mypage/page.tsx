@@ -13,10 +13,10 @@ export default function MyPage() {
           <div className="p-12">
             <h1 className="text-2xl-semibold text-grayscale-600 mb-12 text-center">계정 설정</h1>
 
-            <div className="mx-auto flex max-w-md flex-col gap-20">
+            <div className="mx-auto flex max-w-md flex-col gap-10">
               <Divider />
               {/* 비밀번호 변경 버튼 */}
-              <Button size="lg" fullWidth onClick={() => router.push('/passwordChange')}>
+              <Button size="lg" fullWidth onClick={() => router.push('/passwordchange')}>
                 비밀번호 변경
               </Button>
 

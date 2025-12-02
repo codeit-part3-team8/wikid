@@ -102,6 +102,11 @@ export const useCommonEditor = (content?: string, onChange?: (html: string) => v
             return false;
           }
 
+          // 최상위 노드인지 확인 (depth가 0이면 최상위)
+          if ($from.depth === 0) {
+            return false;
+          }
+
           if ($from.parentOffset === 0 && $from.before() > 0) {
             const posBefore = $from.before();
             const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);

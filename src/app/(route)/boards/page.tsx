@@ -87,6 +87,9 @@ export default function BoardsPage() {
 
   const useHorizontalScroll = () => {
     const bestArticleRef = useRef<HTMLDivElement>(null);
+    const isDragging = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
 
     const handleWheel = useCallback((e: WheelEvent) => {
       const container = bestArticleRef.current;
@@ -101,17 +104,70 @@ export default function BoardsPage() {
         e.preventDefault();
       }
     }, []);
+
+    const handleMouseDown = useCallback((e: MouseEvent) => {
+      const container = bestArticleRef.current;
+      if (!container || window.innerWidth >= 640) return;
+
+      isDragging.current = true;
+      startX.current = e.pageX - container.offsetLeft;
+      scrollLeft.current = container.scrollLeft;
+      container.style.cursor = 'grabbing';
+      container.style.userSelect = 'none';
+    }, []);
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+      const container = bestArticleRef.current;
+      if (!container || !isDragging.current) return;
+
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX.current) * 2;
+      container.scrollLeft = scrollLeft.current - walk;
+    }, []);
+
+    const handleMouseUp = useCallback(() => {
+      const container = bestArticleRef.current;
+      if (!container) return;
+
+      isDragging.current = false;
+      container.style.cursor = 'grab';
+      container.style.userSelect = 'auto';
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+      const container = bestArticleRef.current;
+      if (!container) return;
+
+      isDragging.current = false;
+      container.style.cursor = 'grab';
+      container.style.userSelect = 'auto';
+    }, []);
+
     useEffect(() => {
       const container = bestArticleRef.current;
       if (container) {
         container.addEventListener('wheel', handleWheel, { passive: false });
+        container.addEventListener('mousedown', handleMouseDown);
+        container.addEventListener('mousemove', handleMouseMove);
+        container.addEventListener('mouseup', handleMouseUp);
+        container.addEventListener('mouseleave', handleMouseLeave);
+
+        // 초기 커서 스타일 설정
+        if (window.innerWidth < 640) {
+          container.style.cursor = 'grab';
+        }
 
         return () => {
           container.removeEventListener('wheel', handleWheel);
+          container.removeEventListener('mousedown', handleMouseDown);
+          container.removeEventListener('mousemove', handleMouseMove);
+          container.removeEventListener('mouseup', handleMouseUp);
+          container.removeEventListener('mouseleave', handleMouseLeave);
         };
       }
       return () => {};
-    }, [handleWheel]);
+    }, [handleWheel, handleMouseDown, handleMouseMove, handleMouseUp, handleMouseLeave]);
     return bestArticleRef;
   };
 
@@ -152,6 +208,7 @@ export default function BoardsPage() {
             size="md"
             className="text-md-semibold flex h-[45px] items-center justify-center"
             onClick={handleClickAddBoard}
+            disabled={!isLoggedIn}
           >
             게시물 등록하기
           </Button>

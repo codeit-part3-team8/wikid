@@ -16,7 +16,13 @@ body {
 
 /* --------넥슨폰트---------- */
 .responsive-text-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: var(--responsive-desktop-size);
   line-height: var(--responsive-desktop-line);
   font-weight: var(--responsive-weight);
@@ -45,56 +51,104 @@ body {
 }
 
 .text-8xl-bold-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 90px;
   line-height: 100%;
   font-weight: 700;
 }
 
 .text-7xl-regular-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 60px;
   line-height: 100%;
   font-weight: 400;
 }
 
 .text-7xl-light-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 60px;
   line-height: 100%;
   font-weight: 300;
 }
 
 .text-6xl-semibold-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 50px;
   line-height: 100%;
   font-weight: 600;
 }
 
 .text-6xl-regular-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 50px;
   line-height: 100%;
   font-weight: 400;
 }
 
 .text-3xl-semibold-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 30px;
   line-height: 46px;
   font-weight: 600;
 }
 
 .text-3xl-bold-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 30px;
   line-height: 46px;
   font-weight: 700;
 }
 
 .text-4xl-light-nx {
-  font-family: 'NEXON Lv1 Gothic';
+  font-family:
+    'NEXON Lv1 Gothic',
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   font-size: 40px;
   line-height: 100%;
   font-weight: 300;

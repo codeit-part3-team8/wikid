@@ -51,19 +51,6 @@ export default function NotFound() {
               문제가 지속되면 관리자에게 문의해주세요
             </p>
           </div>
-
-          {/* 장식용 요소들 */}
-          <div className="mt-8 flex justify-center space-x-2 opacity-30">
-            <div className="bg-primary-200 h-2 w-2 animate-bounce rounded-full"></div>
-            <div
-              className="bg-primary-200 h-2 w-2 animate-bounce rounded-full"
-              style={{ animationDelay: '0.1s' }}
-            ></div>
-            <div
-              className="bg-primary-200 h-2 w-2 animate-bounce rounded-full"
-              style={{ animationDelay: '0.2s' }}
-            ></div>
-          </div>
         </div>
       </div>
     </div>

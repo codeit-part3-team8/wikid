@@ -1,7 +1,12 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { handlerServerError } from '@/utils/handlerServerError';
-import { API } from '@/constants/api';
+import { NextRequest } from 'next/server';
+import { API_BASE_URL } from '@/constants/api';
 import { safeFetch } from '@/utils/safeFetch';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateEnvironmentVariables,
+} from '@/utils/apiHelpers';
+import { APIError } from '@/types/Error';
 
 export type Params = {
   articleId: string;
@@ -18,70 +23,91 @@ export function parseArticleId(articleId: string) {
 
 export async function GET(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { articleId } = await context.params;
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
-    const article = await safeFetch(`${API.ARTICLES}${articleId}`, {
-      headers: { Authorization: authHeader },
+    const article = await safeFetch(`${API_BASE_URL}/articles/${articleId}`, {
+      headers: { Authorization: authToken },
     });
 
-    return NextResponse.json({
-      message: `ArticleID: ${articleId}`,
-      data: article,
-    });
-  } catch (err) {
-    return handlerServerError(err, 'Failed to get article');
+    return createSuccessResponse(article, `게시글 ${articleId} 조회 성공`);
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '게시글 조회에 실패했습니다'
+    );
   }
 }
 
 export async function PATCH(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { articleId } = await context.params;
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
     const body = await request.json();
     const { image, title, content } = body;
     const payload = { image, title, content };
 
-    const data = await safeFetch(`${API.ARTICLES}${articleId}`, {
+    const data = await safeFetch(`${API_BASE_URL}/articles/${articleId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authHeader,
+        Authorization: authToken,
       },
       body: JSON.stringify(payload),
     });
 
-    return NextResponse.json({
-      message: `ArticleID: ${articleId} updated`,
-      data: data,
-    });
-  } catch (err: unknown) {
-    return handlerServerError(err, 'Failed to patch article');
+    return createSuccessResponse(data, `게시글 ${articleId} 수정 성공`);
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '게시글 수정에 실패했습니다'
+    );
   }
 }
 
 export async function DELETE(request: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
     const { articleId } = await context.params;
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(
+        APIError.unauthorized('인증이 필요합니다'),
+        '인증이 필요한 요청입니다'
+      );
+    }
 
-    const data = await safeFetch(`${API.ARTICLES}${articleId}`, {
+    const data = await safeFetch(`${API_BASE_URL}/articles/${articleId}`, {
       method: 'DELETE',
-      headers: { Authorization: authHeader },
+      headers: { Authorization: authToken },
     });
 
-    return NextResponse.json({
-      message: `ArticleID: ${articleId} deleted`,
-      data: data,
-    });
-  } catch (err) {
-    return handlerServerError(err, 'Failed to delete article');
+    return createSuccessResponse(data, `게시글 ${articleId} 삭제 성공`);
+  } catch (error) {
+    return createErrorResponse(
+      error instanceof Error ? error : String(error),
+      '게시글 삭제에 실패했습니다'
+    );
   }
 }
