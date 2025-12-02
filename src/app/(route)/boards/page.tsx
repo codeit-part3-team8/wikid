@@ -114,7 +114,7 @@ export default function BoardsPage() {
   useEffect(() => {
     async function fetcharticleData() {
       try {
-        const res = await axios.get(API.ARTICLES);
+        const res = await axios.get(`${API.ARTICLES}?page=1&pageSize=100&orderBy=recent`);
 
         setArticleData(res.data.list);
         setFilteredarticleData(res.data.list);
