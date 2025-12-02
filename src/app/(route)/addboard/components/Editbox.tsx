@@ -43,12 +43,10 @@ const Editbox = ({ article }: EditBox) => {
     });
   }, [title, content, image, postArticle, router]);
 
-  // error가 생기면 SnackBar 띄우고 2초 후 닫기
+  // error가 생기면 SnackBar 띄움
   useEffect(() => {
     if (error) {
       Promise.resolve().then(() => setShowSnackBar(true));
-      const timer = setTimeout(() => setShowSnackBar(false), 2000);
-      return () => clearTimeout(timer);
     }
   }, [error]);
 
@@ -100,6 +98,7 @@ const Editbox = ({ article }: EditBox) => {
         message="게시글 등록에 실패했습니다"
         type="error"
         onClose={() => setShowSnackBar(false)}
+        duration={2000}
       />
     </>
   );
