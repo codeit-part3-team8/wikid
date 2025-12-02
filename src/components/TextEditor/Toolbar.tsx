@@ -21,10 +21,10 @@ const barStyle = tv({
 
 interface ToolbarProps {
   editor: Editor;
-  variant?: 'outlined';
+  onSetThumbnail?: (v: string) => void; // 썸네일 지정
 }
 
-const Toolbar = ({ editor }: ToolbarProps) => {
+const Toolbar = ({ editor, onSetThumbnail }: ToolbarProps) => {
   if (!editor) return null;
 
   return (
@@ -45,7 +45,7 @@ const Toolbar = ({ editor }: ToolbarProps) => {
       <Divider orientation="vertical" className="hidden md:block" />
       <div className="flex gap-1">
         <TableDropdown editor={editor} />
-        <ImageUploadButton editor={editor} />
+        <ImageUploadButton editor={editor} onSetThumbnail={onSetThumbnail} />
         <AddLinkButton editor={editor} />
       </div>
     </div>

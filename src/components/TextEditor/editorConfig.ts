@@ -255,24 +255,27 @@ export const useCommonEditor = (content?: string, onChange?: (html: string) => v
           if (selection.empty) {
             const { $from } = selection;
 
-            if ($from.pos === 1) {
-              // 커서가 문서의 첫 위치인지 확인
+            // 문서 시작인지 확인
+            if ($from.pos === 0) {
               return false;
             }
 
             if ($from.parentOffset === 0) {
               const posBefore = $from.before();
-              const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);
+              if (posBefore <= 0) return false; // 안전 검사
 
-              if (nodeBefore && nodeBefore.type.name === 'youtube') {
-                // 유튜브 노드면 삭제
+              const nodeBefore = editor.state.doc.nodeAt(posBefore - 1);
+              if (
+                nodeBefore &&
+                (nodeBefore.type.name === 'image' || nodeBefore.type.name === 'youtube')
+              ) {
                 const deleteFrom = posBefore - nodeBefore.nodeSize;
 
                 editor
                   .chain()
                   .focus()
                   .deleteRange({
-                    from: deleteFrom,
+                    from: deleteFrom < 0 ? 0 : deleteFrom,
                     to: $from.pos,
                   })
                   .run();
@@ -281,6 +284,7 @@ export const useCommonEditor = (content?: string, onChange?: (html: string) => v
               }
             }
           }
+
           return false;
         },
       };

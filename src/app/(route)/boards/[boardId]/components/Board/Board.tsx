@@ -6,9 +6,6 @@ import { useDeleteArticle } from '../../hooks/articles/useDeleteArticle';
 import { getFormatDate } from '@/utils/getFormatDate';
 import { useRouter } from 'next/navigation';
 
-import Image from 'next/image';
-
-import defaultImage from '@/assets/images/share-message.png';
 import EditButton from './EditButton';
 import DeleteButton from './DeleteButton';
 import LikeButton from './LikeButton';
@@ -61,16 +58,6 @@ const Board = ({ boardId }: BoardProps) => {
         <Divider className="lg:hidden" />
       </div>
       <div className="content flex flex-col gap-4">
-        {article.image && (
-          <div>
-            <Image
-              src={article.image || defaultImage}
-              alt="게시글 이미지"
-              width={300}
-              height={300}
-            />
-          </div>
-        )}
         <BoardContent content={article.content} />
       </div>
     </div>
