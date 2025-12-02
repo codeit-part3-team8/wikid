@@ -14,7 +14,7 @@ export default function MyPage() {
 
             <div className="mx-auto max-w-md space-y-6">
               {/* 비밀번호 변경 버튼 */}
-              <Button size="lg" fullWidth onClick={() => router.push('/passwordchange')}>
+              <Button size="lg" fullWidth onClick={() => router.push('/passwordChange')}>
                 비밀번호 변경
               </Button>
 
