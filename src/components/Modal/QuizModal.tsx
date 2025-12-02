@@ -6,6 +6,7 @@ import { tv } from 'tailwind-variants';
 import BaseModal from './BaseModal';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
 import { BaseModalProps } from '@/types/Modal';
+import { API } from '@/constants/api';
 
 // Quiz input 스타일 정의
 const quizInputStyle = tv({
@@ -68,10 +69,12 @@ export default function QuizModal({
     setHasError(false);
 
     try {
-      const response = await fetch(`/api/profiles/${code}/ping`, {
+      const accessToken = localStorage.getItem('accessToken');
+      const response = await fetch(`${API.PROFILE}${code}/ping`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
         body: JSON.stringify({
           securityAnswer: inputValue.trim(),

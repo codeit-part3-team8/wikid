@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { LIMITS } from '@/constants/validation';
-import { CONFIG } from '@/constants/config';
+import { API_BASE_URL } from '@/constants/api';
+import { APIError } from '@/types/Error';
 
 import {
   createErrorResponse,
@@ -11,10 +12,12 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
-    validateEnvironmentVariables(
-      { name: 'API_BASE_URL', value: CONFIG.API_BASE_URL },
-      { name: 'ACCESS_TOKEN', value: CONFIG.ACCESS_TOKEN }
-    );
+    validateEnvironmentVariables({ name: 'API_BASE_URL', value: API_BASE_URL });
+
+    const authToken = request.headers.get('authorization');
+    if (!authToken) {
+      return createErrorResponse(new Error('인증 토큰이 필요합니다'), '인증이 필요한 요청입니다');
+    }
 
     const formData = await request.formData();
     const imageFile = validateFileUpload(
@@ -27,18 +30,42 @@ export async function POST(request: NextRequest) {
     const uploadFormData = new FormData();
     uploadFormData.append('image', imageFile);
 
-    const apiUrl = `${CONFIG.API_BASE_URL}images/upload`;
+    const apiUrl = `${API_BASE_URL}/images/upload`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${CONFIG.ACCESS_TOKEN}`,
+        Authorization: authToken,
       },
       body: uploadFormData,
     });
 
-    if (!response.ok) {
-      throw new Error(`이미지 업로드 실패: ${response.status} ${response.statusText}`);
+    console.log('POST 이미지 업로드 외부 API 응답 상태:', response.status);
+
+    if (response.status === 401) {
+      console.log('POST 이미지 업로드 외부 API에서 토큰 만료/인증 실패 응답');
+      const errorText = await response.text();
+      console.log('POST 이미지 업로드 401 에러 응답:', errorText);
+      return createErrorResponse(
+        APIError.unauthorized('인증이 만료되었습니다. 다시 로그인해 주세요.')
+      );
+    } else if (response.status === 400) {
+      const errorText = await response.text();
+      console.log('POST 이미지 업로드 400 에러 응답:', errorText);
+      return createErrorResponse(APIError.badRequest('잘못된 이미지 파일입니다.'));
+    } else if (response.status === 413) {
+      const errorText = await response.text();
+      console.log('POST 이미지 업로드 413 에러 응답:', errorText);
+      return createErrorResponse(APIError.payloadTooLarge('이미지 크기가 너무 큽니다.'));
+    } else if (!response.ok) {
+      const errorText = await response.text();
+      console.log('POST 이미지 업로드 외부 API 에러 응답:', response.status, errorText);
+      return createErrorResponse(
+        APIError.fromResponse(
+          response.status,
+          `이미지 업로드 실패: ${response.status} - ${errorText}`
+        )
+      );
     }
 
     const result = await response.json();

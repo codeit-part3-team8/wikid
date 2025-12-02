@@ -1,7 +1,8 @@
 export interface Notification {
   id: string;
   content: string;
-  timestamp: string;
+  timestamp?: string;
+  createdAt?: string;
   isRead: boolean;
   type?: 'info' | 'warning' | 'error';
 }

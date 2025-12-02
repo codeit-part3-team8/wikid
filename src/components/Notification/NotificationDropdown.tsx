@@ -13,7 +13,7 @@ const NotificationDropdown = ({
 }: NotificationDropdownProps) => {
   return (
     <div className="border-grayscale-200 bg-grayscale-200 absolute top-full right-5 z-10 mt-2 w-80 rounded-lg border shadow-lg md:right-0 md:w-96">
-      <div className="max-h-96 overflow-y-auto p-4">
+      <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-xl-bold text-black" id="notification-title">
             알림 {notifications.length}개
@@ -22,15 +22,15 @@ const NotificationDropdown = ({
             {notifications.some((n) => !n.isRead) && (
               <button
                 onClick={onMarkAllAsRead}
-                className="text-sm-regular text-grayscale-400 hover:text-grayscale-600 transition-colors"
+                className="text-sm-regular text-grayscale-500 hover:text-primary-300 cursor-pointer transition-colors"
                 type="button"
               >
-                모두 읽음
+                모두 읽기
               </button>
             )}
             <button
               onClick={onClose}
-              className="rounded p-1 transition-colors hover:bg-black/10"
+              className="cursor-pointer rounded p-1 transition-colors hover:bg-black/10"
               aria-label="알림 창 닫기"
               type="button"
             >
@@ -39,7 +39,12 @@ const NotificationDropdown = ({
           </div>
         </div>
 
-        <div className="space-y-4" role="list" aria-labelledby="notification-title">
+        <div
+          className="space-y-4 overflow-y-auto"
+          style={{ maxHeight: 'calc(2 * 92px + 1rem)' }}
+          role="list"
+          aria-labelledby="notification-title"
+        >
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <div key={notification.id} role="listitem">

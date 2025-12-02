@@ -7,6 +7,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { image, title, content } = body;
+
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const payload = {
       image,
       title,
@@ -17,6 +21,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: authHeader,
       },
       body: JSON.stringify(payload),
     });
@@ -34,6 +39,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     const page = searchParams.get('page') ?? '1'; // 페이지 번호
     const pageSize = searchParams.get('pageSize') ?? '10'; // 페이지 당 게시글 수
     const orderBy = searchParams.get('orderBy') ?? 'recent'; // 정렬 기준
@@ -46,7 +54,9 @@ export async function GET(request: NextRequest) {
     });
     if (keyword) query.append('keyword', keyword);
 
-    const data = await safeFetch(`${API.ARTICLES}?${query.toString()}`);
+    const data = await safeFetch(`${API.ARTICLES}?${query.toString()}`, {
+      headers: { Authorization: authHeader },
+    });
 
     return NextResponse.json({
       message: 'get article',
