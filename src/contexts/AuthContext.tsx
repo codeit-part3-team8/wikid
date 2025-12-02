@@ -109,7 +109,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = useCallback(
     (accessToken: string, refreshToken: string, userData?: LoginUserData) => {
       setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
+      // 리프레시 토큰은 서버에서 HttpOnly 쿠키로 설정되므로 여기서는 처리하지 않음
+      // setRefreshToken(refreshToken);
       setIsLoggedIn(true);
 
       // userData에서 userId와 code 추출하여 저장

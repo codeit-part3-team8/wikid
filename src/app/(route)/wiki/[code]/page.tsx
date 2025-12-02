@@ -30,6 +30,7 @@ export default function WikiPage() {
     hasEditPermission,
     isLoggedIn,
     isMyWiki,
+    isNotFound,
     fetchWikiData,
     checkEditingStatus,
     setProfileData,
@@ -215,7 +216,7 @@ export default function WikiPage() {
     );
   }
 
-  if (!profileData) {
+  if (isNotFound || !profileData) {
     return <NotFoundState onRetry={() => window.location.reload()} />;
   }
 

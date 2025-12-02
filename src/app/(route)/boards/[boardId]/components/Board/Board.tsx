@@ -19,8 +19,8 @@ interface BoardProps {
 
 const Board = ({ boardId }: BoardProps) => {
   const router = useRouter();
-  const { user } = useAuth();
-  const currentUserId = user?.id?.toString() ?? null;
+  const { userProfile } = useAuth();
+  const currentUserId = userProfile?.userId?.toString() ?? null;
 
   const { article, loading, error } = useArticle({ boardId });
   const { deleteArticle } = useDeleteArticle({

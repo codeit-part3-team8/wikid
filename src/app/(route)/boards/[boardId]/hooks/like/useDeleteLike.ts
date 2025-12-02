@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { API } from '@/constants/api';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface LikeParams {
   boardId: string;
@@ -9,23 +9,17 @@ interface LikeParams {
 }
 
 export function useDeleteLike({ boardId, onSuccess }: LikeParams) {
-  const accessToken = getAccessToken();
   const [error, setError] = useState<string | null>(null);
 
   const deleteLike = useCallback(async () => {
-    if (!accessToken) {
-      setError('로그인이 필요합니다.');
-      return;
-    }
     if (!boardId) return;
 
     setError(null);
 
     try {
-      const res = await fetch(`${API.ARTICLES}${boardId}/like`, {
+      const res = await fetchWithAuth(`${API.ARTICLES}${boardId}/like`, {
         method: 'DELETE',
         cache: 'no-store',
-        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (!res.ok) {
@@ -62,7 +56,7 @@ export function useDeleteLike({ boardId, onSuccess }: LikeParams) {
         setError('알 수 없는 오류가 발생했습니다.');
       }
     }
-  }, [boardId, onSuccess, accessToken]);
+  }, [boardId, onSuccess]);
 
   return { error, deleteLike };
 }

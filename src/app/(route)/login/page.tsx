@@ -41,6 +41,17 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showErrorSnackBar, setShowErrorSnackBar] = useState(false);
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
+  const [previousPath, setPreviousPath] = useState<string | null>(null);
+
+  // 이전 페이지 경로 저장
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const referrer = document.referrer;
+      if (referrer && !referrer.includes('/login')) {
+        setPreviousPath(referrer);
+      }
+    }
+  }, []);
 
   // 페이지 마운트 시 이미 로그인된 경우 랜딩 페이지로 리다이렉트
   useEffect(() => {
@@ -107,14 +118,18 @@ export default function LoginPage() {
         password: formData.password,
       });
 
-      // 로그인 처리 (토큰 저장 및 사용자 정보 저장)
-      login(response.accessToken, response.refreshToken, response);
+      // 로그인 처리 (액세스 토큰만 저장, 리프레시 토큰은 서버가 쿠키로 설정)
+      login(response.accessToken, '', response);
 
       // 위키 코드 유무에 따라 페이지 이동
       const userCode = response.user?.profile?.code;
       if (userCode) {
-        // 코드가 있으면 내 위키 페이지로 이동
-        router.push(`/wiki/${userCode}`);
+        // 코드가 있으면 이전 페이지로 이동 (없으면 뒤로가기)
+        if (previousPath) {
+          window.location.href = previousPath;
+        } else {
+          router.back();
+        }
       } else {
         // 코드가 없으면 위키 생성 페이지로 이동
         router.push('/wikicreate');

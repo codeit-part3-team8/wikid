@@ -9,6 +9,8 @@ import { useDeleteComment } from '../../hooks/comment/useDeleteComment';
 import IconButton from '@/components/IconButton/IconButton';
 import TextArea from '../TextArea/TextArea';
 import { useAuth } from '@/contexts/AuthContext';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
+import { useModal } from '@/hooks/useModal';
 
 interface CommentProps {
   comment: CommentType;
@@ -16,15 +18,19 @@ interface CommentProps {
 }
 
 const Comment = ({ comment, refetch }: CommentProps) => {
-  const { user } = useAuth();
-  const currentUserId = user?.id?.toString();
+  const { user, userProfile } = useAuth();
+  const currentUserId = user?.id?.toString() || userProfile?.userId?.toString();
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(comment.content);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const formattedCreated = getFormatDate(comment.createdAt);
   const formattedUpdated = getFormatDate(comment.updatedAt);
 
-  const isWriter = currentUserId !== null && comment.writer.id.toString() === currentUserId;
+  const isWriter =
+    currentUserId !== null &&
+    currentUserId !== undefined &&
+    comment.writer.id.toString() === currentUserId;
 
   const { updateComment } = useUpdateComment({ commentId: comment.id, onSuccess: refetch });
   const { deleteComment } = useDeleteComment({ commentId: comment.id, onSuccess: refetch });
@@ -36,9 +42,14 @@ const Comment = ({ comment, refetch }: CommentProps) => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    openModal();
+  };
+
+  const handleConfirmDelete = async () => {
     const deleted = await deleteComment();
     if (deleted) {
+      closeModal();
     }
   };
 
@@ -70,7 +81,7 @@ const Comment = ({ comment, refetch }: CommentProps) => {
                 <IconButton
                   icon="IC_Delete"
                   className="h-5 w-5 md:h-6 md:w-6"
-                  onClick={handleDelete}
+                  onClick={handleDeleteClick}
                 />
               </div>
             )}
@@ -93,6 +104,16 @@ const Comment = ({ comment, refetch }: CommentProps) => {
           )}
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        onConfirm={handleConfirmDelete}
+        title="정말 삭제하시겠습니까?"
+        message="삭제된 댓글은 복구할 수 없습니다."
+        confirmText="삭제"
+        confirmVariant="secondary"
+        cancelText="취소"
+      />
     </div>
   );
 };

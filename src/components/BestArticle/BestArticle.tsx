@@ -2,9 +2,6 @@ import Image from 'next/image';
 import { tv } from 'tailwind-variants';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import { useRouter } from 'next/navigation';
-import BaseModal from '../Modal/BaseModal';
-import { useModal } from '@/hooks/useModal';
-import Button from '../Button/Button';
 interface BestArticleProps {
   id?: number;
   title: string;
@@ -15,7 +12,6 @@ interface BestArticleProps {
   createdAt: string;
   likeCount: number;
   image?: string;
-  isLoggedIn: boolean;
 }
 
 const bestStyle = tv({
@@ -33,11 +29,8 @@ export default function BestArticle({
   createdAt,
   likeCount,
   image,
-  isLoggedIn,
 }: BestArticleProps) {
   const router = useRouter();
-
-  const { isOpen, openModal, closeModal } = useModal();
 
   function formatDate(createDate: string) {
     const date = new Date(createDate);
@@ -48,10 +41,6 @@ export default function BestArticle({
     return `${year}.${month}.${day}`;
   }
   function handleClick() {
-    if (!isLoggedIn) {
-      openModal();
-      return;
-    }
     router.push(`/boards/${id}`);
   }
 
@@ -88,12 +77,6 @@ export default function BestArticle({
           </div>
         </div>
       </div>
-      <BaseModal size="image" isOpen={isOpen} onClose={closeModal}>
-        <div className="mt-5 flex flex-col justify-center gap-5 p-3">
-          <span className="text-lg">로그인이 필요한 서비스입니다.</span>
-          <Button href="/login">로그인 페이지</Button>
-        </div>
-      </BaseModal>
     </>
   );
 }

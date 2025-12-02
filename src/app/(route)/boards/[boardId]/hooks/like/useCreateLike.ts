@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { API } from '@/constants/api';
-import { getAccessToken } from '@/utils/auth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface CreateLikeParams {
   boardId: string;
@@ -9,24 +9,17 @@ interface CreateLikeParams {
 }
 
 export function useCreateLike({ boardId, onSuccess }: CreateLikeParams) {
-  const accessToken = getAccessToken();
   const [error, setError] = useState<string | null>(null);
 
   const createLike = useCallback(async () => {
-    if (!accessToken) {
-      setError('로그인이 필요합니다.');
-      return;
-    }
     if (!boardId) return;
 
     setError(null);
 
     try {
-      const res = await fetch(`${API.ARTICLES}${boardId}/like`, {
+      // fetchWithAuth가 자동으로 토큰 처리 및 갱신
+      const res = await fetchWithAuth(`${API.ARTICLES}${boardId}/like`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
       });
 
       if (!res.ok) {
@@ -55,7 +48,7 @@ export function useCreateLike({ boardId, onSuccess }: CreateLikeParams) {
       if (err instanceof Error) setError(`좋아요 처리 중 에러 발생: ${err.message}`);
       else setError('알 수 없는 오류가 발생했습니다.');
     }
-  }, [boardId, onSuccess, accessToken]);
+  }, [boardId, onSuccess]);
 
   return { createLike, error };
 }

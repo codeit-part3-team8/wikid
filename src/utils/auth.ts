@@ -1,11 +1,19 @@
 /**
  * 토큰 저장/관리 유틸리티
+ *
+ * 보안 정책:
+ * - 액세스 토큰: localStorage에 저장 (클라이언트에서 API 요청 시 사용)
+ * - 리프레시 토큰: HttpOnly 쿠키에 저장 (XSS 공격 방지)
  */
 
 export const TOKEN_KEYS = {
   ACCESS_TOKEN: 'accessToken',
-  REFRESH_TOKEN: 'refreshToken',
+  REFRESH_TOKEN: 'refreshToken', // 레거시 호환용 (사용 중단 예정)
   USER_PROFILE: 'userProfile',
+} as const;
+
+export const COOKIE_KEYS = {
+  REFRESH_TOKEN: 'refreshToken',
 } as const;
 
 export interface UserProfile {
@@ -24,11 +32,15 @@ export const setAccessToken = (token: string): void => {
 };
 
 /**
- * 리프레시 토큰 저장
+ * 리프레시 토큰 저장 (쿠키에 저장)
+ * HttpOnly 쿠키 설정은 서버 측(API 라우트)에서 처리됩니다.
  */
 export const setRefreshToken = (token: string): void => {
+  // 클라이언트에서는 쿠키 설정을 위해 API 라우트로 전달
+  // 실제 저장은 /api/auth/signin 또는 /api/auth/refresh에서 처리
   if (typeof window !== 'undefined') {
-    localStorage.setItem(TOKEN_KEYS.REFRESH_TOKEN, token);
+    // 레거시 localStorage 제거
+    localStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN);
   }
 };
 
@@ -44,10 +56,17 @@ export const getAccessToken = (): string | null => {
 
 /**
  * 리프레시 토큰 가져오기
+ * 쿠키에서 가져오는 것은 서버 측에서만 가능 (HttpOnly)
  */
 export const getRefreshToken = (): string | null => {
+  // 클라이언트에서는 HttpOnly 쿠키에 접근 불가
+  // 서버 측 API 라우트에서만 사용 가능
   if (typeof window !== 'undefined') {
-    return localStorage.getItem(TOKEN_KEYS.REFRESH_TOKEN);
+    // 레거시 localStorage에서 제거
+    const legacyToken = localStorage.getItem(TOKEN_KEYS.REFRESH_TOKEN);
+    if (legacyToken) {
+      localStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN);
+    }
   }
   return null;
 };
@@ -94,8 +113,13 @@ export const clearUserProfile = (): void => {
 export const clearTokens = (): void => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
-    localStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN);
+    localStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN); // 레거시 제거
     localStorage.removeItem(TOKEN_KEYS.USER_PROFILE);
+
+    // 쿠키에 저장된 리프레시 토큰 삭제는 API 라우트를 통해 처리
+    fetch('/api/auth/logout', { method: 'POST' }).catch((error) => {
+      console.warn('로그아웃 API 호출 실패 (클라이언트 토큰은 제거됨):', error);
+    });
   }
 };
 
@@ -108,20 +132,17 @@ export const isAuthenticated = (): boolean => {
 
 /**
  * 리프레시 토큰으로 액세스 토큰 갱신
+ * 리프레시 토큰은 HttpOnly 쿠키에 저장되어 있으므로 자동으로 서버에 전송됨
  */
 export const refreshAccessToken = async (): Promise<boolean> => {
   try {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      throw new Error('리프레시 토큰이 없습니다.');
-    }
-
+    // 리프레시 토큰은 HttpOnly 쿠키에 있으므로 자동으로 서버에 전송됨
     const response = await fetch('/api/auth/refresh', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ refreshToken }),
+      credentials: 'include', // 쿠키 포함
     });
 
     if (!response.ok) {
@@ -129,13 +150,10 @@ export const refreshAccessToken = async (): Promise<boolean> => {
     }
 
     const result = await response.json();
-    const { accessToken, refreshToken: newRefreshToken } = result.data;
+    const { accessToken } = result.data;
 
-    // 새로운 토큰들 저장
+    // 새로운 액세스 토큰만 저장 (리프레시 토큰은 서버가 쿠키로 설정)
     setAccessToken(accessToken);
-    if (newRefreshToken) {
-      setRefreshToken(newRefreshToken);
-    }
 
     return true;
   } catch (error) {

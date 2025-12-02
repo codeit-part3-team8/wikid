@@ -6,6 +6,7 @@ import { SnackBarProvider } from '@/contexts/SnackBarContext';
 import Header from '@/components/Header/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wikid-19-8.vercel.app'),
@@ -108,6 +109,7 @@ export default function RootLayout({
           <SnackBarProvider>{children}</SnackBarProvider>
         </AuthProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
