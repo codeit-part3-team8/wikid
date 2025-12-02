@@ -57,7 +57,7 @@ const Board = ({ boardId }: BoardProps) => {
         </div>
         <Divider className="lg:hidden" />
       </div>
-      <div className="content flex flex-col gap-4">
+      <div className="content flex flex-col gap-4 overflow-hidden">
         <BoardContent content={article.content} />
       </div>
     </div>

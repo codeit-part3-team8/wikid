@@ -50,7 +50,6 @@ interface AuthContextType {
   updateUserProfile: (profile: Partial<UserProfile>) => void;
 }
 
-// 초기값을 null로 설정
 const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
@@ -69,21 +68,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const token = getAccessToken();
       if (token) {
-        // 토큰이 있으면 유효성 검증 및 필요시 갱신
         try {
-          // 토큰 갱신 시도 (만료되었다면 자동으로 갱신됨)
+          // 토큰 갱신 시도
           await refreshAccessToken();
           setIsLoggedIn(true);
 
-          // 로컬스토리지에서 userProfile 로드
+          // ✅ 로컬스토리지에서 userProfile 로드하고 User 상태도 복원
           const savedProfile = getUserProfile();
           if (savedProfile) {
             setUserProfile(savedProfile);
-          }
 
-          // TODO: 사용자 정보 가져오기
-          // const userInfo = await fetchUserInfo();
-          // setUser(userInfo);
+            // User 상태 복원
+            const user: User = {
+              id: savedProfile.userId.toString(),
+              email: '', // 이메일은 로컬스토리지에 없으면 빈 문자열
+              name: savedProfile.name ?? '',
+            };
+            setUser(user);
+          }
         } catch (error) {
           console.error('토큰 검증 실패:', error);
           setIsLoggedIn(false);
@@ -113,7 +115,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // setRefreshToken(refreshToken);
       setIsLoggedIn(true);
 
-      // userData에서 userId와 code 추출하여 저장
       if (userData && userData.user) {
         // User 형태로 변환하여 설정
         const user: User = {
@@ -131,7 +132,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         };
 
         setUserProfile(userProfile);
-        // 로컬스토리지에 저장
         saveUserProfile(userProfile);
       }
     },
@@ -140,7 +140,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 로그아웃 처리
   const logout = useCallback(() => {
-    clearTokens(); // 토큰 및 userProfile 모두 제거
+    clearTokens();
     setIsLoggedIn(false);
     setUser(null);
     setUserProfile(null);
