@@ -41,7 +41,7 @@ export default function BoardsPage() {
   const [page, setPage] = useState(1);
   const [errSnackBar, setErrorSnackBar] = useState(false);
   const { isLoggedIn } = useAuth();
-  const [isLogiinModal, setIsLoginModal] = useState(false);
+  const [isLoginModal, setIsLoginModal] = useState(false);
   const router = useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -220,7 +220,7 @@ export default function BoardsPage() {
         onClose={() => setErrorSnackBar(false)}
       />
       <SnackBar
-        isOpen={isLogiinModal}
+        isOpen={isLoginModal}
         message="게시물을 등록하기 위해서는 로그인이 필요합니다."
         type="error"
         onClose={() => setIsLoginModal(false)}

@@ -5,14 +5,13 @@ import '../styles/color-variables.css';
 import { SnackBarProvider } from '@/contexts/SnackBarContext';
 import Header from '@/components/Header/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'WIKID',
   description: '위키드 - 나만의 위키를 만들어보세요',
   icons: {
     icon: '/favicon.ico',
-    // shortcut: '/favicon-16x16.png',
-    // apple: '/apple-touch-icon.png',
   },
 };
 
@@ -36,6 +35,7 @@ export default function RootLayout({
           <Header />
           <SnackBarProvider>{children}</SnackBarProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );

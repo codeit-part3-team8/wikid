@@ -49,7 +49,8 @@ interface AuthContextType {
   authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// 초기값을 null로 설정
+const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -104,36 +105,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [checkAuth]);
 
   // 로그인 처리
-  const login = (accessToken: string, refreshToken: string, userData?: LoginUserData) => {
-    setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
-    setIsLoggedIn(true);
+  const login = useCallback(
+    (accessToken: string, refreshToken: string, userData?: LoginUserData) => {
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
+      setIsLoggedIn(true);
 
-    // userData에서 userId와 code 추출하여 저장
-    if (userData && userData.user) {
-      // User 형태로 변환하여 설정
-      const user: User = {
-        id: userData.user.id.toString(),
-        email: userData.user.email,
-        name: userData.user.name,
-      };
-      setUser(user);
+      // userData에서 userId와 code 추출하여 저장
+      if (userData && userData.user) {
+        // User 형태로 변환하여 설정
+        const user: User = {
+          id: userData.user.id.toString(),
+          email: userData.user.email,
+          name: userData.user.name,
+        };
+        setUser(user);
 
-      // userId와 code 추출 및 저장
-      const userProfile: UserProfile = {
-        userId: userData.user.id,
-        code: userData.user.profile?.code || '',
-        name: userData.user.name,
-      };
+        // userId와 code 추출 및 저장
+        const userProfile: UserProfile = {
+          userId: userData.user.id,
+          code: userData.user.profile?.code || '',
+          name: userData.user.name,
+        };
 
-      setUserProfile(userProfile);
-      // 로컬스토리지에 저장
-      saveUserProfile(userProfile);
-    }
-  };
+        setUserProfile(userProfile);
+        // 로컬스토리지에 저장
+        saveUserProfile(userProfile);
+      }
+    },
+    []
+  );
 
   // 로그아웃 처리
-  const logout = () => {
+  const logout = useCallback(() => {
     clearTokens(); // 토큰 및 userProfile 모두 제거
     setIsLoggedIn(false);
     setUser(null);
@@ -141,31 +145,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (typeof window !== 'undefined') {
       window.location.href = '/';
     }
+  }, []);
+
+  const contextValue = {
+    isLoggedIn,
+    user,
+    userProfile,
+    isLoading,
+    login,
+    logout,
+    checkAuth,
+    authenticatedFetch,
   };
 
   if (isLoading) return null;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        user,
-        userProfile,
-        isLoading,
-        login,
-        logout,
-        checkAuth,
-        authenticatedFetch,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (context === null) {
     throw new Error('useAuth는 반드시 AuthProvider 내부에서 사용되어야 합니다.');
   }
   return context;
