@@ -52,6 +52,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isLoggedIn, onClose }) => {
               className="text-md-regular text-grayscale-500 hover:bg-grayscale-100 rounded-lg px-4 py-3 text-left transition-colors"
               onClick={() => {
                 // 로그아웃 로직
+                console.log('로그아웃');
                 onClose();
               }}
             >

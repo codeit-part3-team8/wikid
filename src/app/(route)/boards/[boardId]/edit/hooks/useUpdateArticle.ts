@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { Comment } from '@/types/Comment';
 import { getAccessToken } from '@/utils/auth';
 import { API } from '@/constants/api';
 import { ArticlePayload } from '@/types/ArticlePayload';
-import { Article as ArticleType } from '@/types/Article';
 
 interface useUpdateArticleParams {
   boardId: number;
@@ -16,7 +16,7 @@ export function useUpdateArticle({ boardId, onSuccess }: useUpdateArticleParams)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updateArticle = async (payload: ArticlePayload): Promise<ArticleType | null> => {
+  const updateArticle = async (payload: ArticlePayload): Promise<Comment | null> => {
     if (!accessToken) {
       setError('로그인 후 다시 시도해주세요.');
       return null;
@@ -31,7 +31,11 @@ export function useUpdateArticle({ boardId, onSuccess }: useUpdateArticleParams)
     setError(null);
 
     try {
-      const res = await fetch(`${API.ARTICLES}${boardId}`, {
+      const url = `${API.ARTICLES}${boardId}`;
+      console.log('PATCH URL:', url); // 디버깅용
+      console.log('Payload:', payload); // 디버깅용
+
+      const res = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -45,6 +49,7 @@ export function useUpdateArticle({ boardId, onSuccess }: useUpdateArticleParams)
       if (!res.ok) {
         try {
           const errorBody = await res.json();
+          console.error('Error response:', errorBody); // 디버깅용
           serverMessage = errorBody?.message;
         } catch {}
 

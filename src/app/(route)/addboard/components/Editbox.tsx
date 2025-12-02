@@ -49,9 +49,13 @@ const Editbox = ({ article, isEditMode = false }: EditBoxProps) => {
       ? getFormatDate(article.updatedAt)
       : created;
 
-  /** ▶ 게시글 "등록 / 수정" 제출 버튼 */
   const handleSubmit = useCallback(async () => {
-    const payload: ArticlePayload = { title, content, image };
+    // image가 빈 문자열이면 제외
+    const payload: ArticlePayload = {
+      title,
+      content,
+      ...(image && { image }), // image가 truthy일 때만 포함
+    };
 
     if (isEditMode) {
       await updateArticle(payload);
