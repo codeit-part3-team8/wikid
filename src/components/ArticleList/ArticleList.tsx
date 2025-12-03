@@ -32,16 +32,16 @@ export default function ArticleList({ id, title, writer, likeCount, createdAt }:
           {id}
         </td>
 
-        <td className="text-grayscale-500 text-lg-regular hidden py-[11px] text-center whitespace-nowrap min-[640px]:table-cell">
+        <td className="text-grayscale-500 hidden py-[11px] text-center whitespace-nowrap min-[640px]:table-cell">
           {title}
         </td>
-        <td className="text-grayscale-500 hidden w-30 py-[11px] text-center text-sm min-[640px]:table-cell">
+        <td className="text-grayscale-500 hidden w-[120px] py-[11px] text-center text-sm min-[640px]:table-cell">
           {writer}
         </td>
         <td className="text-grayscale-500 hidden w-20 py-[11px] text-center text-sm min-[640px]:table-cell">
           {likeCount}
         </td>
-        <td className="text-grayscale-500 hidden w-30 py-[11px] text-center text-sm whitespace-nowrap min-[640px]:table-cell">
+        <td className="text-grayscale-500 hidden w-[120px] py-[11px] text-center text-sm whitespace-nowrap min-[640px]:table-cell">
           {formatDate(createdAt)}
         </td>
 

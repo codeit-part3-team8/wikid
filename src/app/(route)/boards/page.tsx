@@ -43,6 +43,7 @@ export default function BoardsPage() {
   const [filteredarticleData, setFilteredarticleData] = useState<ArticleProps[]>(articleData);
   const [page, setPage] = useState(1);
   const [errSnackBar, setErrorSnackBar] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { isLoggedIn } = useAuth();
   const { isOpen, openModal, closeModal } = useModal();
   const router = useRouter();
@@ -177,6 +178,7 @@ export default function BoardsPage() {
   useEffect(() => {
     async function fetcharticleData() {
       try {
+        setIsLoading(true);
         const res = await axios.get(`${API.ARTICLES}?page=1&pageSize=100&orderBy=recent`);
 
         setArticleData(res.data.list);
@@ -184,6 +186,8 @@ export default function BoardsPage() {
       } catch (error) {
         console.error(error);
         setErrorSnackBar(true);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -220,7 +224,7 @@ export default function BoardsPage() {
           className="no-scrollbar min-h-[220px] overflow-x-auto sm:min-h-auto"
         >
           <div className="mb-10 grid max-w-[1048px] auto-cols-[250px] grid-flow-col gap-4 min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4">
-            {articleData.length === 0
+            {isLoading
               ? // 로딩 스켈레톤
                 Array.from({ length: 4 }).map((_, i) => <BestArticleSkeleton key={i} />)
               : [...articleData]
@@ -256,7 +260,7 @@ export default function BoardsPage() {
           </thead>
 
           <tbody>
-            {pagedarticleData.length === 0
+            {isLoading
               ? // 로딩 스켈레톤
                 Array.from({ length: 5 }).map((_, i) => <ArticleRowSkeleton key={i} />)
               : pagedarticleData.map((article) => (
