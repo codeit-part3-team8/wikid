@@ -27,7 +27,7 @@ export default function ArticleList({ id, title, writer, likeCount, createdAt }:
   }
   return (
     <>
-      <tr onClick={handleClick} className="cursor-pointer border-b border-[#E4E5F0]">
+      <tr onClick={handleClick} className="min-h-[60px] cursor-pointer border-b border-[#E4E5F0]">
         <td className="text-grayscale-500 hidden w-20 py-[11px] text-center text-sm min-[640px]:table-cell">
           {id}
         </td>

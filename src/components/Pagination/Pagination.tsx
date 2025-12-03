@@ -14,7 +14,7 @@ const paginationStyle = tv({
 });
 
 const paginationBtnStyle = tv({
-  base: 'relative inline-flex items-center justify-center w-[40px] h-[40px] md:w-[45px] md:h-[45px] rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)]',
+  base: 'relative inline-flex items-center justify-center w-[40px] h-[40px] md:w-[45px] md:h-[45px] rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)] cursor-pointer',
 });
 
 const pagiNumStyle = tv({

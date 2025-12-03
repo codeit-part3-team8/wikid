@@ -13,6 +13,7 @@ import Image from 'next/image';
 import NoSearch from '@/assets/images/no-search.png';
 import { API } from '@/constants/api';
 import SnackBar from '@/components/SnackBar/SnackBar';
+import { ListCardSkeleton } from '@/components/Skeleton/Skeleton';
 
 interface Profile {
   id: number;
@@ -108,11 +109,9 @@ function WikiListContent() {
           </span>
         </div>
 
-        <section className="mb-[54px] flex h-[466px] w-full max-w-[860px] flex-col gap-6 px-6 md:mb-[81px] md:h-[474px] md:px-6 lg:mb-[121px]">
+        <section className="mb-[54px] flex h-[466px] min-h-[466px] w-full max-w-[860px] flex-col gap-6 px-6 md:mb-[81px] md:h-[474px] md:min-h-[474px] md:px-6 lg:mb-[121px]">
           {isLoading ? (
-            <div className="text-grayscale-400 flex h-full flex-col items-center justify-center gap-4">
-              <span className="text-md">위키 리스트를 불러오는 중입니다...</span>
-            </div>
+            Array.from({ length: 3 }).map((_, i) => <ListCardSkeleton key={i} />)
           ) : filteredProfiles.length <= 0 ? (
             <div className="text-grayscale-400 flex flex-col items-center justify-center gap-8 py-[60px] text-center">
               {keywordFromUrl ? (
