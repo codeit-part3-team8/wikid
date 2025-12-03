@@ -47,14 +47,6 @@ export const metadata: Metadata = {
       '위키드에서 나만의 위키를 만들고 공유하세요. 지식을 정리하고 공유하는 가장 쉬운 방법입니다.',
     url: 'https://wikid-19-8.vercel.app',
     siteName: 'WIKID',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'WIKID - 나만의 위키를 만들어보세요',
-      },
-    ],
     locale: 'ko_KR',
     type: 'website',
   },
@@ -63,7 +55,6 @@ export const metadata: Metadata = {
     title: 'WIKID - 나만의 위키를 만들어보세요',
     description:
       '위키드에서 나만의 위키를 만들고 공유하세요. 지식을 정리하고 공유하는 가장 쉬운 방법입니다.',
-    images: ['/og-image.png'],
     creator: '@WIKID',
   },
   robots: {
@@ -97,9 +88,12 @@ export default function RootLayout({
     <html lang="ko">
       <head>
         <link
-          rel="stylesheet"
+          rel="preload"
           as="style"
-          crossOrigin=""
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
+        />
+        <link
+          rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
         />
       </head>

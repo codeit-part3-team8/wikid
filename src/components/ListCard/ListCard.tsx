@@ -15,7 +15,7 @@ interface ListCardProps {
 }
 
 const listCardStyle = tv({
-  base: 'flex items-center h-[150px] md:h-[142px] gap-[32px] py-6 px-9  shadow-[0px_4px_20px_rgba(0,0,0,0.08)] overflow-hidden',
+  base: 'flex items-center h-[150px] md:h-[142px] min-h-[150px] md:min-h-[142px] gap-[32px] py-6 px-9  shadow-[0px_4px_20px_rgba(0,0,0,0.08)] overflow-hidden',
 });
 const cardInfoStyle = tv({
   base: 'flex flex-col  flex-1 justify-between gap-[10px] md:gap-[14px] ',

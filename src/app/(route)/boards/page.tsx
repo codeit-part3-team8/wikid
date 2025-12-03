@@ -3,6 +3,7 @@
 import BestArticle from '@/components/BestArticle/BestArticle';
 import Button from '@/components/Button/Button';
 import { tv } from 'tailwind-variants';
+import { BestArticleSkeleton, ArticleRowSkeleton } from '@/components/Skeleton/Skeleton';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import DropDown from '@/components/DropDown/DropDown';
 import ArticleList from '@/components/ArticleList/ArticleList';
@@ -42,6 +43,7 @@ export default function BoardsPage() {
   const [filteredarticleData, setFilteredarticleData] = useState<ArticleProps[]>(articleData);
   const [page, setPage] = useState(1);
   const [errSnackBar, setErrorSnackBar] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { isLoggedIn } = useAuth();
   const { isOpen, openModal, closeModal } = useModal();
   const router = useRouter();
@@ -176,6 +178,7 @@ export default function BoardsPage() {
   useEffect(() => {
     async function fetcharticleData() {
       try {
+        setIsLoading(true);
         const res = await axios.get(`${API.ARTICLES}?page=1&pageSize=100&orderBy=recent`);
 
         setArticleData(res.data.list);
@@ -183,6 +186,8 @@ export default function BoardsPage() {
       } catch (error) {
         console.error(error);
         setErrorSnackBar(true);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -213,14 +218,19 @@ export default function BoardsPage() {
             게시물 등록하기
           </Button>
         </div>
-        <div ref={bestRef} id="dragBox" className="no-scrollbar overflow-x-auto">
+        <div
+          ref={bestRef}
+          id="dragBox"
+          className="no-scrollbar min-h-[220px] overflow-x-auto sm:min-h-auto"
+        >
           <div className="mb-10 grid max-w-[1048px] auto-cols-[250px] grid-flow-col gap-4 min-[640px]:auto-cols-auto min-[640px]:grid-flow-row min-[640px]:grid-cols-2 sm:mb-[60px] lg:grid-cols-4">
-            {[...articleData]
-              .sort((a, b) => b.likeCount - a.likeCount)
-              .slice(0, 4)
-              .map((article) => (
-                <BestArticle key={article.id} {...article} />
-              ))}
+            {isLoading
+              ? // 로딩 스켈레톤
+                Array.from({ length: 4 }).map((_, i) => <BestArticleSkeleton key={i} />)
+              : [...articleData]
+                  .sort((a, b) => b.likeCount - a.likeCount)
+                  .slice(0, 4)
+                  .map((article) => <BestArticle key={article.id} {...article} />)}
           </div>
         </div>
 
@@ -238,7 +248,7 @@ export default function BoardsPage() {
           </div>
           <DropDown onSelect={handleSelect} />
         </div>
-        <table className="text-grayscale-400 m-auto mt-[30px] mb-8 w-full sm:mt-5 sm:mb-[60px] md:px-[60px] lg:w-[1060px]">
+        <table className="text-grayscale-400 m-auto mt-[30px] mb-8 min-h-[600px] w-full sm:mt-5 sm:mb-[60px] md:px-[60px] lg:w-[1060px]">
           <thead className="text-lg-regular max-[640px]:hidden">
             <tr className="border-b">
               <th className="text-lg-regular px-4 py-2">번호</th>
@@ -250,16 +260,19 @@ export default function BoardsPage() {
           </thead>
 
           <tbody>
-            {pagedarticleData.map((article) => (
-              <ArticleList
-                key={article.id}
-                id={article.id}
-                title={article.title}
-                writer={article.writer.name}
-                likeCount={article.likeCount}
-                createdAt={article.createdAt}
-              />
-            ))}
+            {isLoading
+              ? // 로딩 스켈레톤
+                Array.from({ length: 5 }).map((_, i) => <ArticleRowSkeleton key={i} />)
+              : pagedarticleData.map((article) => (
+                  <ArticleList
+                    key={article.id}
+                    id={article.id}
+                    title={article.title}
+                    writer={article.writer.name}
+                    likeCount={article.likeCount}
+                    createdAt={article.createdAt}
+                  />
+                ))}
           </tbody>
         </table>
         <div className="mb-[57px] flex justify-center md:mb-20 lg:mb-[120px]">
