@@ -52,7 +52,7 @@ export default function Home() {
             </div>
             <ActionButton
               to="/wikicreate"
-              className="responsive-text-nx nx-24-to-20-bold bg-grayscale-500 hover:bg-grayscale-400 text-grayscale-50 m-auto w-fit rounded-[15px] px-[30px] py-[15px]"
+              className="responsive-text-nx nx-24-to-20-bold bg-grayscale-500 hover:bg-grayscale-400 text-grayscale-50 m-auto w-fit cursor-pointer rounded-[15px] px-[30px] py-[15px]"
             >
               위키 만들기
             </ActionButton>
@@ -60,6 +60,8 @@ export default function Home() {
           <Image
             src={writeSection}
             alt="위키만들기 이미지"
+            width={498}
+            height={590}
             className="h-[398px] w-[336px] sm:h-[590px] sm:w-[498px]"
             priority
           />
@@ -78,6 +80,8 @@ export default function Home() {
               <Image
                 src={shareSocial}
                 alt="home share social 이미지"
+                width={364}
+                height={450}
                 className="-ml-5 h-[162px] w-[133px] object-contain sm:h-[322px] sm:w-[262px] lg:h-[450px] lg:w-[364px]"
               />
             </div>
@@ -85,6 +89,8 @@ export default function Home() {
           <Image
             src={shareSection}
             alt="share section 이미지"
+            width={520}
+            height={681}
             className="h-[250px] w-48 sm:h-[479px] sm:w-[365px] lg:h-[681px] lg:w-[520px]"
           />
         </div>
@@ -186,7 +192,13 @@ export default function Home() {
           </span>
         </div>
         <div className="m-auto flex flex-col gap-2.5 sm:gap-[22px] lg:gap-10">
-          <Image src={viewSection} alt="viewSection 이미지" className="w-full" />
+          <Image
+            src={viewSection}
+            alt="viewSection 이미지"
+            width={842}
+            height={524}
+            className="w-full"
+          />
           <div className="grid w-full grid-cols-3 gap-2.5 sm:gap-[22px] lg:gap-10">
             <div className="relative col-span-1 aspect-square max-w-[280px]">
               <Image
