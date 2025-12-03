@@ -99,7 +99,7 @@ export default function WikiCreatePage() {
         updateUserProfile({ code: data.code });
         router.push(`/wiki/${data.code}`);
       } else {
-        router.push('/');
+        router.push('/wikilist');
       }
     } catch (error) {
       console.error('위키 생성 실패:', error);
