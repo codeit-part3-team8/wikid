@@ -15,13 +15,24 @@ interface TextAreaProps
   maxLength?: number;
   placeholder?: string;
   value: string;
+  disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSubmit?: (e?: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
-    { className, heightLines, maxLength = 0, placeholder = '', value, onChange, onSubmit, ...rest },
+    {
+      className,
+      heightLines,
+      maxLength = 0,
+      placeholder = '',
+      value,
+      disabled = false,
+      onChange,
+      onSubmit,
+      ...rest
+    },
     ref
   ) => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -39,6 +50,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           placeholder={placeholder}
           style={{ minHeight: `${heightLines * 26}px` }}
           value={value}
+          disabled={disabled}
           ref={ref}
           className={clsx(textAreaStyle(), className)}
           onChange={onChange}

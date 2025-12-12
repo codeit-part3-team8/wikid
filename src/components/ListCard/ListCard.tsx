@@ -34,7 +34,7 @@ export default function ListCard({ code, image, name, city, nationality, job }: 
           <Avatar className="shrink-0" imgUrl={image} name={name} variant="list" />
           <div className={cardInfoStyle()}>
             <span className={nameStyle()}>{name}</span>
-            <div className="flex items-end justify-between max-[641px]:items-start max-[640px]:flex-col max-[640px]:gap-[14px]">
+            <div className="flex items-end justify-between max-[641px]:items-start max-[640px]:flex-col max-[640px]:gap-3.5">
               <div className="text-grayscale-400 flex flex-col text-xs sm:text-sm">
                 <div>
                   {city}&nbsp;{nationality}
